@@ -24,22 +24,35 @@
         }
         #norm-badge.bad { border-left-color: #e74c3c; color: #ffd9d9; }
 
-        /* ===== ПАНЕЛЬ СОЛНЦА ===== */
-        #sun-panel {
+        /* ===== ЛЕВЫЕ ПАНЕЛИ: СОЛНЦЕ + ПЛАНИРОВКА ===== */
+        #left-panels {
             position: absolute; top: 80px; left: 10px; z-index: 120;
+            display: flex; flex-direction: column; gap: 10px; width: 230px;
+            pointer-events: none;
+        }
+        #left-panels > * { pointer-events: auto; }
+        .panel-fab {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(16,20,30,0.92); border: 1px solid rgba(255,255,255,0.12);
+            font-size: 20px; cursor: pointer; color: #fff;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+        }
+        .panel-fab:hover { background: rgba(30,36,50,0.95); }
+        #sun-panel, #edit-panel {
             background: rgba(16, 20, 30, 0.9); backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
-            padding: 10px 14px; width: 230px;
+            padding: 10px 14px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
         }
-        .sun-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .sun-panel-title { color: #ffaa00; font-weight: 700; font-size: 13px; }
-        #sun-panel-toggle {
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .panel-title { color: #ffaa00; font-weight: 700; font-size: 13px; }
+        #sun-panel-toggle, #edit-panel-toggle {
             background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
             color: #eee; border-radius: 6px; width: 24px; height: 24px; cursor: pointer;
             font-size: 14px; line-height: 1; padding: 0;
         }
-        #sun-panel-toggle:hover { background: rgba(255,255,255,0.18); }
+        #sun-panel-toggle:hover, #edit-panel-toggle:hover { background: rgba(255,255,255,0.18); }
         .sun-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #bbb; font-size: 12px; }
         .sun-row input[type="range"] {
             flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
@@ -63,15 +76,31 @@
         #sun-play-btn:hover { background: rgba(255,170,0,0.3); }
         #sun-play-btn.playing { background: rgba(231,76,60,0.25); border-color: #e74c3c; color: #ff9d8f; }
 
-        #sun-fab {
-            position: absolute; top: 80px; left: 10px; z-index: 120;
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(16,20,30,0.92); border: 1px solid rgba(255,255,255,0.12);
-            font-size: 20px; cursor: pointer; color: #fff;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center;
+        /* панель планировки */
+        #edit-panel.collapsed .edit-panel-body { display: none; }
+        #edit-panel.collapsed .panel-header { margin-bottom: 0; }
+        .edit-btn {
+            width: 100%; background: rgba(52,152,219,0.15); border: 1px solid #3498db;
+            color: #9fd3ff; border-radius: 20px; padding: 7px 10px; font-size: 12px;
+            font-weight: 600; cursor: pointer; transition: 0.2s; margin-bottom: 6px;
         }
-        #sun-fab:hover { background: rgba(30,36,50,0.95); }
+        .edit-btn:hover { background: rgba(52,152,219,0.32); }
+        .edit-btn.active { background: rgba(46,204,113,0.25); border-color: #2ecc71; color: #b9f6ca; }
+        .edit-row { display: flex; gap: 6px; }
+        .edit-row .edit-btn { margin-bottom: 0; }
+        .edit-btn.danger { background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.7); color: #ffb3a7; }
+        .edit-btn.danger:hover { background: rgba(231,76,60,0.32); }
+        #edit-status { color: #888; font-size: 11px; text-align: center; margin-top: 6px; }
+
+        /* ===== ПОДСКАЗКИ / ТОСТЫ ===== */
+        #drag-hint {
+            position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
+            background: rgba(10, 25, 40, 0.92); color: #fff; padding: 8px 16px; border-radius: 8px;
+            font-size: 13px; z-index: 250; pointer-events: none; display: none;
+            text-align: center; backdrop-filter: blur(4px); border: 1px solid #3498db;
+            max-width: 85vw;
+        }
+        #drag-hint.show { display: block; }
 
         #hamburger {
             position: fixed; bottom: 20px; right: 20px; z-index: 300;
@@ -218,8 +247,10 @@
         @media (max-width: 768px) {
             #info { font-size: 10px; padding: 4px 8px; top: 8px; left: 8px; }
             #norm-badge { top: 36px; left: 8px; font-size: 10px; padding: 4px 8px; }
-            #sun-panel { top: 66px; left: 8px; width: 200px; padding: 8px 10px; }
-            #sun-fab { top: 66px; left: 8px; width: 40px; height: 40px; font-size: 18px; }
+            #left-panels { top: 66px; left: 8px; width: 200px; gap: 8px; }
+            .panel-fab { width: 40px; height: 40px; font-size: 18px; }
+            #sun-panel, #edit-panel { padding: 8px 10px; }
+            #drag-hint { font-size: 11px; bottom: 110px; padding: 6px 12px; }
             .note { display: none; }
             .legend { top: 8px; right: 8px; font-size: 7px; padding: 4px 6px; }
             .legend-color { width: 12px; height: 2px; }
@@ -248,7 +279,7 @@
 <body>
     <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север</span></div>
     <div id="norm-badge"></div>
-    <div class="note">🖱 Вращать / Масштаб</div>
+    <div class="note">🖱 Вращать / Масштаб • ✏️ Редактирование — в панели слева</div>
     <div class="legend">
         <div class="legend-item"><span class="legend-color" style="background:#3366ff;"></span> Вода</div>
         <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество</div>
@@ -256,30 +287,49 @@
         <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
     </div>
 
-    <!-- ===== ПАНЕЛЬ СОЛНЦА ===== -->
-    <div id="sun-panel">
-        <div class="sun-panel-header">
-            <span class="sun-panel-title">☀️ Солнце</span>
-            <button id="sun-panel-toggle" title="Свернуть">–</button>
+    <!-- ===== ЛЕВЫЕ ПАНЕЛИ ===== -->
+    <div id="left-panels">
+        <button id="sun-fab" class="panel-fab" title="Открыть панель солнца">☀️</button>
+        <button id="edit-fab" class="panel-fab" title="Открыть панель планировки">✏️</button>
+
+        <div id="sun-panel">
+            <div class="panel-header">
+                <span class="panel-title">☀️ Солнце</span>
+                <button id="sun-panel-toggle" title="Свернуть">–</button>
+            </div>
+            <div class="sun-panel-body">
+                <div class="sun-row">
+                    <span>🌞</span>
+                    <input type="range" id="sun-month-side" min="1" max="12" value="6" step="1">
+                    <span id="month-label-side">Июнь</span>
+                </div>
+                <div class="sun-row">
+                    <span>🕒</span>
+                    <input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05">
+                    <span id="hour-label-side">12:00</span>
+                </div>
+                <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
+                <button id="sun-play-btn">▶ Проиграть день</button>
+            </div>
         </div>
-        <div class="sun-panel-body">
-            <div class="sun-row">
-                <span>🌞</span>
-                <input type="range" id="sun-month-side" min="1" max="12" value="6" step="1">
-                <span id="month-label-side">Июнь</span>
+
+        <div id="edit-panel">
+            <div class="panel-header">
+                <span class="panel-title">✏️ Планировка</span>
+                <button id="edit-panel-toggle" title="Свернуть">–</button>
             </div>
-            <div class="sun-row">
-                <span>🕒</span>
-                <input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05">
-                <span id="hour-label-side">12:00</span>
+            <div class="edit-panel-body">
+                <button id="edit-mode-btn" class="edit-btn">🖐 Включить изменения на карте</button>
+                <div class="edit-row">
+                    <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
+                    <button id="reset-layout-btn" class="edit-btn danger">🔄 Сброс</button>
+                </div>
+                <div id="edit-status">Режим просмотра</div>
             </div>
-            <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
-            <button id="sun-play-btn">▶ Проиграть день</button>
         </div>
     </div>
-    <button id="sun-fab" title="Открыть панель солнца">☀️</button>
 
-    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта, нужна для слайдеров и кнопок) ===== -->
+    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта) ===== -->
     <div id="controls">
         <label>Месяц <span id="month-label">Июнь</span></label>
         <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
@@ -304,6 +354,7 @@
 
     <div id="measure-hint">👆 Коснитесь участка, чтобы поставить точку</div>
     <div id="comm-info"></div>
+    <div id="drag-hint"></div>
 
     <button id="hamburger" aria-label="Меню">☰</button>
 
@@ -418,6 +469,9 @@
     <script>
     // ═══════════════════════════════════════════════════════════════
     // КОНФИГУРАЦИЯ
+    // Коммуникации описаны ЯКОРЯМИ: концы привязаны к объектам
+    // ({obj, dx, dz} — смещение от центра объекта) или к фиксированным
+    // точкам ({x, z}). При переносе объекта трасса перестраивается.
     // ═══════════════════════════════════════════════════════════════
     const CONFIG = {
         plot: { w: 25, d: 40 },
@@ -443,15 +497,24 @@
             { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
         ],
         utilities: [
-            { name: 'Гофра к бане', icon: '⚡', points: [[20, 29], [24, 29], [24, 11]], color: 0xff6600, label: '⚡ Гофра к бане', labelPos: [24, 20], pipe: 'гофра Ø20 мм', depth: 0.8 },
-            { name: 'Гофра к хозблоку', icon: '⚡', points: [[20, 29], [24, 29], [24, 5]], color: 0xff9933, label: '⚡ Гофра к хозблоку', labelPos: [24, 16], pipe: 'гофра Ø20 мм', depth: 0.8 },
-            { name: 'Вода от скважины', icon: '💧', points: [[16, 22], [12.5, 22], [12.5, 29]], color: 0x3366ff, label: '💧 Вода от скважины', labelPos: [15, 27], pipe: 'ПНД Ø32 мм', depth: 1.5 },
-            { name: 'Вода к бане', icon: '💧', points: [[12.5, 29], [20, 29], [24, 29], [24, 11]], color: 0x3366ff, label: '💧 Вода к бане', labelPos: [22, 20], pipe: 'ПНД Ø25 мм', depth: 1.5 },
-            { name: 'Вода на полив', icon: '💧', points: [[12.5, 29], [2.5, 29], [2.5, 3.5]], color: 0x3366ff, label: '💧 Вода на полив', labelPos: [2.5, 16], pipe: 'ПНД Ø20 мм', depth: 0.8 },
-            { name: 'Канализация (дом)', icon: '🚽', points: [[12.5, 29], [3, 29], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (дом)', labelPos: [7, 33], pipe: 'ПВХ Ø110 мм', depth: 1.2 },
-            { name: 'Канализация (баня)', icon: '🚽', points: [[19, 11], [3, 11], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (баня)', labelPos: [21, 22], pipe: 'ПВХ Ø110 мм', depth: 1.0 },
-            { name: 'Магистральный газ', icon: '🔥', points: [[24.5, 0], [24.5, 29]], color: 0xffcc00, label: '🔥 Магистральный газ', labelPos: [24.5, 15], pipe: 'ПЭ Ø32 мм', depth: 1.2 },
-            { name: 'Газ к дому', icon: '🔥', points: [[24.5, 29], [20, 29]], color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2 }
+            { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8,
+              route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
+            { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8,
+              route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'shed', dx: 3, dz: 0 } ] },
+            { name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5,
+              route: [ { obj: 'well', dx: 0, dz: 0 }, { x: 12.5, z: 22 }, { obj: 'house', dx: 0, dz: -1 } ] },
+            { name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5,
+              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
+            { name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8,
+              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 2.5, z: 29 }, { obj: 'garden', dx: 0, dz: 0 } ] },
+            { name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2,
+              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 3, z: 29 }, { obj: 'septic', dx: 0, dz: 0 } ] },
+            { name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0,
+              route: [ { obj: 'bath', dx: 0, dz: 0 }, { x: 3, z: 11 }, { obj: 'septic', dx: 0, dz: 0 } ] },
+            { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2,
+              route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
+            { name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false,
+              route: [ { x: 24.5, z: 29 }, { obj: 'house', dx: 7.5, dz: -1 } ] }
         ],
         months: [
             { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
@@ -470,12 +533,44 @@
         monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
     };
 
-    function utilityLength(u) {
-        let len = 0;
-        for (let i = 1; i < u.points.length; i++) {
-            len += Math.hypot(u.points[i][0] - u.points[i-1][0], u.points[i][1] - u.points[i-1][1]);
+    // ═══════════════════════════════════════════════════════════════
+    // СОХРАНЕНИЕ ПЛАНИРОВКИ (localStorage)
+    // ═══════════════════════════════════════════════════════════════
+    const STORAGE_KEY = 'bern_layout_v1';
+    const DEFAULT_LAYOUT = {};
+    CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z }; });
+
+    let hadSavedLayout = false;
+
+    function loadSavedLayout() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const data = JSON.parse(raw);
+            if (data && data.objects) {
+                CONFIG.objects.forEach(o => {
+                    const s = data.objects[o.id];
+                    if (s && typeof s.x === 'number' && typeof s.z === 'number') {
+                        o.x = s.x;
+                        o.z = s.z;
+                        hadSavedLayout = true;
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Не удалось загрузить сохранённую планировку:', e);
         }
-        return len;
+    }
+    loadSavedLayout();
+
+    function saveLayout() {
+        try {
+            const objects = {};
+            CONFIG.objects.forEach(o => { objects[o.id] = { x: o.x, z: o.z }; });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), objects }));
+        } catch (e) {
+            console.warn('Не удалось сохранить планировку:', e);
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -490,6 +585,7 @@
         timeDisplay: document.getElementById('time-display'),
         measureHint: document.getElementById('measure-hint'),
         commInfo: document.getElementById('comm-info'),
+        dragHint: document.getElementById('drag-hint'),
         toggleComm: document.getElementById('toggle-comm'),
         toggleLabels: document.getElementById('toggle-labels'),
         exportPng: document.getElementById('export-png'),
@@ -522,6 +618,15 @@
             hourLabel: document.getElementById('hour-label-side'),
             status: document.getElementById('sun-status'),
             playBtn: document.getElementById('sun-play-btn')
+        },
+        edit: {
+            panel: document.getElementById('edit-panel'),
+            fab: document.getElementById('edit-fab'),
+            toggle: document.getElementById('edit-panel-toggle'),
+            modeBtn: document.getElementById('edit-mode-btn'),
+            saveBtn: document.getElementById('save-layout-btn'),
+            resetBtn: document.getElementById('reset-layout-btn'),
+            status: document.getElementById('edit-status')
         },
         mobile: {
             comms: document.getElementById('toggleCommsMob'),
@@ -939,44 +1044,50 @@
         },
         garden(b) {
             const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.2, b.d, b.color, [b.x, 0.1, b.z]));
+            g.add(makeBox(b.w, 0.2, b.d, b.color, [0, 0.1, 0]));
             for (let i = 0; i < 5; i++) {
-                g.add(makeBox(3.5, 0.3, 0.6, 0x5a7a1a, [b.x, 0.3, b.z - b.d/2 + 0.5 + i * 1.5]));
+                g.add(makeBox(3.5, 0.3, 0.6, 0x5a7a1a, [0, 0.3, -b.d/2 + 0.5 + i * 1.5]));
             }
+            g.position.set(b.x, 0, b.z);
             return g;
         },
         greenhouse: makeGreenhouse,
         playground(b) {
             const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.3, b.d, b.color, [b.x, 0.15, b.z]));
-            g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [b.x + 0.5, 0.4, b.z + 0.5]));
+            g.add(makeBox(b.w, 0.3, b.d, b.color, [0, 0.15, 0]));
+            g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [0.5, 0.4, 0.5]));
+            g.position.set(b.x, 0, b.z);
             return g;
         },
         firepit(b) {
             const g = new THREE.Group();
-            g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [b.x, 0.1, b.z]));
+            g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [0, 0.1, 0]));
             for (let i = 0; i < 12; i++) {
                 const a = (i / 12) * Math.PI * 2;
                 g.add(makeCylinder(0.12, 0.18, 0.15, 0x7a6a5a,
-                    [b.x + Math.cos(a) * (b.radius + 0.1), 0.15, b.z + Math.sin(a) * (b.radius + 0.1)]));
+                    [Math.cos(a) * (b.radius + 0.1), 0.15, Math.sin(a) * (b.radius + 0.1)]));
             }
+            g.position.set(b.x, 0, b.z);
             return g;
         },
         car(b) {
             const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.5, b.d, b.color, [b.x, 0.25, b.z]));
-            g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [b.x + 1.3, 0.55, b.z]));
+            g.add(makeBox(b.w, 0.5, b.d, b.color, [0, 0.25, 0]));
+            g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [1.3, 0.55, 0]));
+            g.position.set(b.x, 0, b.z);
             return g;
         },
         septic(b) {
             const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.8, b.d, b.color, [b.x, 0.4, b.z]));
+            g.add(makeBox(b.w, 0.8, b.d, b.color, [0, 0.4, 0]));
+            g.position.set(b.x, 0, b.z);
             return g;
         },
         well(b) {
             const g = new THREE.Group();
-            g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [b.x, 0.4, b.z]));
-            g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [b.x, 0.85, b.z]));
+            g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [0, 0.4, 0]));
+            g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [0, 0.85, 0]));
+            g.position.set(b.x, 0, b.z);
             return g;
         }
     };
@@ -1014,15 +1125,24 @@
     path.receiveShadow = true;
     groups.site.add(path);
 
+    const draggables = [];
+    const labelSprites = {};
+
     CONFIG.objects.forEach(obj => {
         const builder = Builders[obj.type];
         if (builder) {
-            groups[obj.group || 'site'].add(builder(obj));
+            const group = builder(obj);
+            group.userData.objectId = obj.id;
+            groups[obj.group || 'site'].add(group);
+            draggables.push({ id: obj.id, group });
         }
         const label = Utils.createLabel(obj.label, obj.labelColor || '#fff', obj.labelSize || 0.8);
         label.position.set(obj.x, obj.y, obj.z);
         groups.objectLabels.add(label);
+        labelSprites[obj.id] = label;
     });
+
+    const draggableGroups = draggables.map(d => d.group);
 
     for (let z = 24; z <= 32; z += 1.5) {
         const t1 = makeTree(0.7); t1.position.set(2, 0, z); groups.site.add(t1);
@@ -1054,34 +1174,98 @@
     })();
 
     // ═══════════════════════════════════════════════════════════════
-    // КОММУНИКАЦИИ (с поддержкой клика)
+    // КОММУНИКАЦИИ (живые трассы с якорями)
     // ═══════════════════════════════════════════════════════════════
     const commLines = [];
 
+    function utilityPoints(u) {
+        return u.route.map(a => {
+            if (a.obj) {
+                const o = CONFIG.objects.find(x => x.id === a.obj);
+                if (o) return [o.x + (a.dx || 0), o.z + (a.dz || 0)];
+            }
+            return [a.x, a.z];
+        });
+    }
+
+    function utilityLength(u) {
+        const pts = utilityPoints(u);
+        let len = 0;
+        for (let i = 1; i < pts.length; i++) {
+            len += Math.hypot(pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]);
+        }
+        return len;
+    }
+
+    function toVec3(pts, y) {
+        return pts.map(p => new THREE.Vector3(p[0], y, p[1]));
+    }
+
+    function routeMidPoint(pts) {
+        let total = 0;
+        for (let i = 1; i < pts.length; i++) {
+            total += Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
+        }
+        let half = total / 2;
+        for (let i = 1; i < pts.length; i++) {
+            const segLen = Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
+            if (half <= segLen) {
+                const t = segLen === 0 ? 0 : half / segLen;
+                return [
+                    pts[i-1][0] + (pts[i][0]-pts[i-1][0]) * t,
+                    pts[i-1][1] + (pts[i][1]-pts[i-1][1]) * t
+                ];
+            }
+            half -= segLen;
+        }
+        return pts[0];
+    }
+
     function createUndergroundLine(u, index) {
-        const pts = u.points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
-        const line = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints(pts),
+        const pts = utilityPoints(u);
+
+        u._line = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05)),
             new THREE.LineBasicMaterial({ color: u.color })
         );
-        line.userData.utilIndex = index;
-        groups.comms.add(line);
-        commLines.push(line);
+        u._line.userData.utilIndex = index;
+        groups.comms.add(u._line);
+        commLines.push(u._line);
 
-        const shadowPts = u.points.map(p => new THREE.Vector3(p[0], -0.01, p[1]));
-        const shadowLine = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints(shadowPts),
+        u._shadow = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01)),
             new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 })
         );
-        shadowLine.computeLineDistances();
-        groups.comms.add(shadowLine);
+        u._shadow.computeLineDistances();
+        groups.comms.add(u._shadow);
 
-        if (u.label && u.labelPos) {
-            const lbl = Utils.createLabel(u.label, '#ffffff', 0.6);
-            lbl.position.set(u.labelPos[0], 0.5, u.labelPos[1]);
-            groups.labels.add(lbl);
+        if (u.name && u.label !== false) {
+            const mid = routeMidPoint(pts);
+            u._label = Utils.createLabel(`${u.icon} ${u.name}`, '#ffffff', 0.6);
+            u._label.position.set(mid[0], 0.5, mid[1]);
+            groups.labels.add(u._label);
         }
     }
+
+    function refreshUtility(u) {
+        const pts = utilityPoints(u);
+        u._line.geometry.dispose();
+        u._line.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05));
+        u._shadow.geometry.dispose();
+        u._shadow.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01));
+        u._shadow.computeLineDistances();
+        if (u._label) {
+            const mid = routeMidPoint(pts);
+            u._label.position.set(mid[0], 0.5, mid[1]);
+        }
+    }
+
+    function refreshUtilitiesFor(objectId) {
+        CONFIG.utilities.forEach(u => {
+            if (u.route.some(a => a.obj === objectId)) refreshUtility(u);
+        });
+    }
+
     CONFIG.utilities.forEach((u, i) => createUndergroundLine(u, i));
 
     const commHighlight = new THREE.Line(
@@ -1104,9 +1288,9 @@
             `<span class="close" id="comm-info-close">✕</span>`;
         DOM.commInfo.classList.add('show');
 
-        const pts = u.points.map(p => new THREE.Vector3(p[0], 0.12, p[1]));
+        const pts = utilityPoints(u);
         commHighlight.geometry.dispose();
-        commHighlight.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+        commHighlight.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.12));
         commHighlight.visible = true;
         Utils.markDirty();
 
@@ -1763,7 +1947,187 @@
         return sprite;
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // РЕЖИМ РЕДАКТИРОВАНИЯ И ПЕРЕТАСКИВАНИЕ ОБЪЕКТОВ
+    // ═══════════════════════════════════════════════════════════════
+    let editMode = false;
+
+    function setEditMode(on) {
+        editMode = on;
+        DOM.edit.modeBtn.textContent = on ? '✋ Выключить изменения на карте' : '🖐 Включить изменения на карте';
+        DOM.edit.modeBtn.classList.toggle('active', on);
+        DOM.edit.status.textContent = on ? '✋ Перетаскивайте объекты мышью' : 'Режим просмотра';
+        renderer.domElement.style.cursor = '';
+        if (!on && drag.active) endDrag();
+        if (on) toast('✋ Изменения включены — перетаскивайте объекты', 2500);
+    }
+
+    const drag = {
+        active: false,
+        moved: false,
+        id: null,
+        obj: null,
+        group: null,
+        plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0),
+        raycaster: new THREE.Raycaster(),
+        point: new THREE.Vector3()
+    };
+
+    let toastTimer = null;
+
+    function toast(msg, ms = 2600) {
+        clearTimeout(toastTimer);
+        DOM.dragHint.textContent = msg;
+        DOM.dragHint.classList.add('show');
+        toastTimer = setTimeout(() => DOM.dragHint.classList.remove('show'), ms);
+    }
+
+    function showDragHint() {
+        clearTimeout(toastTimer);
+        DOM.dragHint.textContent = `✋ ${drag.obj.label} — X: ${Utils.fmt(drag.obj.x)} • Z: ${Utils.fmt(drag.obj.z)}`;
+        DOM.dragHint.classList.add('show');
+    }
+
+    function hideDragHint() {
+        clearTimeout(toastTimer);
+        DOM.dragHint.classList.remove('show');
+    }
+
+    function chainVisible(o) {
+        let c = o;
+        while (c) { if (!c.visible) return false; c = c.parent; }
+        return true;
+    }
+
+    function findDraggableRoot(object3d) {
+        let cur = object3d;
+        while (cur) {
+            if (cur.userData && cur.userData.objectId) return cur;
+            cur = cur.parent;
+        }
+        return null;
+    }
+
+    function screenToPlane(e, out) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        drag.raycaster.setFromCamera(mouse, camera);
+        return drag.raycaster.ray.intersectPlane(drag.plane, out);
+    }
+
+    function tryStartDrag(e) {
+        if (!editMode || measure.mode) return false;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        drag.raycaster.setFromCamera(mouse, camera);
+        const hits = drag.raycaster.intersectObjects(draggableGroups, true);
+        if (!hits.length) return false;
+        const root = findDraggableRoot(hits[0].object);
+        if (!root || !chainVisible(root)) return false;
+
+        drag.active = true;
+        drag.moved = false;
+        drag.id = root.userData.objectId;
+        drag.obj = CONFIG.objects.find(o => o.id === drag.id);
+        drag.group = root;
+        renderer.domElement.style.cursor = 'grabbing';
+        hideCommInfo();
+        showDragHint();
+        return true;
+    }
+
+    function dragTo(e) {
+        if (!screenToPlane(e, drag.point)) return;
+
+        const b = Norms.bounds(drag.obj);
+        const halfW = (b.maxX - b.minX) / 2;
+        const halfD = (b.maxZ - b.minZ) / 2;
+
+        let x = Math.round(drag.point.x * 2) / 2;
+        let z = Math.round(drag.point.z * 2) / 2;
+        x = Math.max(halfW, Math.min(CONFIG.plot.w - halfW, x));
+        z = Math.max(halfD, Math.min(CONFIG.plot.d - halfD, z));
+
+        if (x !== drag.obj.x || z !== drag.obj.z) {
+            drag.moved = true;
+            drag.obj.x = x;
+            drag.obj.z = z;
+            drag.group.position.set(x, 0, z);
+            const lbl = labelSprites[drag.id];
+            if (lbl) { lbl.position.x = x; lbl.position.z = z; }
+            refreshUtilitiesFor(drag.id); // трубы и кабели следуют за объектом
+            renderer.shadowMap.needsUpdate = true;
+            Utils.markDirty();
+            showDragHint();
+        }
+    }
+
+    function endDrag() {
+        if (!drag.active) return;
+        const wasMoved = drag.moved;
+        const id = drag.id;
+        drag.active = false;
+        drag.id = null;
+        drag.obj = null;
+        drag.group = null;
+        renderer.domElement.style.cursor = '';
+        hideDragHint();
+
+        if (wasMoved) {
+            saveLayout();
+            updateNormBadge();
+            const o = CONFIG.objects.find(x => x.id === id);
+            toast(`💾 ${Norms.name(id)} → X ${Utils.fmt(o.x)}, Z ${Utils.fmt(o.z)} • сохранено`);
+            renderer.shadowMap.needsUpdate = true;
+        }
+        Utils.markDirty();
+    }
+
+    function syncPositionsToScene() {
+        draggables.forEach(d => {
+            const o = CONFIG.objects.find(x => x.id === d.id);
+            if (o) d.group.position.set(o.x, 0, o.z);
+        });
+        CONFIG.objects.forEach(o => {
+            const lbl = labelSprites[o.id];
+            if (lbl) lbl.position.set(o.x, o.y, o.z);
+        });
+        CONFIG.utilities.forEach(refreshUtility);
+        renderer.shadowMap.needsUpdate = true;
+        Utils.markDirty();
+    }
+
+    function resetLayout() {
+        CONFIG.objects.forEach(o => {
+            const d = DEFAULT_LAYOUT[o.id];
+            if (d) { o.x = d.x; o.z = d.z; }
+        });
+        syncPositionsToScene();
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        updateNormBadge();
+        toast('🔄 Планировка сброшена к исходной');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ОБРАБОТКА УКАЗАТЕЛЯ
+    // ═══════════════════════════════════════════════════════════════
     let pointerDownPos = null;
+
+    document.body.addEventListener('pointerdown', (e) => {
+        if (measure.mode) return;
+        if (drag.active) return;
+        if (e.target !== renderer.domElement) return;
+        if (tryStartDrag(e)) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    }, true);
 
     renderer.domElement.addEventListener('pointerdown', (e) => {
         pointerDownPos = { x: e.clientX, y: e.clientY };
@@ -1784,11 +2148,31 @@
         handleMeasureClick(pt);
     });
 
+    renderer.domElement.addEventListener('pointermove', (e) => {
+        if (drag.active) {
+            dragTo(e);
+            return;
+        }
+        if (!editMode || measure.mode || e.buttons !== 0) return;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        drag.raycaster.setFromCamera(mouse, camera);
+        const hits = drag.raycaster.intersectObjects(draggableGroups, true);
+        renderer.domElement.style.cursor = (hits.length && chainVisible(hits[0].object)) ? 'grab' : '';
+    });
+
+    window.addEventListener('pointerup', () => {
+        if (drag.active) endDrag();
+    });
+
     renderer.domElement.addEventListener('pointerup', (e) => {
         if (!pointerDownPos) return;
         const moved = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
         pointerDownPos = null;
-        if (moved > 6 || measure.mode) return;
+        if (moved > 6 || measure.mode || drag.active) return;
         pickUtility(e);
     });
 
@@ -1838,16 +2222,13 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // СОЛНЦЕ + ПЛЕЕР (ИСПРАВЛЕННАЯ ВЕРСИЯ)
-    // Время хранится в JS-переменной sunPlayer.hour,
-    // слайдеры только отображают его. Никакого чтения из DOM.
+    // СОЛНЦЕ + ПЛЕЕР
     // ═══════════════════════════════════════════════════════════════
     function updateSun(hoursOverride) {
         const mi = parseInt(DOM.monthSlider.value) - 1;
         const month = CONFIG.months[mi];
         const dayLength = month.sunset - month.sunrise;
 
-        // ИСТИННОЕ время: либо передано плеером/вызывающим, либо читаем слайдер
         let hours = (hoursOverride !== undefined) ? hoursOverride : parseFloat(DOM.hourSlider.value);
         const minH = Math.max(0, month.sunrise - 0.5);
         const maxH = Math.min(24, month.sunset + 0.5);
@@ -1901,13 +2282,11 @@
         sunLight.position.set(x, y, z);
         sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
 
-        // Подписи — из ЛОКАЛЬНОГО hours, не из DOM
         const monthName = CONFIG.monthNames[mi];
         const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
         DOM.monthLabel.textContent = monthName;
         DOM.timeLabel.textContent = hoursStr;
 
-        // Слайдеры — только отображение истинного значения
         DOM.hourSlider.value = hours;
         if (DOM.sun.monthSlider && document.activeElement !== DOM.sun.monthSlider) {
             DOM.sun.monthSlider.value = DOM.monthSlider.value;
@@ -1933,8 +2312,8 @@
         playing: false,
         rafId: null,
         lastTs: 0,
-        hour: 12,              // ← внутреннее время, источник истины
-        durationSec: 20,       // полный день за 20 секунд
+        hour: 12,
+        durationSec: 20,
 
         toggle() {
             if (this.playing) this.stop();
@@ -1943,7 +2322,7 @@
 
         start() {
             const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
-            this.hour = Math.max(0, m.sunrise - 0.5); // старт за 30 мин до рассвета
+            this.hour = Math.max(0, m.sunrise - 0.5);
             this.playing = true;
             DOM.sun.playBtn.textContent = '⏸ Стоп';
             DOM.sun.playBtn.classList.add('playing');
@@ -1959,7 +2338,7 @@
 
             let dt = (now - sp.lastTs) / 1000;
             sp.lastTs = now;
-            if (dt > 0.1) dt = 0.1;  // защита от скачка после фоновой вкладки
+            if (dt > 0.1) dt = 0.1;
             if (dt < 0) dt = 0;
 
             const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
@@ -1967,7 +2346,7 @@
             const end = Math.min(24, m.sunset + 0.5);
             const speed = (end - start) / sp.durationSec;
 
-            sp.hour += dt * speed;   // время живёт в JS, а не в DOM
+            sp.hour += dt * speed;
 
             if (sp.hour >= end) {
                 sp.hour = end;
@@ -2007,17 +2386,20 @@
     }
     DOM.sun.playBtn.addEventListener('click', () => sunPlayer.toggle());
 
-    // Сворачивание панели
     function setSunPanelCollapsed(collapsed) {
         DOM.sun.panel.style.display = collapsed ? 'none' : 'block';
         DOM.sun.fab.style.display = collapsed ? 'flex' : 'none';
     }
-    DOM.sun.toggle.addEventListener('click', () => setSunPanelCollapsed(true));
-    DOM.sun.fab.addEventListener('click', () => setSunPanelCollapsed(false));
+    DOM.sun.toggle.addEventListener('click', () => {
+        const isCollapsed = DOM.sun.panel.style.display === 'none';
+        setSunPanelCollapsed(!isCollapsed);
+        DOM.sun.toggle.textContent = !isCollapsed ? '+' : '–';
+    });
+    DOM.sun.fab.addEventListener('click', () => {
+        setSunPanelCollapsed(false);
+        DOM.sun.toggle.textContent = '–';
+    });
     if (window.innerWidth < 769) setSunPanelCollapsed(true);
-    else setSunPanelCollapsed(false);
-
-    updateSun();
 
     // ═══════════════════════════════════════════════════════════════
     // АНИМАЦИЯ
@@ -2427,9 +2809,42 @@
     DOM.mobile.pdf.addEventListener('click', () => { exportPDF(); closeMenu(); });
     DOM.mobile.gps.addEventListener('click', () => { showGPS(); closeMenu(); });
 
+    // ═══════════════════════════════════════════════════════════════
+    // ПАНЕЛЬ ПЛАНИРОВКИ (режим изменений / сохранить / сброс)
+    // ═══════════════════════════════════════════════════════════════
+    DOM.edit.modeBtn.addEventListener('click', () => setEditMode(!editMode));
+
+    DOM.edit.saveBtn.addEventListener('click', () => {
+        saveLayout();
+        toast('💾 Планировка сохранена');
+    });
+
+    DOM.edit.resetBtn.addEventListener('click', () => {
+        if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка будет удалена.')) return;
+        resetLayout();
+    });
+
+    DOM.edit.toggle.addEventListener('click', () => {
+        const collapsed = DOM.edit.panel.classList.toggle('collapsed');
+        DOM.edit.toggle.textContent = collapsed ? '+' : '–';
+        DOM.edit.fab.style.display = collapsed ? 'flex' : 'none';
+    });
+    DOM.edit.fab.addEventListener('click', () => {
+        DOM.edit.panel.classList.remove('collapsed');
+        DOM.edit.toggle.textContent = '–';
+        DOM.edit.fab.style.display = 'none';
+    });
+
     // Инициализация
     updateNormBadge();
-    console.log('✅ Проект Берн: плеер солнца исправлен (внутренние часы, плавный цикл 20 с).');
+    setTimeout(() => {
+        if (hadSavedLayout) {
+            toast('📂 Загружена сохранённая планировка', 3500);
+        } else {
+            toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
+        }
+    }, 1200);
+    console.log('✅ Проект Берн: панель планировки + живые коммуникации активны.');
     </script>
 </body>
 </html>
