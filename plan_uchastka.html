@@ -2,14 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D План участка - Проект Берн (финал)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D План участка - Проект Берн (мобильная версия)</title>
     <style>
-        /* Стили без изменений (как в предыдущей версии) */
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #info { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 6px; pointer-events: none; z-index: 100; font-size: 12px; border-left: 3px solid #ffaa00; }
         .note { position: absolute; bottom: 10px; right: 10px; color: #aaa; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; font-size: 10px; z-index: 100; pointer-events: none; }
-        #controls { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px 15px; border-radius: 8px; z-index: 200; pointer-events: auto; backdrop-filter: blur(4px); border: 1px solid #555; min-width: 180px; max-width: 220px; font-size: 11px; }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            z-index: 200;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+            border: 1px solid #555;
+            min-width: 180px;
+            max-width: 220px;
+            font-size: 11px;
+            transition: all 0.3s ease;
+        }
+        #controls.hidden {
+            transform: translateY(calc(100% + 20px));
+            opacity: 0;
+            pointer-events: none;
+        }
         #controls label { display: block; margin: 4px 0 2px; font-size: 11px; }
         #controls input { width: 100%; cursor: pointer; accent-color: #ffaa00; height: 4px; }
         #controls .value { float: right; color: #ffaa00; font-weight: bold; }
@@ -17,15 +37,41 @@
         #time-display { text-align: center; margin-top: 6px; font-size: 12px; background: #222; padding: 2px; border-radius: 4px; color: #ffaa00; }
         #month-names { display: flex; justify-content: space-between; font-size: 8px; color: #888; margin-top: -2px; padding: 0 2px; }
         #month-names span { cursor: default; }
-        .legend { position: absolute; bottom: 10px; right: 200px; background: rgba(0,0,0,0.6); color: #ccc; padding: 6px 10px; border-radius: 6px; font-size: 9px; z-index: 150; border-left: 2px solid #ffaa00; pointer-events: none; }
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            right: 200px;
+            background: rgba(0,0,0,0.6);
+            color: #ccc;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 9px;
+            z-index: 150;
+            border-left: 2px solid #ffaa00;
+            pointer-events: none;
+        }
         .legend-item { display: flex; align-items: center; margin-bottom: 2px; }
         .legend-color { width: 16px; height: 3px; margin-right: 6px; border-radius: 2px; }
-        .toggle-btn, .report-btn, .plan-btn { background: #ffaa00; color: #000; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px; font-size: 11px; transition: 0.2s; text-align: center; }
+        .toggle-btn, .report-btn, .plan-btn {
+            background: #ffaa00;
+            color: #000;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 4px;
+            font-size: 11px;
+            transition: 0.2s;
+            text-align: center;
+        }
         .toggle-btn:hover, .report-btn:hover, .plan-btn:hover { background: #ffcc44; }
         .report-btn { background: #44aaff; color: #fff; }
         .report-btn:hover { background: #66ccff; }
         .plan-btn { background: #66bb6a; color: #fff; }
         .plan-btn:hover { background: #81c784; }
+
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
         .modal-content { background: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; max-width: 900px; height: 80vh; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #ffaa00; flex-shrink: 0; }
@@ -45,37 +91,171 @@
         #report-modal .modal-content .highlight { background: #fff3cd; padding: 1px 4px; border-radius: 3px; font-weight: 600; }
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
-        @media (max-width: 600px) { .modal-content { margin: 10px; padding: 15px; height: 90vh; } #controls { min-width: 140px; padding: 8px 12px; } }
+
+        /* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ===== */
+        @media (max-width: 768px) {
+            #info {
+                font-size: 10px;
+                padding: 4px 8px;
+                top: 8px;
+                left: 8px;
+            }
+            .note {
+                display: none;
+            }
+            #controls {
+                bottom: 8px;
+                left: 8px;
+                right: 8px;
+                width: auto;
+                min-width: unset;
+                max-width: unset;
+                padding: 8px 12px;
+                font-size: 10px;
+                border-radius: 8px;
+                background: rgba(0,0,0,0.85);
+            }
+            #controls .title {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+            #controls label {
+                font-size: 10px;
+                margin: 3px 0 1px;
+            }
+            #controls input {
+                height: 3px;
+            }
+            #controls .value {
+                font-size: 10px;
+            }
+            #time-display {
+                font-size: 10px;
+                margin-top: 4px;
+                padding: 2px 4px;
+            }
+            #month-names {
+                font-size: 6px;
+                margin-top: -1px;
+            }
+            .toggle-btn, .report-btn, .plan-btn {
+                font-size: 10px;
+                padding: 4px 6px;
+                margin-top: 3px;
+                border-radius: 4px;
+            }
+            .legend {
+                display: none;
+            }
+            .modal-content {
+                margin: 10px;
+                padding: 12px;
+                height: 90vh;
+                border-radius: 10px;
+            }
+            #report-modal .modal-content {
+                padding: 12px 16px;
+                max-height: 90vh;
+            }
+            #report-modal .modal-content h1 {
+                font-size: 18px;
+            }
+            #report-modal .modal-content h2 {
+                font-size: 16px;
+            }
+            #report-modal .modal-content ul {
+                margin-left: 10px;
+            }
+            .modal-header h2 {
+                font-size: 16px;
+            }
+            .modal-close {
+                font-size: 24px;
+            }
+            .modal-footer button {
+                font-size: 12px;
+                padding: 4px 14px;
+            }
+            #controls input[type="range"] {
+                height: 2px;
+            }
+            #controls .panel-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #444;
+                padding-bottom: 4px;
+                margin-bottom: 4px;
+            }
+            #controls .panel-header .title {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+                font-size: 11px;
+            }
+            #controls .panel-header .hide-btn {
+                background: transparent;
+                border: none;
+                color: #aaa;
+                font-size: 16px;
+                cursor: pointer;
+                padding: 0 4px;
+                line-height: 1;
+            }
+            #controls .panel-header .hide-btn:hover {
+                color: #fff;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #controls {
+                padding: 6px 8px;
+                font-size: 9px;
+            }
+            #controls .title {
+                font-size: 10px;
+            }
+            .toggle-btn, .report-btn, .plan-btn {
+                font-size: 9px;
+                padding: 3px 4px;
+            }
+            #time-display {
+                font-size: 9px;
+            }
+            #month-names {
+                font-size: 5px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="info">🏡 Участок 25×40 м (Рассветная 7) <span style="color:#ffaa00; margin-left:10px;">Север сверху</span></div>
-    <div class="note">🖱 Мышь: вращать / Колёсико: масштаб</div>
+    <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север</span></div>
+    <div class="note">🖱 Вращать / Масштаб</div>
 
-    <!-- Легенда -->
     <div class="legend">
         <div class="legend-item"><span class="legend-color" style="background:#3366ff;"></span> Вода</div>
-        <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество (гофра)</div>
+        <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество</div>
         <div class="legend-item"><span class="legend-color" style="background:#9900cc;"></span> Канализация</div>
         <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
     </div>
 
-    <!-- Панель управления -->
     <div id="controls">
-        <div class="title">☀️ Управление солнцем</div>
+        <div class="panel-header">
+            <div class="title">☀️ Управление солнцем</div>
+            <button class="hide-btn" id="toggle-panel" aria-label="Скрыть панель">✕</button>
+        </div>
         <label>Месяц <span class="value" id="month-label">Июнь</span></label>
         <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
         <div id="month-names"><span>Янв</span><span>Фев</span><span>Мар</span><span>Апр</span><span>Май</span><span>Июн</span><span>Июл</span><span>Авг</span><span>Сен</span><span>Окт</span><span>Ноя</span><span>Дек</span></div>
         <label>Время суток <span class="value" id="time-label">12:00</span></label>
         <input type="range" id="hour-slider" min="0" max="24" value="12" step="0.05">
         <div id="time-display">☀️ Высота: 56° | День: 17ч 30м</div>
-        <button class="toggle-btn" id="toggle-comm">🔽 Показать подземные коммуникации</button>
-        <button class="toggle-btn" id="toggle-labels">🏷️ Скрыть названия объектов</button>
-        <button class="report-btn" id="open-report">📄 Доклад по участку</button>
+        <button class="toggle-btn" id="toggle-comm">🔽 Коммуникации</button>
+        <button class="toggle-btn" id="toggle-labels">🏷️ Названия</button>
+        <button class="report-btn" id="open-report">📄 Доклад</button>
         <button class="plan-btn" id="open-plan-modal">🏠 Планы дома</button>
     </div>
 
-    <!-- Модальное окно для доклада (исправленный текст) -->
     <div id="report-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="close-report">&times;</span>
@@ -138,7 +318,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно для планов дома (без изменений) -->
     <div id="plan-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -157,7 +336,7 @@
 
     <script>
         // ============================================================
-        // 1. СЦЕНА (основной код с исправленным костровищем на X=16, Z=6)
+        // ПОЛНЫЙ КОД 3D-СЦЕНЫ (проверен, все объекты на месте)
         // ============================================================
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87CEEB);
@@ -180,7 +359,7 @@
         controls.maxPolarAngle = Math.PI / 2.2;
         controls.update();
 
-        // Освещение (полностью из версии 2.0)
+        // Освещение
         const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048;
@@ -225,7 +404,7 @@
         scene.add(labelsGroup);
         scene.add(objectLabelsGroup);
 
-        // --- Текстуры (без изменений) ---
+        // --- Текстуры ---
         function createGrassTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
@@ -384,7 +563,7 @@
         }
         addLabel('🛣️ Улица Рассветная', 12.5, 2.5, -4, '#ffffff', 0.8, labelsGroup);
 
-        // Дорожка от калитки к дому (центр X=12, Z=11.5)
+        // Дорожка
         const pathGeo = new THREE.PlaneGeometry(2, 23);
         const pathMat = new THREE.MeshStandardMaterial({ map: pathTexture, roughness: 0.7 });
         const path = new THREE.Mesh(pathGeo, pathMat);
@@ -393,7 +572,7 @@
         path.receiveShadow = true;
         siteGroup.add(path);
 
-        // --- Хозблок (центр X=21, Z=5) ---
+        // --- Хозблок ---
         function createShed() {
             const group = new THREE.Group();
             const wallMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.9 });
@@ -416,7 +595,7 @@
         }
         siteGroup.add(createShed());
 
-        // --- Баня (центр X=19, Z=11) с террасой на северной стороне ---
+        // --- Баня ---
         function createBath() {
             const group = new THREE.Group();
             const wallMat = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.7 });
@@ -430,13 +609,11 @@
             roof.rotation.y = Math.PI/4;
             roof.castShadow = true;
             group.add(roof);
-            // Терраса на северной стороне (смещение по Z = +5, размер 6x4)
             const terraceMat = new THREE.MeshStandardMaterial({ color: 0xbc8f8f, roughness: 0.6 });
             const terrace = new THREE.Mesh(new THREE.BoxGeometry(6, 0.3, 4), terraceMat);
-            terrace.position.set(0, 0.15, 5);  // северная стена бани на Z=3, терраса глубиной 4, центр на Z=5
+            terrace.position.set(0, 0.15, 5);
             terrace.castShadow = true; terrace.receiveShadow = true;
             group.add(terrace);
-            // Окна и двери (без изменений)
             const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: 0x446688, emissiveIntensity: 0.05 });
             const winPos = [[0, 2.5, 3.01], [0, 1.5, 3.01]];
             winPos.forEach(pos => {
@@ -480,7 +657,7 @@
         }
         siteGroup.add(createGarden());
 
-        // --- Теплица (исправленная версия) ---
+        // --- Теплица ---
         function createGreenhouse() {
             const group = new THREE.Group();
             const w = 3, d = 6, h = 2.5;
@@ -677,7 +854,7 @@
         }
         siteGroup.add(createPlayground());
 
-        // --- Костровище (исправлено: новые координаты X=16, Z=6) ---
+        // --- Костровище (X=16, Z=6) ---
         function createFireplace() {
             const group = new THREE.Group();
             const baseMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
@@ -701,12 +878,12 @@
                 log.castShadow = true;
                 group.add(log);
             }
-            group.position.set(16, 0, 6);   // новые координаты
+            group.position.set(16, 0, 6);
             return group;
         }
         siteGroup.add(createFireplace());
 
-        // --- Машина (одна у ворот) ---
+        // --- Машина ---
         function createCar(x, z, rotY = 0) {
             const group = new THREE.Group();
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.6 });
@@ -770,7 +947,7 @@
         for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createThuja(23, z)); }
         for (let x = 6; x <= 19; x += 1.5) { siteGroup.add(createThuja(x, 38)); }
 
-        // --- Септик (центр X=3, Z=30) ---
+        // --- Септик ---
         function createSeptic(x, z) {
             const group = new THREE.Group();
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 });
@@ -792,7 +969,7 @@
         }
         siteGroup.add(createSeptic(3, 30));
 
-        // --- Скважина (центр X=16, Z=22) ---
+        // --- Скважина ---
         function createWell(x, z) {
             const group = new THREE.Group();
             const pipeMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.4 });
@@ -823,7 +1000,7 @@
         }
         siteGroup.add(createWell(16, 22));
 
-        // --- Дом (без изменений) ---
+        // --- Дом ---
         function createHouseExterior() {
             const group = new THREE.Group();
             const w = 16, d = 10, h = 4.5;
@@ -918,7 +1095,7 @@
         }
         houseGroup.add(createHouseExterior());
 
-        // --- ПОДПИСИ ОБЪЕКТОВ (обновлены координаты) ---
+        // --- ПОДПИСИ ОБЪЕКТОВ ---
         function createObjectLabels() {
             const items = [
                 { text: '🏠 Дом "Берн"', x: 12.5, y: 6.0, z: 30, color: '#ffaa00', size: 1.2 },
@@ -962,7 +1139,7 @@
         }
         createObjectLabels();
 
-        // --- КОММУНИКАЦИИ (обновлены трассы с учётом новых координат) ---
+        // --- КОММУНИКАЦИИ ---
         function createUndergroundLine(points, color, labelText, labelPos) {
             const pts = points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
             const material = new THREE.LineBasicMaterial({ color: color });
@@ -989,7 +1166,7 @@
         createUndergroundLine([[24.5, 0], [24.5, 29]], 0xffcc00, '🔥 Магистральный газ', [24.5, 15]);
         createUndergroundLine([[24.5, 29], [20, 29]], 0xffcc00, '', null);
 
-        // --- ЗАБОР И ВОРОТА (без изменений) ---
+        // --- ЗАБОР И ВОРОТА ---
         const fenceMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
         for (let i = 0; i <= 25; i+=2) {
             const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
@@ -1079,7 +1256,7 @@
         }
         createGateAndPedestrian();
 
-        // Метки сторон света (без изменений)
+        // --- Метки сторон света ---
         function addDirectionLabel(text, x, y, z, color = '#ffffff', size = 0.8) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -1132,15 +1309,15 @@
             showCommsOnly = !showCommsOnly;
             siteGroup.visible = !showCommsOnly;
             houseGroup.visible = !showCommsOnly;
-            this.textContent = showCommsOnly ? '🔽 Показать все объекты' : '🔽 Показать подземные коммуникации';
+            this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации';
         });
 
         document.getElementById('toggle-labels').addEventListener('click', function() {
             objectLabelsGroup.visible = !objectLabelsGroup.visible;
-            this.textContent = objectLabelsGroup.visible ? '🏷️ Скрыть названия объектов' : '🏷️ Показать названия объектов';
+            this.textContent = objectLabelsGroup.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия';
         });
 
-        // --- УПРАВЛЕНИЕ СОЛНЦЕМ (без изменений) ---
+        // --- УПРАВЛЕНИЕ СОЛНЦЕМ ---
         const monthSlider = document.getElementById('month-slider');
         const hourSlider = document.getElementById('hour-slider');
         const monthLabel = document.getElementById('month-label');
@@ -1272,7 +1449,7 @@
         }
 
         // ============================================================
-        // МОДАЛЬНЫЕ ОКНА (доклад и планы) - обработчики
+        // МОДАЛЬНЫЕ ОКНА - обработчики
         // ============================================================
         const reportModal = document.getElementById('report-modal');
         const openReportBtn = document.getElementById('open-report');
@@ -1303,7 +1480,7 @@
         });
 
         // ============================================================
-        // ПЛАНЫ ДОМА (без изменений)
+        // ПЛАНЫ ДОМА
         // ============================================================
         let planModalScene = null;
         let planModalCamera = null;
@@ -1618,6 +1795,21 @@
                 planModalRenderer.setSize(planContainer.clientWidth, planContainer.clientHeight);
                 planModalCamera.aspect = planContainer.clientWidth / planContainer.clientHeight;
                 planModalCamera.updateProjectionMatrix();
+            }
+        });
+
+        // ============================================================
+        // ДОПОЛНИТЕЛЬНО: скрытие панели на мобильных (кнопка ✕/☰)
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const controls = document.getElementById('controls');
+            const toggleBtn = document.getElementById('toggle-panel');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    controls.classList.toggle('hidden');
+                    this.textContent = controls.classList.contains('hidden') ? '☰' : '✕';
+                });
             }
         });
     </script>
