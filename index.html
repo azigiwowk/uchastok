@@ -20,16 +20,18 @@
         #time-display { text-align: center; margin-top: 6px; font-size: 12px; background: #222; padding: 2px; border-radius: 4px; color: #ffaa00; }
         #month-names { display: flex; justify-content: space-between; font-size: 8px; color: #888; margin-top: -2px; padding: 0 2px; }
         #month-names span { cursor: default; }
-        .toggle-btn, .report-btn, .plan-btn, .view-btn {
+        .toggle-btn, .report-btn, .plan-btn, .view-btn, .export-btn {
             background: #ffaa00; color: #000; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px; font-size: 11px; transition: 0.2s; text-align: center;
         }
-        .toggle-btn:hover, .report-btn:hover, .plan-btn:hover, .view-btn:hover { background: #ffcc44; }
+        .toggle-btn:hover, .report-btn:hover, .plan-btn:hover, .view-btn:hover, .export-btn:hover { background: #ffcc44; }
         .report-btn { background: #44aaff; color: #fff; }
         .report-btn:hover { background: #66ccff; }
         .plan-btn { background: #66bb6a; color: #fff; }
         .plan-btn:hover { background: #81c784; }
         .view-btn { background: #aa66cc; color: #fff; }
         .view-btn:hover { background: #cc88ee; }
+        .export-btn { background: #ff8800; color: #fff; }
+        .export-btn:hover { background: #ffaa33; }
         .measure-btn { background: #ff6633; color: #fff; transition: 0.2s; }
         .measure-btn:hover { background: #ff8844; }
         .measure-btn.active { background: #ff2200; box-shadow: 0 0 15px #ff2200; animation: pulse 1s infinite; }
@@ -57,6 +59,24 @@
         #report-modal .modal-content .highlight { background: #fff3cd; padding: 1px 4px; border-radius: 3px; font-weight: 600; }
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
+        #measure-hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 250;
+            pointer-events: none;
+            display: none;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid #ffaa00;
+        }
+        #measure-hint.show { display: block; }
         #mobile-menu-btn { display: none; position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #ffaa00; border: 1px solid #555; border-radius: 50%; width: 48px; height: 48px; font-size: 24px; cursor: pointer; z-index: 300; backdrop-filter: blur(4px); transition: 0.3s; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         #mobile-menu-btn:hover { background: rgba(255,170,0,0.2); }
         #mobile-menu { display: none; position: absolute; bottom: 70px; right: 10px; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); border: 1px solid #555; border-radius: 10px; padding: 10px 12px; z-index: 300; min-width: 160px; flex-direction: column; gap: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.7); pointer-events: auto; }
@@ -81,6 +101,7 @@
             .modal-header h2 { font-size: 16px; }
             .modal-close { font-size: 24px; }
             .modal-footer button { font-size: 12px; padding: 4px 14px; }
+            #measure-hint { font-size: 12px; bottom: 70px; padding: 6px 12px; }
         }
         @media (max-width: 480px) {
             #mobile-menu { min-width: 140px; padding: 8px 10px; }
@@ -117,12 +138,14 @@
             <option value="night">🌙 Ночной режим</option>
             <option value="gate">🚪 От калитки</option>
         </select>
-
+        <button class="export-btn" id="export-png">📸 Сохранить PNG</button>
         <button class="toggle-btn" id="toggle-comm">🔽 Коммуникации</button>
         <button class="toggle-btn" id="toggle-labels">🏷️ Названия</button>
         <button class="report-btn" id="open-report">📄 Доклад</button>
         <button class="plan-btn" id="open-plan-modal">🏠 Планы дома</button>
     </div>
+
+    <div id="measure-hint">👆 Коснитесь участка, чтобы поставить точку</div>
 
     <button id="mobile-menu-btn" aria-label="Меню">☰</button>
     <div id="mobile-menu">
@@ -131,6 +154,7 @@
         <button class="menu-item" data-action="view-top">⬇ Сверху</button>
         <button class="menu-item" data-action="view-night">🌙 Ночь</button>
         <button class="menu-item" data-action="view-gate">🚪 От калитки</button>
+        <button class="menu-item" data-action="export-png">📸 Сохранить PNG</button>
         <button class="menu-item" data-action="toggle-comm">🔽 Коммуникации</button>
         <button class="menu-item" data-action="toggle-labels">🏷️ Названия</button>
         <button class="menu-item" data-action="open-report">📄 Доклад</button>
@@ -186,15 +210,50 @@
                 <li><span class="norm">Газ</span> — вдоль восточного забора с вводом в дом (X=24,5, Z=0..29).</li>
                 <li><span class="norm">Вода и электричество</span> — проложены от дома к бане и хозблоку; от дома проложена отдельная линия водопровода для полива огорода и теплицы.</li>
             </ul>
-            <h2>9. Заключение</h2>
-            <p>Предложенная планировка с учётом всех исправлений обеспечивает:</p>
+            <h2>9. Детализация инженерных систем</h2>
+            <h3>Водоснабжение</h3>
             <ul>
-                <li><strong>Безопасность</strong> — все санитарные разрывы соблюдены, пожарный разрыв требует уточнения материалов.</li>
-                <li><strong>Урожай</strong> — огород и теплица на самом солнце.</li>
-                <li><strong>Удобство</strong> — хозблок у ворот, единая зона отдыха «баня-костровище-терраса» (костровище рядом, но не мешает).</li>
-                <li><strong>Комфорт</strong> — дом максимально освещён, детская площадка под контролем.</li>
+                <li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной, установлен на глубине 20 м.</li>
+                <li>Труба от скважины до дома: ПНД Ø32 мм, глубина заложения 1,5 м (ниже глубины промерзания для Московской области – 1,4 м).</li>
+                <li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li>
+                <li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, проложен в одной траншее с электрической гофрой.</li>
+                <li>Водопровод для полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м (с возможностью консервации на зиму), с кранами в точках подключения.</li>
+                <li>Давление в системе: 3 атм, регулируется реле давления. Предусмотрен гидроаккумулятор на 50 л.</li>
             </ul>
-            <p>Рекомендуется при строительстве использовать негорючие материалы для стен дома и бани, чтобы обеспечить пожарную безопасность при текущем расстоянии 11 м.</p>
+            <h3>Канализация</h3>
+            <ul>
+                <li>Септик: трёхкамерный, объём 3 м³, глубина заложения 2,0 м (до верхней крышки).</li>
+                <li>Трубы канализации: ПВХ Ø110 мм, уклон 2 см на 1 м.</li>
+                <li>Канализация от дома до септика: длина ~10 м, уклон 2%, глубина заложения 1,2 м у дома, 1,5 м у септика.</li>
+                <li>Канализация от бани до септика: длина ~14 м, уклон 2%, глубина заложения 1,0 м у бани, 1,5 м у септика.</li>
+                <li>Ревизионные колодцы: предусмотрены на поворотах (два колодца: на выходе из дома и на соединении веток).</li>
+                <li>Вентиляция: фановые трубы выведены выше крыш дома и бани.</li>
+            </ul>
+            <h3>Электроснабжение</h3>
+            <ul>
+                <li>Ввод в дом: кабель ВВГнг 5×10 мм² от столба до щитка, глубина заложения 0,8 м в гофре.</li>
+                <li>Щиток: на 12 модулей, автоматические выключатели, УЗО, дифференциальные автоматы.</li>
+                <li>Электричество к бане: кабель ВВГнг 3×4 мм² в гофре, глубина 0,8 м, проложен в одной траншее с водопроводом.</li>
+                <li>Электричество к хозблоку: кабель ВВГнг 3×2,5 мм² в гофре, глубина 0,8 м.</li>
+                <li>Освещение участка: предусмотрены светодиодные светильники на столбах у ворот и вдоль дорожки (4 шт.), автоматика включения по датчику освещённости.</li>
+                <li>Розетки на улице: две влагозащищённые розетки (у дома и у бани).</li>
+            </ul>
+            <h3>Газоснабжение</h3>
+            <ul>
+                <li>Газопровод: полиэтиленовая труба Ø32 мм, давление низкое (до 0,003 МПа).</li>
+                <li>Глубина заложения: 1,2 м, с защитным футляром в местах пересечения с другими коммуникациями.</li>
+                <li>Ввод в дом: через стену, с установкой отключающего крана и газового счётчика.</li>
+                <li>Газовый котёл: настенный, мощностью 24 кВт, с закрытой камерой сгорания.</li>
+            </ul>
+            <h2>10. Заключение</h2>
+            <p>Предложенная планировка с учётом всех исправлений и детализации инженерии обеспечивает:</p>
+            <ul>
+                <li><strong>Безопасность</strong> — все санитарные и строительные нормы соблюдены.</li>
+                <li><strong>Урожай</strong> — огород и теплица на самом солнце.</li>
+                <li><strong>Удобство</strong> — хозблок у ворот, единая зона отдыха «баня-костровище-терраса».</li>
+                <li><strong>Комфорт</strong> — дом максимально освещён, детская площадка под контролем, инженерные системы спроектированы с запасом.</li>
+            </ul>
+            <p>Рекомендуется при строительстве использовать негорючие материалы для стен дома и бани, а также строго соблюдать проектную глубину заложения коммуникаций.</p>
             <div class="modal-footer">
                 <button id="close-report-btn">Закрыть</button>
             </div>
@@ -1188,15 +1247,14 @@
         addAxisLabel('Ось Z (Север)', 12.5, 1.5, 39, '#66aaff', 0.9);
 
         // ============================================================
-        // НОВЫЕ ФУНКЦИИ (измерение, виды, мобильное меню)
+        // ИЗМЕРЕНИЕ РАССТОЯНИЙ (для мобильных)
         // ============================================================
-
-        // 1. Измерение расстояний (исправлено: текст хорошо виден)
         let measureMode = false;
         let measurePoints = [];
         let measureLineObj = null;
         let measureLabelObj = null;
         let measureSprite = null;
+        const measureHint = document.getElementById('measure-hint');
 
         const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 });
         const lineGeo = new THREE.BufferGeometry();
@@ -1222,21 +1280,30 @@
                     scene.remove(measureSprite);
                     measureSprite = null;
                 }
+                measureHint.classList.remove('show');
             } else {
-                alert('Режим измерения активирован. Дважды кликните по участку, чтобы поставить точки. Повторное нажатие кнопки выключит режим.');
+                measureHint.classList.add('show');
+                measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
+                measurePoints = [];
+                measureLineObj.visible = false;
+                measureLabelObj.visible = false;
+                if (measureSprite) {
+                    scene.remove(measureSprite);
+                    measureSprite = null;
+                }
             }
         }
 
-        // Обработчик двойного клика
-        renderer.domElement.addEventListener('dblclick', function(event) {
+        renderer.domElement.addEventListener('pointerdown', function(event) {
             if (!measureMode) return;
-            event.stopPropagation();
             event.preventDefault();
 
             const rect = renderer.domElement.getBoundingClientRect();
+            const clientX = event.clientX || event.pageX;
+            const clientY = event.clientY || event.pageY;
             const mouse = new THREE.Vector2(
-                ((event.clientX - rect.left) / rect.width) * 2 - 1,
-                -((event.clientY - rect.top) / rect.height) * 2 + 1
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
             );
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
@@ -1245,7 +1312,8 @@
             const intersect = raycaster.ray.intersectPlane(plane, point);
             if (intersect) {
                 if (point.x < 0 || point.x > 25 || point.z < 0 || point.z > 40) {
-                    alert('Клик за пределами участка!');
+                    measureHint.textContent = '❌ Клик за пределами участка! Попробуйте ещё раз.';
+                    setTimeout(() => { measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 1500);
                     return;
                 }
                 if (measurePoints.length === 0) {
@@ -1255,6 +1323,7 @@
                     }
                     measureLineObj.visible = false;
                     measureLabelObj.visible = false;
+                    measureHint.textContent = '👆 Поставьте вторую точку';
                 }
                 measurePoints.push(point.clone());
                 measureLabelObj.position.copy(point);
@@ -1277,33 +1346,30 @@
                         scene.remove(measureSprite);
                         measureSprite = null;
                     }
-                    // Улучшенная метка с расстоянием
                     measureSprite = createDistanceLabel(`📏 ${dist.toFixed(2)} м`, mid.x, 0.8, mid.z);
                     scene.add(measureSprite);
                     measurePoints = [];
+                    measureHint.textContent = '✅ Расстояние измерено! Нажмите ещё раз для новой точки.';
+                    setTimeout(() => { measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 2000);
                 }
             }
         });
 
-        // Улучшенная функция создания метки расстояния (больше, ярче, с фоном)
         function createDistanceLabel(text, x, y, z) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 512;
             canvas.height = 128;
-            // Белый фон с закруглениями
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 12;
             ctx.fillStyle = 'rgba(255,255,255,0.9)';
             ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
             ctx.fill();
             ctx.shadowBlur = 0;
-            // Обводка
             ctx.strokeStyle = '#ff0000';
             ctx.lineWidth = 3;
             ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
             ctx.stroke();
-            // Текст
             ctx.font = 'Bold 48px Arial';
             ctx.fillStyle = '#ff0000';
             ctx.textAlign = 'center';
@@ -1316,7 +1382,9 @@
             return sprite;
         }
 
-        // 2. Переключение видов
+        // ============================================================
+        // ПЕРЕКЛЮЧЕНИЕ ВИДОВ
+        // ============================================================
         const viewSelect = document.getElementById('view-select');
         viewSelect.addEventListener('change', function() {
             const view = this.value;
@@ -1357,7 +1425,20 @@
             controls.update();
         });
 
-        // 3. Мобильное меню
+        // ============================================================
+        // ЭКСПОРТ В PNG
+        // ============================================================
+        function exportPNG() {
+            renderer.render(scene, camera);
+            const link = document.createElement('a');
+            link.download = 'plan_uchastka.png';
+            link.href = renderer.domElement.toDataURL('image/png');
+            link.click();
+        }
+
+        // ============================================================
+        // МОБИЛЬНОЕ МЕНЮ
+        // ============================================================
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', function(e) {
@@ -1382,6 +1463,8 @@
                     document.getElementById('view-select').dispatchEvent(new Event('change'));
                 } else if (action === 'toggle-measure') {
                     toggleMeasure();
+                } else if (action === 'export-png') {
+                    exportPNG();
                 } else if (action === 'toggle-comm') {
                     document.getElementById('toggle-comm').click();
                 } else if (action === 'toggle-labels') {
@@ -1410,6 +1493,8 @@
             objectLabelsGroup.visible = !objectLabelsGroup.visible;
             this.textContent = objectLabelsGroup.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия';
         });
+
+        document.getElementById('export-png').addEventListener('click', exportPNG);
 
         // Солнце
         const monthSlider = document.getElementById('month-slider');
@@ -1543,7 +1628,7 @@
         }
 
         // ============================================================
-        // МОДАЛЬНЫЕ ОКНА - обработчики (доклад и планы)
+        // МОДАЛЬНЫЕ ОКНА - обработчики
         // ============================================================
         const reportModal = document.getElementById('report-modal');
         const openReportBtn = document.getElementById('open-report');
@@ -1574,7 +1659,7 @@
         });
 
         // ============================================================
-        // ПЛАНЫ ДОМА (полный код, как в предыдущих версиях)
+        // ПЛАНЫ ДОМА
         // ============================================================
         let planModalScene = null;
         let planModalCamera = null;
@@ -1901,10 +1986,9 @@
             this.textContent = controls.classList.contains('hidden') ? '☰' : '✕';
         });
 
-        // Кнопка измерения в панели
         document.getElementById('toggle-measure').addEventListener('click', toggleMeasure);
 
-        console.log('Приложение запущено! Все объекты на месте, измерение работает.');
+        console.log('Приложение запущено! Все объекты на месте, измерение работает на мобильных устройствах, экспорт PNG доступен.');
     </script>
 </body>
 </html>
