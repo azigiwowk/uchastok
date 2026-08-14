@@ -11,146 +11,52 @@
         .legend { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #ccc; padding: 6px 10px; border-radius: 6px; font-size: 9px; z-index: 150; border-left: 2px solid #ffaa00; pointer-events: none; backdrop-filter: blur(2px); }
         .legend-item { display: flex; align-items: center; margin-bottom: 2px; }
         .legend-color { width: 16px; height: 3px; margin-right: 6px; border-radius: 2px; }
-
         #controls { display: none; }
-
-        #norm-badge {
-            position: absolute; top: 44px; left: 10px;
-            background: rgba(0,0,0,0.65); color: #eaffea;
-            padding: 5px 12px; border-radius: 6px;
-            font-size: 12px; z-index: 100; cursor: pointer;
-            border-left: 3px solid #27ae60;
-            backdrop-filter: blur(2px);
-        }
+        #norm-badge { position: absolute; top: 44px; left: 10px; background: rgba(0,0,0,0.65); color: #eaffea; padding: 5px 12px; border-radius: 6px; font-size: 12px; z-index: 100; cursor: pointer; border-left: 3px solid #27ae60; backdrop-filter: blur(2px); }
         #norm-badge.bad { border-left-color: #e74c3c; color: #ffd9d9; }
-
-        /* ===== ЛЕВЫЕ ПАНЕЛИ: СОЛНЦЕ + ПЛАНИРОВКА ===== */
-        #left-panels {
-            position: absolute; top: 80px; left: 10px; z-index: 120;
-            display: flex; flex-direction: column; gap: 10px; width: 230px;
-            pointer-events: none;
-        }
+        #left-panels { position: absolute; top: 80px; left: 10px; z-index: 120; display: flex; flex-direction: column; gap: 10px; width: 230px; pointer-events: none; }
         #left-panels > * { pointer-events: auto; }
-        .panel-fab {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(16,20,30,0.92); border: 1px solid rgba(255,255,255,0.12);
-            font-size: 20px; cursor: pointer; color: #fff;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center;
-        }
+        .panel-fab { width: 44px; height: 44px; border-radius: 50%; background: rgba(16,20,30,0.92); border: 1px solid rgba(255,255,255,0.12); font-size: 20px; cursor: pointer; color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
         .panel-fab:hover { background: rgba(30,36,50,0.95); }
-        #sun-panel, #edit-panel {
-            background: rgba(16, 20, 30, 0.9); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
-            padding: 10px 14px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-        }
+        #sun-panel, #edit-panel { background: rgba(16, 20, 30, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .panel-title { color: #ffaa00; font-weight: 700; font-size: 13px; }
-        #sun-panel-toggle, #edit-panel-toggle {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-            color: #eee; border-radius: 6px; width: 24px; height: 24px; cursor: pointer;
-            font-size: 14px; line-height: 1; padding: 0;
-        }
+        #sun-panel-toggle, #edit-panel-toggle { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #eee; border-radius: 6px; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
         #sun-panel-toggle:hover, #edit-panel-toggle:hover { background: rgba(255,255,255,0.18); }
         .sun-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #bbb; font-size: 12px; }
-        .sun-row input[type="range"] {
-            flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
-            background: #555; border-radius: 4px; outline: none; margin: 0;
-        }
-        .sun-row input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
-            background: #3498db; cursor: pointer;
-        }
-        .sun-row input[type="range"]::-moz-range-thumb {
-            width: 14px; height: 14px; border-radius: 50%; background: #3498db;
-            cursor: pointer; border: none;
-        }
+        .sun-row input[type="range"] { flex: 1; height: 4px; -webkit-appearance: none; appearance: none; background: #555; border-radius: 4px; outline: none; margin: 0; }
+        .sun-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #3498db; cursor: pointer; }
+        .sun-row input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #3498db; cursor: pointer; border: none; }
         .sun-row span:last-child { min-width: 42px; text-align: right; color: #fff; font-size: 12px; }
         #sun-status { color: #ccc; font-size: 11px; margin: 4px 0 8px; text-align: center; }
-        #sun-play-btn {
-            width: 100%; background: rgba(255,170,0,0.15); border: 1px solid #ffaa00;
-            color: #ffcc44; border-radius: 20px; padding: 6px 10px; font-size: 12px;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
+        #sun-play-btn { width: 100%; background: rgba(255,170,0,0.15); border: 1px solid #ffaa00; color: #ffcc44; border-radius: 20px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         #sun-play-btn:hover { background: rgba(255,170,0,0.3); }
         #sun-play-btn.playing { background: rgba(231,76,60,0.25); border-color: #e74c3c; color: #ff9d8f; }
-
-        /* панель планировки */
         #edit-panel.collapsed .edit-panel-body { display: none; }
         #edit-panel.collapsed .panel-header { margin-bottom: 0; }
-        .edit-btn {
-            width: 100%; background: rgba(52,152,219,0.15); border: 1px solid #3498db;
-            color: #9fd3ff; border-radius: 20px; padding: 7px 10px; font-size: 12px;
-            font-weight: 600; cursor: pointer; transition: 0.2s; margin-bottom: 6px;
-        }
+        .edit-btn { width: 100%; background: rgba(52,152,219,0.15); border: 1px solid #3498db; color: #9fd3ff; border-radius: 20px; padding: 7px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-bottom: 6px; }
         .edit-btn:hover { background: rgba(52,152,219,0.32); }
         .edit-btn.active { background: rgba(46,204,113,0.25); border-color: #2ecc71; color: #b9f6ca; }
+        .edit-btn.viol-active { background: rgba(255,51,51,0.25); border-color: #ff3333; color: #ffcccc; }
         .edit-row { display: flex; gap: 6px; }
         .edit-row .edit-btn { margin-bottom: 0; }
         .edit-btn.danger { background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.7); color: #ffb3a7; }
         .edit-btn.danger:hover { background: rgba(231,76,60,0.32); }
         #edit-status { color: #888; font-size: 11px; text-align: center; margin-top: 6px; }
-
-        /* ===== ПОДСКАЗКИ / ТОСТЫ ===== */
-        #drag-hint {
-            position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
-            background: rgba(10, 25, 40, 0.92); color: #fff; padding: 8px 16px; border-radius: 8px;
-            font-size: 13px; z-index: 250; pointer-events: none; display: none;
-            text-align: center; backdrop-filter: blur(4px); border: 1px solid #3498db;
-            max-width: 85vw;
-        }
+        #drag-hint { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(10, 25, 40, 0.92); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; z-index: 250; pointer-events: none; display: none; text-align: center; backdrop-filter: blur(4px); border: 1px solid #3498db; max-width: 85vw; }
         #drag-hint.show { display: block; }
-
-        #hamburger {
-            position: fixed; bottom: 20px; right: 20px; z-index: 300;
-            background: rgba(20, 25, 35, 0.92); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%;
-            width: 56px; height: 56px; font-size: 28px; color: #fff;
-            cursor: pointer; touch-action: manipulation;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
-            display: flex; justify-content: center; align-items: center;
-            transition: 0.2s; user-select: none;
-        }
+        #hamburger { position: fixed; bottom: 20px; right: 20px; z-index: 300; background: rgba(20, 25, 35, 0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; width: 56px; height: 56px; font-size: 28px; color: #fff; cursor: pointer; touch-action: manipulation; box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; transition: 0.2s; user-select: none; }
         #hamburger:active { transform: scale(0.92); }
-
-        #mobile-menu {
-            display: none; position: fixed; bottom: 90px; right: 20px; z-index: 299;
-            background: rgba(16, 20, 30, 0.94); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px;
-            padding: 16px 18px; min-width: 210px; max-width: 90vw;
-            flex-direction: column; gap: 8px;
-            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.8);
-            max-height: 70vh; overflow-y: auto;
-        }
+        #mobile-menu { display: none; position: fixed; bottom: 90px; right: 20px; z-index: 299; background: rgba(16, 20, 30, 0.94); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 16px 18px; min-width: 210px; max-width: 90vw; flex-direction: column; gap: 8px; box-shadow: 0 12px 50px rgba(0, 0, 0, 0.8); max-height: 70vh; overflow-y: auto; }
         #mobile-menu.open { display: flex; }
-        #mobile-menu .ctrl-btn {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px; padding: 8px 14px; color: #eee;
-            font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
-            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-            touch-action: manipulation; min-height: 38px; width: 100%; justify-content: center;
-        }
+        #mobile-menu .ctrl-btn { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 8px 14px; color: #eee; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; touch-action: manipulation; min-height: 38px; width: 100%; justify-content: center; }
         #mobile-menu .ctrl-btn:hover { background: rgba(255, 255, 255, 0.15); }
-        #mobile-menu .ctrl-btn.active {
-            background: rgba(52, 152, 219, 0.45); border-color: #3498db;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.25);
-        }
+        #mobile-menu .ctrl-btn.active { background: rgba(52, 152, 219, 0.45); border-color: #3498db; box-shadow: 0 0 15px rgba(52, 152, 219, 0.25); }
         #mobile-menu .ctrl-btn.pdf-btn { background: rgba(231, 76, 60, 0.35); border-color: #e74c3c; }
         #mobile-menu .ctrl-btn.pdf-btn:hover { background: rgba(231, 76, 60, 0.55); }
-        #mobile-menu .close-menu {
-            color: #ffaa00; margin-top: 6px; text-align: center; font-weight: bold;
-            background: transparent; border: none; border-top: 1px solid #444;
-            cursor: pointer; padding: 10px 0 0 0; width: 100%; font-size: 14px;
-        }
+        #mobile-menu .close-menu { color: #ffaa00; margin-top: 6px; text-align: center; font-weight: bold; background: transparent; border: none; border-top: 1px solid #444; cursor: pointer; padding: 10px 0 0 0; width: 100%; font-size: 14px; }
         #mobile-menu .close-menu:hover { color: #ffcc44; }
-
-        @media (min-width: 769px) {
-            #mobile-menu { min-width: 280px; max-width: 400px; right: 20px; bottom: 90px; padding: 18px 22px; }
-            #mobile-menu .ctrl-btn { font-size: 14px; padding: 10px 16px; }
-        }
-
+        @media (min-width: 769px) { #mobile-menu { min-width: 280px; max-width: 400px; right: 20px; bottom: 90px; padding: 18px 22px; } #mobile-menu .ctrl-btn { font-size: 14px; padding: 10px 16px; } }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
         .modal-content { background: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; max-width: 900px; height: 80vh; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #ffaa00; flex-shrink: 0; }
@@ -171,7 +77,6 @@
         #report-modal .modal-content em { color: #888; font-size: 12px; }
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
-
         #norms-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
         #norms-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
         #norms-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
@@ -181,69 +86,27 @@
         .norm-doc { font-size: 11px; color: #888; margin-top: 2px; }
         .norm-detail { font-size: 11px; color: #555; }
         #norms-summary { background: #f5f8fc; padding: 12px 16px; border-radius: 10px; font-size: 14px; }
-
-        #measure-hint {
-            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 8px;
-            font-size: 14px; z-index: 250; pointer-events: none; display: none;
-            text-align: center; backdrop-filter: blur(4px); border: 1px solid #ffaa00;
-            max-width: 85vw;
-        }
+        #measure-hint { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; z-index: 250; pointer-events: none; display: none; text-align: center; backdrop-filter: blur(4px); border: 1px solid #ffaa00; max-width: 85vw; }
         #measure-hint.show { display: block; }
-
-        #comm-info {
-            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
-            background: rgba(10, 15, 25, 0.93); color: #fff; padding: 10px 16px;
-            border-radius: 12px; font-size: 13px; z-index: 250; display: none;
-            border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(8px);
-            max-width: 85vw; text-align: center; line-height: 1.6;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-        }
+        #comm-info { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(10, 15, 25, 0.93); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 250; display: none; border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(8px); max-width: 85vw; text-align: center; line-height: 1.6; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
         #comm-info.show { display: block; }
         #comm-info .title { font-weight: 700; color: #ffaa00; font-size: 14px; }
         #comm-info .close { margin-left: 12px; color: #ffaa00; cursor: pointer; font-weight: 700; }
-
-        #pdf-loader {
-            display: none; position: fixed; inset: 0; z-index: 9999;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
-            justify-content: center; align-items: center; flex-direction: column;
-            gap: 20px; color: #fff; font-size: 18px; font-weight: 500;
-        }
+        #pdf-loader { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); justify-content: center; align-items: center; flex-direction: column; gap: 20px; color: #fff; font-size: 18px; font-weight: 500; }
         #pdf-loader.active { display: flex; }
-        .spinner {
-            width: 56px; height: 56px;
-            border: 6px solid rgba(255,255,255,0.15); border-top-color: #ffaa00;
-            border-radius: 50%; animation: spin 0.9s linear infinite;
-        }
+        .spinner { width: 56px; height: 56px; border: 6px solid rgba(255,255,255,0.15); border-top-color: #ffaa00; border-radius: 50%; animation: spin 0.9s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        #pdf-cover-container, #pdf-report-container {
-            position: absolute; left: -9999px; top: 0; width: 780px;
-            background: white; font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 40px 45px; z-index: -1; pointer-events: none;
-        }
-        #pdf-cover-container .cover-title {
-            font-size: 32px; font-weight: 700; color: #1a2a3a;
-            border-bottom: 4px solid #ffaa00; padding-bottom: 12px; margin-bottom: 20px; text-align: center;
-        }
-        #pdf-cover-container .cover-info {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px;
-            background: #f5f8fc; padding: 18px 22px; border-radius: 14px;
-            margin-bottom: 24px; font-size: 15px; line-height: 1.7;
-        }
+        #pdf-cover-container, #pdf-report-container { position: absolute; left: -9999px; top: 0; width: 780px; background: white; font-family: 'Segoe UI', Arial, sans-serif; padding: 40px 45px; z-index: -1; pointer-events: none; }
+        #pdf-cover-container .cover-title { font-size: 32px; font-weight: 700; color: #1a2a3a; border-bottom: 4px solid #ffaa00; padding-bottom: 12px; margin-bottom: 20px; text-align: center; }
+        #pdf-cover-container .cover-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px; background: #f5f8fc; padding: 18px 22px; border-radius: 14px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; }
         #pdf-cover-container .cover-info strong { color: #1e3b5a; }
-        #pdf-cover-container .cover-footer {
-            text-align: center; margin-top: 20px; font-size: 14px; color: #666;
-            border-top: 1px solid #ccc; padding-top: 16px;
-        }
-
+        #pdf-cover-container .cover-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #666; border-top: 1px solid #ccc; padding-top: 16px; }
         #pdf-report-container h1 { font-size: 26px; color: #1a2a3a; border-bottom: 3px solid #ffaa00; padding-bottom: 12px; margin-bottom: 20px; }
         #pdf-report-container h2 { font-size: 19px; color: #1e3b5a; margin: 22px 0 10px 0; border-left: 6px solid #ffaa00; padding-left: 14px; }
         #pdf-report-container h3 { font-size: 16px; color: #1e4a6b; margin: 16px 0 6px 0; }
         #pdf-report-container p, #pdf-report-container li { font-size: 13px; color: #222; }
         #pdf-report-container ul { padding-left: 22px; margin: 6px 0 10px 0; }
         #pdf-report-container .norm { color: #c0392b; font-weight: 600; }
-
         @media (max-width: 768px) {
             #info { font-size: 10px; padding: 4px 8px; top: 8px; left: 8px; }
             #norm-badge { top: 36px; left: 8px; font-size: 10px; padding: 4px 8px; }
@@ -270,10 +133,7 @@
             #mobile-menu { min-width: 180px; max-width: 85vw; bottom: 80px; right: 10px; padding: 14px 14px; }
             #mobile-menu .ctrl-btn { font-size: 12px; padding: 6px 10px; }
         }
-        @media (max-width: 480px) {
-            #mobile-menu { min-width: 150px; padding: 12px 10px; }
-            #mobile-menu .ctrl-btn { font-size: 11px; padding: 6px 8px; }
-        }
+        @media (max-width: 480px) { #mobile-menu { min-width: 150px; padding: 12px 10px; } #mobile-menu .ctrl-btn { font-size: 11px; padding: 6px 8px; } }
     </style>
 </head>
 <body>
@@ -287,7 +147,6 @@
         <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
     </div>
 
-    <!-- ===== ЛЕВЫЕ ПАНЕЛИ ===== -->
     <div id="left-panels">
         <button id="sun-fab" class="panel-fab" title="Открыть панель солнца">☀️</button>
         <button id="edit-fab" class="panel-fab" title="Открыть панель планировки">✏️</button>
@@ -298,16 +157,8 @@
                 <button id="sun-panel-toggle" title="Свернуть">–</button>
             </div>
             <div class="sun-panel-body">
-                <div class="sun-row">
-                    <span>🌞</span>
-                    <input type="range" id="sun-month-side" min="1" max="12" value="6" step="1">
-                    <span id="month-label-side">Июнь</span>
-                </div>
-                <div class="sun-row">
-                    <span>🕒</span>
-                    <input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05">
-                    <span id="hour-label-side">12:00</span>
-                </div>
+                <div class="sun-row"><span>🌞</span><input type="range" id="sun-month-side" min="1" max="12" value="6" step="1"><span id="month-label-side">Июнь</span></div>
+                <div class="sun-row"><span>🕒</span><input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05"><span id="hour-label-side">12:00</span></div>
                 <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
                 <button id="sun-play-btn">▶ Проиграть день</button>
             </div>
@@ -320,6 +171,7 @@
             </div>
             <div class="edit-panel-body">
                 <button id="edit-mode-btn" class="edit-btn">🖐 Включить изменения на карте</button>
+                <button id="toggle-violations-btn" class="edit-btn">🔴 Показать нарушения</button>
                 <div class="edit-row">
                     <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
                     <button id="reset-layout-btn" class="edit-btn danger">🔄 Сброс</button>
@@ -329,7 +181,6 @@
         </div>
     </div>
 
-    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта) ===== -->
     <div id="controls">
         <label>Месяц <span id="month-label">Июнь</span></label>
         <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
@@ -376,55 +227,33 @@
         <button class="close-menu" id="closeMenu">✕ Закрыть меню</button>
     </div>
 
-    <!-- ===== ДОКЛАД ===== -->
     <div id="report-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="close-report">&times;</span>
             <div id="report-body"></div>
-            <div class="modal-footer">
-                <button id="close-report-btn">Закрыть</button>
-            </div>
+            <div class="modal-footer"><button id="close-report-btn">Закрыть</button></div>
         </div>
     </div>
 
-    <!-- ===== ПРОВЕРКА НОРМ ===== -->
     <div id="norms-modal" class="modal">
         <div class="modal-content" style="max-width: 880px; height: auto; max-height: 80vh; overflow-y: auto; display: block; padding: 20px 30px;">
             <span class="modal-close" id="close-norms-modal">&times;</span>
             <h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">✅ Автоматическая проверка норм</h2>
             <div id="norms-summary"></div>
             <table id="norms-table">
-                <thead>
-                    <tr>
-                        <th>Правило</th>
-                        <th style="text-align:center;">Норма</th>
-                        <th style="text-align:center;">Факт</th>
-                        <th style="text-align:center;">Статус</th>
-                        <th>Детали</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Правило</th><th style="text-align:center;">Норма</th><th style="text-align:center;">Факт</th><th style="text-align:center;">Статус</th><th>Детали</th></tr></thead>
                 <tbody id="norms-tbody"></tbody>
             </table>
-            <p style="font-size:11px; color:#777; margin-top:14px;">
-                * Расстояния измеряются между ближайшими краями объектов, а не между центрами — так, как этого требуют нормативы.<br>
-                * Красные кольца и линии в 3D показывают проблемные зоны (видны, пока открыто это окно).
-            </p>
-            <div class="modal-footer">
-                <button id="close-norms-btn">Закрыть</button>
-            </div>
+            <p style="font-size:11px; color:#777; margin-top:14px;">* Расстояния измеряются между ближайшими краями объектов, а не между центрами.<br>* Красные кольца и линии в 3D показывают проблемные зоны (видны, пока открыто это окно).</p>
+            <div class="modal-footer"><button id="close-norms-btn">Закрыть</button></div>
         </div>
     </div>
 
     <div id="plan-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>🏠 Планы дома «Берн» (10 × 16 м)</h2>
-                <span class="modal-close" id="close-plan-modal">&times;</span>
-            </div>
+            <div class="modal-header"><h2>🏠 Планы дома «Берн» (10 × 16 м)</h2><span class="modal-close" id="close-plan-modal">&times;</span></div>
             <div class="modal-body" id="plan-container"></div>
-            <div class="modal-footer">
-                <button id="close-plan-modal-btn">Закрыть</button>
-            </div>
+            <div class="modal-footer"><button id="close-plan-modal-btn">Закрыть</button></div>
         </div>
     </div>
 
@@ -434,32 +263,18 @@
             <h2 style="margin-top:0;">🌍 GPS-координаты объектов</h2>
             <div style="overflow-x: auto; margin-top: 10px;">
                 <table id="gps-table" style="width:100%; border-collapse: collapse; font-size: 14px;">
-                    <thead>
-                        <tr style="background: #f0f0f0; border-bottom: 2px solid #ffaa00;">
-                            <th style="padding: 8px; text-align: left;">Объект</th>
-                            <th style="padding: 8px; text-align: center;">Локальные X, Z (м)</th>
-                            <th style="padding: 8px; text-align: center;">Широта (°)</th>
-                            <th style="padding: 8px; text-align: center;">Долгота (°)</th>
-                        </tr>
-                    </thead>
+                    <thead><tr style="background: #f0f0f0; border-bottom: 2px solid #ffaa00;"><th style="padding: 8px; text-align: left;">Объект</th><th style="padding: 8px; text-align: center;">Локальные X, Z (м)</th><th style="padding: 8px; text-align: center;">Широта (°)</th><th style="padding: 8px; text-align: center;">Долгота (°)</th></tr></thead>
                     <tbody id="gps-tbody"></tbody>
                 </table>
             </div>
-            <div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">
-                * Координаты рассчитаны на основе привязки к центру участка (56.042291, 38.417342) и его реальной ориентации (азимут 33°).
-            </div>
-            <div class="modal-footer">
-                <button id="close-gps-btn">Закрыть</button>
-            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">* Координаты рассчитаны на основе привязки к центру участка (56.042291, 38.417342) и его реальной ориентации (азимут 33°).</div>
+            <div class="modal-footer"><button id="close-gps-btn">Закрыть</button></div>
         </div>
     </div>
 
     <div id="pdf-cover-container"></div>
     <div id="pdf-report-container"></div>
-    <div id="pdf-loader">
-        <div class="spinner"></div>
-        <span>Формируем PDF-отчёт...</span>
-    </div>
+    <div id="pdf-loader"><div class="spinner"></div><span>Формируем PDF-отчёт...</span></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -467,23 +282,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-    // ═══════════════════════════════════════════════════════════════
-    // КОНФИГУРАЦИЯ
-    // Коммуникации описаны ЯКОРЯМИ: концы привязаны к объектам
-    // ({obj, dx, dz} — смещение от центра объекта) или к фиксированным
-    // точкам ({x, z}). При переносе объекта трасса перестраивается.
-    // ═══════════════════════════════════════════════════════════════
     const CONFIG = {
         plot: { w: 25, d: 40 },
         center: { x: 12.5, z: 20 },
         gps: { lat: 56.042291, lng: 38.417342, angle: 33, latPerM: 0.000009, lngPerM: 0.000012 },
         latitude: 56,
-        camera: {
-            default: [35, 30, 60],
-            top: [12.5, 60, 20],
-            night: [35, 30, 60],
-            gate: [12.5, 2, -2]
-        },
+        camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [12.5, 2, -2] },
         objects: [
             { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
             { id: 'bath', type: 'bath', label: '🧖 Баня', x: 19, z: 11, y: 5.5, w: 6, d: 6, h: 4, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
@@ -497,51 +301,31 @@
             { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
         ],
         utilities: [
-            { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8,
-              route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
-            { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8,
-              route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'shed', dx: 3, dz: 0 } ] },
-            { name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5,
-              route: [ { obj: 'well', dx: 0, dz: 0 }, { x: 12.5, z: 22 }, { obj: 'house', dx: 0, dz: -1 } ] },
-            { name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5,
-              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
-            { name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8,
-              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 2.5, z: 29 }, { obj: 'garden', dx: 0, dz: 0 } ] },
-            { name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2,
-              route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 3, z: 29 }, { obj: 'septic', dx: 0, dz: 0 } ] },
-            { name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0,
-              route: [ { obj: 'bath', dx: 0, dz: 0 }, { x: 3, z: 11 }, { obj: 'septic', dx: 0, dz: 0 } ] },
-            { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2,
-              route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
-            { name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false,
-              route: [ { x: 24.5, z: 29 }, { obj: 'house', dx: 7.5, dz: -1 } ] }
+            { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
+            { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'shed', dx: 3, dz: 0 } ] },
+            { name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', dx: 0, dz: 0 }, { x: 12.5, z: 22 }, { obj: 'house', dx: 0, dz: -1 } ] },
+            { name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
+            { name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 2.5, z: 29 }, { obj: 'garden', dx: 0, dz: 0 } ] },
+            { name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 3, z: 29 }, { obj: 'septic', dx: 0, dz: 0 } ] },
+            { name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', dx: 0, dz: 0 }, { x: 3, z: 11 }, { obj: 'septic', dx: 0, dz: 0 } ] },
+            { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
+            { name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false, route: [ { x: 24.5, z: 29 }, { obj: 'house', dx: 7.5, dz: -1 } ] }
         ],
         months: [
-            { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
-            { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
-            { declination: -2.5,  sunrise: 6.70, sunset: 18.50 },
-            { declination: 10.5,  sunrise: 5.30, sunset: 19.80 },
-            { declination: 20.0,  sunrise: 4.20, sunset: 20.50 },
-            { declination: 23.5,  sunrise: 3.75, sunset: 21.20 },
-            { declination: 21.5,  sunrise: 3.90, sunset: 21.00 },
-            { declination: 15.0,  sunrise: 4.70, sunset: 20.20 },
-            { declination: 5.0,   sunrise: 6.00, sunset: 19.00 },
-            { declination: -7.0,  sunrise: 7.00, sunset: 17.70 },
-            { declination: -17.0, sunrise: 8.00, sunset: 16.40 },
-            { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
+            { declination: -20.5, sunrise: 8.85, sunset: 16.10 }, { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
+            { declination: -2.5, sunrise: 6.70, sunset: 18.50 }, { declination: 10.5, sunrise: 5.30, sunset: 19.80 },
+            { declination: 20.0, sunrise: 4.20, sunset: 20.50 }, { declination: 23.5, sunrise: 3.75, sunset: 21.20 },
+            { declination: 21.5, sunrise: 3.90, sunset: 21.00 }, { declination: 15.0, sunrise: 4.70, sunset: 20.20 },
+            { declination: 5.0, sunrise: 6.00, sunset: 19.00 }, { declination: -7.0, sunrise: 7.00, sunset: 17.70 },
+            { declination: -17.0, sunrise: 8.00, sunset: 16.40 }, { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
         ],
         monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // СОХРАНЕНИЕ ПЛАНИРОВКИ (localStorage)
-    // ═══════════════════════════════════════════════════════════════
     const STORAGE_KEY = 'bern_layout_v1';
     const DEFAULT_LAYOUT = {};
     CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z }; });
-
     let hadSavedLayout = false;
-
     function loadSavedLayout() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -550,32 +334,20 @@
             if (data && data.objects) {
                 CONFIG.objects.forEach(o => {
                     const s = data.objects[o.id];
-                    if (s && typeof s.x === 'number' && typeof s.z === 'number') {
-                        o.x = s.x;
-                        o.z = s.z;
-                        hadSavedLayout = true;
-                    }
+                    if (s && typeof s.x === 'number' && typeof s.z === 'number') { o.x = s.x; o.z = s.z; hadSavedLayout = true; }
                 });
             }
-        } catch (e) {
-            console.warn('Не удалось загрузить сохранённую планировку:', e);
-        }
+        } catch (e) { console.warn('Не удалось загрузить сохранённую планировку:', e); }
     }
     loadSavedLayout();
-
     function saveLayout() {
         try {
             const objects = {};
             CONFIG.objects.forEach(o => { objects[o.id] = { x: o.x, z: o.z }; });
             localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), objects }));
-        } catch (e) {
-            console.warn('Не удалось сохранить планировку:', e);
-        }
+        } catch (e) { console.warn('Не удалось сохранить планировку:', e); }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // DOM
-    // ═══════════════════════════════════════════════════════════════
     const DOM = {
         viewSelect: document.getElementById('view-select'),
         monthSlider: document.getElementById('month-slider'),
@@ -609,65 +381,44 @@
         mobileMenu: document.getElementById('mobile-menu'),
         closeMenu: document.getElementById('closeMenu'),
         sun: {
-            panel: document.getElementById('sun-panel'),
-            fab: document.getElementById('sun-fab'),
+            panel: document.getElementById('sun-panel'), fab: document.getElementById('sun-fab'),
             toggle: document.getElementById('sun-panel-toggle'),
-            monthSlider: document.getElementById('sun-month-side'),
-            hourSlider: document.getElementById('sun-hour-side'),
-            monthLabel: document.getElementById('month-label-side'),
-            hourLabel: document.getElementById('hour-label-side'),
-            status: document.getElementById('sun-status'),
-            playBtn: document.getElementById('sun-play-btn')
+            monthSlider: document.getElementById('sun-month-side'), hourSlider: document.getElementById('sun-hour-side'),
+            monthLabel: document.getElementById('month-label-side'), hourLabel: document.getElementById('hour-label-side'),
+            status: document.getElementById('sun-status'), playBtn: document.getElementById('sun-play-btn')
         },
         edit: {
-            panel: document.getElementById('edit-panel'),
-            fab: document.getElementById('edit-fab'),
+            panel: document.getElementById('edit-panel'), fab: document.getElementById('edit-fab'),
             toggle: document.getElementById('edit-panel-toggle'),
             modeBtn: document.getElementById('edit-mode-btn'),
+            violationsBtn: document.getElementById('toggle-violations-btn'),
             saveBtn: document.getElementById('save-layout-btn'),
             resetBtn: document.getElementById('reset-layout-btn'),
             status: document.getElementById('edit-status')
         },
         mobile: {
-            comms: document.getElementById('toggleCommsMob'),
-            labels: document.getElementById('toggleLabelsMob'),
-            measure: document.getElementById('toggleMeasureMob'),
-            area: document.getElementById('toggleAreaMob'),
-            norms: document.getElementById('showNormsBtnMob'),
-            report: document.getElementById('showReportBtnMob'),
-            plan: document.getElementById('showHousePlanBtnMob'),
-            png: document.getElementById('exportPngBtnMob'),
-            pdf: document.getElementById('exportPdfBtnMob'),
-            gps: document.getElementById('showGpsBtnMob')
+            comms: document.getElementById('toggleCommsMob'), labels: document.getElementById('toggleLabelsMob'),
+            measure: document.getElementById('toggleMeasureMob'), area: document.getElementById('toggleAreaMob'),
+            norms: document.getElementById('showNormsBtnMob'), report: document.getElementById('showReportBtnMob'),
+            plan: document.getElementById('showHousePlanBtnMob'), png: document.getElementById('exportPngBtnMob'),
+            pdf: document.getElementById('exportPdfBtnMob'), gps: document.getElementById('showGpsBtnMob')
         }
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // УТИЛИТЫ
-    // ═══════════════════════════════════════════════════════════════
     const Utils = {
         dirty: true,
         markDirty() { this.dirty = true; },
-
         ensureRoundRect() {
             if (CanvasRenderingContext2D.prototype.roundRect) return;
             CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-                if (r > w/2) r = w/2;
-                if (r > h/2) r = h/2;
-                this.moveTo(x + r, y);
-                this.lineTo(x + w - r, y);
-                this.quadraticCurveTo(x + w, y, x + w, y + r);
-                this.lineTo(x + w, y + h - r);
-                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-                this.lineTo(x + r, y + h);
-                this.quadraticCurveTo(x, y + h, x, y + h - r);
-                this.lineTo(x, y + r);
-                this.quadraticCurveTo(x, y, x + r, y);
-                this.closePath();
-                return this;
+                if (r > w/2) r = w/2; if (r > h/2) r = h/2;
+                this.moveTo(x + r, y); this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r); this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h); this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r); this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y); this.closePath(); return this;
             };
         },
-
         createLabel(text, color = '#fff', size = 0.8, scale = [6, 1.5], canvasW = 512, canvasH = 128, fontSize = 40, bgColor = 'rgba(0,0,0,0.6)', borderRadius = 20) {
             const canvas = document.createElement('canvas');
             canvas.width = canvasW; canvas.height = canvasH;
@@ -676,9 +427,7 @@
             ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, borderRadius);
             ctx.fill();
             ctx.font = `Bold ${fontSize}px Arial`;
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
             const texture = new THREE.CanvasTexture(canvas);
             const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
@@ -686,14 +435,10 @@
             sprite.scale.set(scale[0] * size, scale[1] * size, 1);
             return sprite;
         },
-
         fmt(v) { return v.toFixed(1).replace('.', ','); }
     };
     Utils.ensureRoundRect();
 
-    // ═══════════════════════════════════════════════════════════════
-    // СЦЕНА
-    // ═══════════════════════════════════════════════════════════════
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87CEEB);
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -719,14 +464,10 @@
     const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.set(2048, 2048);
-    sunLight.shadow.camera.left = -28;
-    sunLight.shadow.camera.right = 28;
-    sunLight.shadow.camera.top = 28;
-    sunLight.shadow.camera.bottom = -28;
-    sunLight.shadow.camera.near = 1;
-    sunLight.shadow.camera.far = 90;
-    sunLight.shadow.bias = -0.0004;
-    sunLight.shadow.normalBias = 0.02;
+    sunLight.shadow.camera.left = -28; sunLight.shadow.camera.right = 28;
+    sunLight.shadow.camera.top = 28; sunLight.shadow.camera.bottom = -28;
+    sunLight.shadow.camera.near = 1; sunLight.shadow.camera.far = 90;
+    sunLight.shadow.bias = -0.0004; sunLight.shadow.normalBias = 0.02;
     scene.add(sunLight);
     scene.add(sunLight.target);
 
@@ -738,55 +479,32 @@
     const hemiLight = new THREE.HemisphereLight(0x9bc4e2, 0x4a7d4a, 0.35);
     scene.add(hemiLight);
 
-    const sunDisc = new THREE.Mesh(
-        new THREE.SphereGeometry(2.2, 24, 24),
-        new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false })
-    );
+    const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(2.2, 24, 24), new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false }));
     scene.add(sunDisc);
-    const sunGlow = new THREE.Mesh(
-        new THREE.SphereGeometry(3.6, 24, 24),
-        new THREE.MeshBasicMaterial({ color: 0xffd86b, transparent: true, opacity: 0.18, fog: false })
-    );
+    const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(3.6, 24, 24), new THREE.MeshBasicMaterial({ color: 0xffd86b, transparent: true, opacity: 0.18, fog: false }));
     scene.add(sunGlow);
 
     const groups = {
-        site: new THREE.Group(),
-        house: new THREE.Group(),
-        comms: new THREE.Group(),
-        labels: new THREE.Group(),
-        objectLabels: new THREE.Group(),
-        norms: new THREE.Group()
+        site: new THREE.Group(), house: new THREE.Group(), comms: new THREE.Group(),
+        labels: new THREE.Group(), objectLabels: new THREE.Group(),
+        norms: new THREE.Group(), violRings: new THREE.Group()
     };
     Object.values(groups).forEach(g => scene.add(g));
+    groups.violRings.visible = false;
 
-    // ═══════════════════════════════════════════════════════════════
-    // ПЛАВНЫЙ ПЕРЕЛЁТ КАМЕРЫ
-    // ═══════════════════════════════════════════════════════════════
     const cameraTween = {
-        active: false,
-        startTime: 0,
-        duration: 1400,
-        fromPos: new THREE.Vector3(),
-        toPos: new THREE.Vector3(),
-        fromTarget: new THREE.Vector3(),
-        toTarget: new THREE.Vector3(),
+        active: false, startTime: 0, duration: 1400,
+        fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(),
+        fromTarget: new THREE.Vector3(), toTarget: new THREE.Vector3(),
         start(toPos, toTarget) {
-            this.fromPos.copy(camera.position);
-            this.fromTarget.copy(controls.target);
-            this.toPos.copy(toPos);
-            this.toTarget.copy(toTarget);
-            this.startTime = performance.now();
-            this.active = true;
-            controls.enabled = false;
+            this.fromPos.copy(camera.position); this.fromTarget.copy(controls.target);
+            this.toPos.copy(toPos); this.toTarget.copy(toTarget);
+            this.startTime = performance.now(); this.active = true; controls.enabled = false;
         },
         update() {
             if (!this.active) return false;
             let t = (performance.now() - this.startTime) / this.duration;
-            if (t >= 1) {
-                t = 1;
-                this.active = false;
-                controls.enabled = true;
-            }
+            if (t >= 1) { t = 1; this.active = false; controls.enabled = true; }
             const e = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
             camera.position.lerpVectors(this.fromPos, this.toPos, e);
             controls.target.lerpVectors(this.fromTarget, this.toTarget, e);
@@ -795,9 +513,6 @@
         }
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // ТЕКСТУРЫ И МАТЕРИАЛЫ
-    // ═══════════════════════════════════════════════════════════════
     function makeTexture(w, h, drawFn) {
         const canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
@@ -806,51 +521,12 @@
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         return texture;
     }
-
     const Textures = {
-        grass: (() => {
-            const t = makeTexture(256, 256, (ctx, w, h) => {
-                ctx.fillStyle = '#4caf50'; ctx.fillRect(0, 0, w, h);
-                for (let i = 0; i < 2000; i++) {
-                    const x = Math.random() * w, y = Math.random() * h;
-                    const s = Math.floor(60 + Math.random() * 60);
-                    ctx.fillStyle = `rgb(${s}, ${s + 100}, ${s})`;
-                    ctx.fillRect(x, y, 2, 4);
-                }
-            });
-            t.repeat.set(20, 20); return t;
-        })(),
-        road: (() => {
-            const t = makeTexture(256, 256, (ctx, w, h) => {
-                ctx.fillStyle = '#444'; ctx.fillRect(0, 0, w, h);
-                for (let i = 0; i < 1000; i++) {
-                    ctx.fillStyle = '#555';
-                    ctx.fillRect(Math.random()*w, Math.random()*h, 3, 1);
-                }
-            });
-            t.repeat.set(10, 3); return t;
-        })(),
-        path: (() => {
-            const t = makeTexture(128, 128, (ctx, w, h) => {
-                ctx.fillStyle = '#aaa'; ctx.fillRect(0, 0, w, h);
-                ctx.strokeStyle = '#888'; ctx.lineWidth = 1;
-                for (let i = 0; i < 20; i++) ctx.strokeRect(10 + i * 6, 10, 40, 40);
-            });
-            t.repeat.set(4, 4); return t;
-        })(),
-        roof: (() => {
-            const t = makeTexture(128, 128, (ctx, w, h) => {
-                ctx.fillStyle = '#8b4513'; ctx.fillRect(0, 0, w, h);
-                ctx.fillStyle = '#a0522d';
-                for (let i = 0; i < 20; i++) {
-                    ctx.fillRect(i * 10, 0, 8, h);
-                    ctx.fillRect(0, i * 10, w, 8);
-                }
-            });
-            t.repeat.set(4, 3); return t;
-        })()
+        grass: (() => { const t = makeTexture(256, 256, (ctx, w, h) => { ctx.fillStyle = '#4caf50'; ctx.fillRect(0, 0, w, h); for (let i = 0; i < 2000; i++) { const x = Math.random() * w, y = Math.random() * h; const s = Math.floor(60 + Math.random() * 60); ctx.fillStyle = `rgb(${s}, ${s + 100}, ${s})`; ctx.fillRect(x, y, 2, 4); } }); t.repeat.set(20, 20); return t; })(),
+        road: (() => { const t = makeTexture(256, 256, (ctx, w, h) => { ctx.fillStyle = '#444'; ctx.fillRect(0, 0, w, h); for (let i = 0; i < 1000; i++) { ctx.fillStyle = '#555'; ctx.fillRect(Math.random()*w, Math.random()*h, 3, 1); } }); t.repeat.set(10, 3); return t; })(),
+        path: (() => { const t = makeTexture(128, 128, (ctx, w, h) => { ctx.fillStyle = '#aaa'; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = '#888'; ctx.lineWidth = 1; for (let i = 0; i < 20; i++) ctx.strokeRect(10 + i * 6, 10, 40, 40); }); t.repeat.set(4, 4); return t; })(),
+        roof: (() => { const t = makeTexture(128, 128, (ctx, w, h) => { ctx.fillStyle = '#8b4513'; ctx.fillRect(0, 0, w, h); ctx.fillStyle = '#a0522d'; for (let i = 0; i < 20; i++) { ctx.fillRect(i * 10, 0, 8, h); ctx.fillRect(0, i * 10, w, 8); } }); t.repeat.set(4, 3); return t; })()
     };
-
     const maxAniso = renderer.capabilities.getMaxAnisotropy();
     Object.values(Textures).forEach(t => t.anisotropy = maxAniso);
 
@@ -859,16 +535,13 @@
         return {
             get(color, opts = {}) {
                 const key = `${color}_${opts.roughness||0.6}_${opts.metalness||0.1}_${opts.transparent||false}`;
-                if (!cache.has(key)) {
-                    cache.set(key, new THREE.MeshStandardMaterial({ color, roughness: opts.roughness || 0.6, metalness: opts.metalness || 0.1, transparent: opts.transparent || false, opacity: opts.opacity || 1, side: opts.side || THREE.FrontSide }));
-                }
+                if (!cache.has(key)) cache.set(key, new THREE.MeshStandardMaterial({ color, roughness: opts.roughness || 0.6, metalness: opts.metalness || 0.1, transparent: opts.transparent || false, opacity: opts.opacity || 1, side: opts.side || THREE.FrontSide }));
                 return cache.get(key);
             },
             rough: (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.9 }),
             metal: (color) => new THREE.MeshStandardMaterial({ color, metalness: 0.7, roughness: 0.3 })
         };
     })();
-
     const GeoPool = {
         box: (w, h, d) => new THREE.BoxGeometry(w, h, d),
         cylinder: (rT, rB, h, s = 16) => new THREE.CylinderGeometry(rT, rB, h, s),
@@ -876,283 +549,124 @@
         plane: (w, h) => new THREE.PlaneGeometry(w, h)
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // ФАБРИКА ОБЪЕКТОВ
-    // ═══════════════════════════════════════════════════════════════
     function makeBox(w, h, d, color, pos, opts = {}) {
         const mesh = new THREE.Mesh(GeoPool.box(w, h, d), MaterialPool.get(color));
         mesh.position.set(pos[0], pos[1], pos[2]);
-        mesh.castShadow = opts.castShadow !== false;
-        mesh.receiveShadow = opts.receiveShadow !== false;
+        mesh.castShadow = opts.castShadow !== false; mesh.receiveShadow = opts.receiveShadow !== false;
         return mesh;
     }
-
     function makeCylinder(rT, rB, h, color, pos, segs = 16) {
         const mesh = new THREE.Mesh(GeoPool.cylinder(rT, rB, h, segs), MaterialPool.get(color, { roughness: 0.5 }));
         mesh.position.set(pos[0], pos[1], pos[2]);
         mesh.castShadow = true; mesh.receiveShadow = true;
         return mesh;
     }
-
     function makeTree(scale = 1) {
         const g = new THREE.Group();
         const trunk = new THREE.Mesh(GeoPool.cylinder(0.25*scale, 0.35*scale, 1.8*scale, 6), MaterialPool.rough(0x5d4037));
-        trunk.position.y = 0.9 * scale;
-        trunk.castShadow = trunk.receiveShadow = true;
-        g.add(trunk);
+        trunk.position.y = 0.9 * scale; trunk.castShadow = trunk.receiveShadow = true; g.add(trunk);
         const crown = new THREE.Mesh(GeoPool.sphere(0.9*scale, 6), MaterialPool.rough(0x2e7d32));
-        crown.position.y = 1.8*scale + 0.6*scale;
-        crown.castShadow = crown.receiveShadow = true;
-        g.add(crown);
+        crown.position.y = 1.8*scale + 0.6*scale; crown.castShadow = crown.receiveShadow = true; g.add(crown);
         return g;
     }
-
     function makeGreenhouse(b) {
         const group = new THREE.Group();
         const halfW = b.w / 2;
         const frameMat = MaterialPool.metal(0x3a3a3a);
         const polyMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.32, side: THREE.DoubleSide, roughness: 0.2 });
-
         const archX = (t) => -halfW * Math.cos(t * Math.PI);
         const archY = (t) => b.h * Math.sin(t * Math.PI);
         const numArcs = 13, arcSteps = 24;
-
         for (let i = 0; i < numArcs; i++) {
             const zPos = i * (b.d / (numArcs - 1));
             const pts = [];
-            for (let j = 0; j <= arcSteps; j++) {
-                const t = j / arcSteps;
-                pts.push(new THREE.Vector3(archX(t), archY(t), 0));
-            }
+            for (let j = 0; j <= arcSteps; j++) { const t = j / arcSteps; pts.push(new THREE.Vector3(archX(t), archY(t), 0)); }
             const curve = new THREE.CatmullRomCurve3(pts);
             const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.04, 5, false), frameMat);
-            tube.position.z = zPos;
-            tube.castShadow = tube.receiveShadow = true;
-            group.add(tube);
+            tube.position.z = zPos; tube.castShadow = tube.receiveShadow = true; group.add(tube);
         }
-
         const ridgeCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, b.h, 0), new THREE.Vector3(0, b.h, b.d)]);
         const ridgeMesh = new THREE.Mesh(new THREE.TubeGeometry(ridgeCurve, 2, 0.035, 5, false), frameMat);
-        ridgeMesh.castShadow = ridgeMesh.receiveShadow = true;
-        group.add(ridgeMesh);
-
+        ridgeMesh.castShadow = ridgeMesh.receiveShadow = true; group.add(ridgeMesh);
         [-halfW, halfW].forEach(xPos => {
             const railCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(xPos, 0.05, 0), new THREE.Vector3(xPos, 0.05, b.d)]);
             const rail = new THREE.Mesh(new THREE.TubeGeometry(railCurve, 2, 0.03, 5, false), frameMat);
-            rail.castShadow = true;
-            group.add(rail);
+            rail.castShadow = true; group.add(rail);
         });
-
         const zSeg = 20, xSeg = 16;
         const verts = [], idx = [];
-        for (let i = 0; i <= zSeg; i++) {
-            const z = (i / zSeg) * b.d;
-            for (let j = 0; j <= xSeg; j++) {
-                const t = j / xSeg;
-                verts.push(archX(t), archY(t), z);
-            }
-        }
+        for (let i = 0; i <= zSeg; i++) { const z = (i / zSeg) * b.d; for (let j = 0; j <= xSeg; j++) { const t = j / xSeg; verts.push(archX(t), archY(t), z); } }
         const cols = xSeg + 1;
-        for (let i = 0; i < zSeg; i++) {
-            for (let j = 0; j < xSeg; j++) {
-                const a = i * cols + j;
-                idx.push(a, a + cols, a + 1, a + 1, a + cols, a + cols + 1);
-            }
-        }
+        for (let i = 0; i < zSeg; i++) for (let j = 0; j < xSeg; j++) { const a = i * cols + j; idx.push(a, a + cols, a + 1, a + 1, a + cols, a + cols + 1); }
         const roofGeo = new THREE.BufferGeometry();
         roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-        roofGeo.setIndex(idx);
-        roofGeo.computeVertexNormals();
+        roofGeo.setIndex(idx); roofGeo.computeVertexNormals();
         const roofMesh = new THREE.Mesh(roofGeo, polyMat);
-        roofMesh.castShadow = roofMesh.receiveShadow = true;
-        group.add(roofMesh);
-
+        roofMesh.castShadow = roofMesh.receiveShadow = true; group.add(roofMesh);
         const endShape = new THREE.Shape();
-        for (let j = 0; j <= xSeg; j++) {
-            const t = j / xSeg, px = archX(t), py = archY(t);
-            if (j === 0) endShape.moveTo(px, py); else endShape.lineTo(px, py);
-        }
+        for (let j = 0; j <= xSeg; j++) { const t = j / xSeg, px = archX(t), py = archY(t); if (j === 0) endShape.moveTo(px, py); else endShape.lineTo(px, py); }
         const endGeo = new THREE.ShapeGeometry(endShape);
-        [0, b.d].forEach(zEnd => {
-            const wall = new THREE.Mesh(endGeo, polyMat);
-            wall.position.z = zEnd;
-            group.add(wall);
-        });
-
+        [0, b.d].forEach(zEnd => { const wall = new THREE.Mesh(endGeo, polyMat); wall.position.z = zEnd; group.add(wall); });
         const dW = 0.8, dH = 1.8;
         group.add(makeBox(0.05, dH, 0.05, 0x666666, [-dW/2, dH/2, 0.02], {castShadow:false}));
         group.add(makeBox(0.05, dH, 0.05, 0x666666, [dW/2, dH/2, 0.02], {castShadow:false}));
         group.add(makeBox(dW, 0.05, 0.05, 0x666666, [0, dH, 0.02], {castShadow:false}));
         const handle = new THREE.Mesh(GeoPool.sphere(0.04, 6), MaterialPool.get(0xffaa00));
-        handle.position.set(dW/2 - 0.1, dH/2, 0.06);
-        group.add(handle);
-
+        handle.position.set(dW/2 - 0.1, dH/2, 0.06); group.add(handle);
         const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
         for (let zPos = 1.5; zPos < b.d; zPos += 2.5) {
             [-halfW, halfW].forEach((xPos, k) => {
                 const win = new THREE.Mesh(GeoPool.plane(0.6, 0.6), windowMat);
                 win.position.set(xPos + (k === 0 ? 0.02 : -0.02), 1.2, zPos);
-                win.rotation.y = Math.PI/2;
-                group.add(win);
+                win.rotation.y = Math.PI/2; group.add(win);
                 const frame = makeBox(0.02, 0.6, 0.6, 0x666666, [xPos, 1.2, zPos], {castShadow:false});
-                frame.rotation.y = Math.PI/2;
-                group.add(frame);
+                frame.rotation.y = Math.PI/2; group.add(frame);
             });
         }
         group.position.set(b.x, 0, b.z);
         return group;
     }
-
     const Builders = {
-        house(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
-            const roofRise = 2.5;
-            const shape = new THREE.Shape();
-            shape.moveTo(-b.d/2, b.h); shape.lineTo(0, b.h + roofRise); shape.lineTo(b.d/2, b.h); shape.lineTo(-b.d/2, b.h);
-            const gableGeo = new THREE.ExtrudeGeometry(shape, { depth: b.w, bevelEnabled: false });
-            gableGeo.translate(0, 0, -b.w/2);
-            gableGeo.computeVertexNormals();
-            const roof = new THREE.Mesh(gableGeo, new THREE.MeshStandardMaterial({ map: Textures.roof, roughness: 0.8 }));
-            roof.rotation.y = Math.PI/2;
-            roof.castShadow = roof.receiveShadow = true;
-            g.add(roof);
-            if (b.terrace) {
-                g.add(makeBox(b.terrace.w, 0.3, b.terrace.d, b.terrace.color, [0, 0.15, -b.d/2 - b.terrace.d/2]));
-            }
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        bath(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
-            g.add(makeBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0]));
-            if (b.terrace) g.add(makeBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2]));
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        shed(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
-            const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.2, 4), MaterialPool.get(b.roofColor, { roughness: 0.8 }));
-            roof.position.y = b.h + 0.6;
-            roof.rotation.y = Math.PI/4;
-            roof.castShadow = true;
-            g.add(roof);
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        garden(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.2, b.d, b.color, [0, 0.1, 0]));
-            for (let i = 0; i < 5; i++) {
-                g.add(makeBox(3.5, 0.3, 0.6, 0x5a7a1a, [0, 0.3, -b.d/2 + 0.5 + i * 1.5]));
-            }
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
+        house(b) { const g = new THREE.Group(); g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); const roofRise = 2.5; const shape = new THREE.Shape(); shape.moveTo(-b.d/2, b.h); shape.lineTo(0, b.h + roofRise); shape.lineTo(b.d/2, b.h); shape.lineTo(-b.d/2, b.h); const gableGeo = new THREE.ExtrudeGeometry(shape, { depth: b.w, bevelEnabled: false }); gableGeo.translate(0, 0, -b.w/2); gableGeo.computeVertexNormals(); const roof = new THREE.Mesh(gableGeo, new THREE.MeshStandardMaterial({ map: Textures.roof, roughness: 0.8 })); roof.rotation.y = Math.PI/2; roof.castShadow = roof.receiveShadow = true; g.add(roof); if (b.terrace) g.add(makeBox(b.terrace.w, 0.3, b.terrace.d, b.terrace.color, [0, 0.15, -b.d/2 - b.terrace.d/2])); g.position.set(b.x, 0, b.z); return g; },
+        bath(b) { const g = new THREE.Group(); g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); g.add(makeBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0])); if (b.terrace) g.add(makeBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2])); g.position.set(b.x, 0, b.z); return g; },
+        shed(b) { const g = new THREE.Group(); g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.2, 4), MaterialPool.get(b.roofColor, { roughness: 0.8 })); roof.position.y = b.h + 0.6; roof.rotation.y = Math.PI/4; roof.castShadow = true; g.add(roof); g.position.set(b.x, 0, b.z); return g; },
+        garden(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.2, b.d, b.color, [0, 0.1, 0])); for (let i = 0; i < 5; i++) g.add(makeBox(3.5, 0.3, 0.6, 0x5a7a1a, [0, 0.3, -b.d/2 + 0.5 + i * 1.5])); g.position.set(b.x, 0, b.z); return g; },
         greenhouse: makeGreenhouse,
-        playground(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.3, b.d, b.color, [0, 0.15, 0]));
-            g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [0.5, 0.4, 0.5]));
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        firepit(b) {
-            const g = new THREE.Group();
-            g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [0, 0.1, 0]));
-            for (let i = 0; i < 12; i++) {
-                const a = (i / 12) * Math.PI * 2;
-                g.add(makeCylinder(0.12, 0.18, 0.15, 0x7a6a5a,
-                    [Math.cos(a) * (b.radius + 0.1), 0.15, Math.sin(a) * (b.radius + 0.1)]));
-            }
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        car(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.5, b.d, b.color, [0, 0.25, 0]));
-            g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [1.3, 0.55, 0]));
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        septic(b) {
-            const g = new THREE.Group();
-            g.add(makeBox(b.w, 0.8, b.d, b.color, [0, 0.4, 0]));
-            g.position.set(b.x, 0, b.z);
-            return g;
-        },
-        well(b) {
-            const g = new THREE.Group();
-            g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [0, 0.4, 0]));
-            g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [0, 0.85, 0]));
-            g.position.set(b.x, 0, b.z);
-            return g;
-        }
+        playground(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.3, b.d, b.color, [0, 0.15, 0])); g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [0.5, 0.4, 0.5])); g.position.set(b.x, 0, b.z); return g; },
+        firepit(b) { const g = new THREE.Group(); g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [0, 0.1, 0])); for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; g.add(makeCylinder(0.12, 0.18, 0.15, 0x7a6a5a, [Math.cos(a) * (b.radius + 0.1), 0.15, Math.sin(a) * (b.radius + 0.1)])); } g.position.set(b.x, 0, b.z); return g; },
+        car(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.5, b.d, b.color, [0, 0.25, 0])); g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [1.3, 0.55, 0])); g.position.set(b.x, 0, b.z); return g; },
+        septic(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.8, b.d, b.color, [0, 0.4, 0])); g.position.set(b.x, 0, b.z); return g; },
+        well(b) { const g = new THREE.Group(); g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [0, 0.4, 0])); g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [0, 0.85, 0])); g.position.set(b.x, 0, b.z); return g; }
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // ПОСТРОЕНИЕ УЧАСТКА
-    // ═══════════════════════════════════════════════════════════════
     const ground = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w, CONFIG.plot.d), new THREE.MeshStandardMaterial({ map: Textures.grass, roughness: 0.9 }));
-    ground.rotation.x = -Math.PI/2;
-    ground.position.set(CONFIG.center.x, 0, CONFIG.center.z);
-    ground.receiveShadow = true;
+    ground.rotation.x = -Math.PI/2; ground.position.set(CONFIG.center.x, 0, CONFIG.center.z); ground.receiveShadow = true;
     groups.site.add(ground);
-
     const road = new THREE.Mesh(GeoPool.plane(30, 8), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
-    road.rotation.x = -Math.PI/2;
-    road.position.set(CONFIG.center.x, -0.1, -4);
-    road.receiveShadow = true;
+    road.rotation.x = -Math.PI/2; road.position.set(CONFIG.center.x, -0.1, -4); road.receiveShadow = true;
     groups.site.add(road);
-
     const markMat = MaterialPool.get(0xffffff);
-    for (let i = -10; i <= 10; i += 3) {
-        const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat);
-        mark.rotation.x = -Math.PI/2;
-        mark.position.set(CONFIG.center.x + i, 0.01, -4);
-        groups.site.add(mark);
-    }
-
+    for (let i = -10; i <= 10; i += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(CONFIG.center.x + i, 0.01, -4); groups.site.add(mark); }
     const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
-    roadLabel.position.set(CONFIG.center.x, 2.5, -4);
-    groups.labels.add(roadLabel);
-
+    roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
     const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
-    path.rotation.x = -Math.PI/2;
-    path.position.set(12, 0.03, 11.5);
-    path.receiveShadow = true;
+    path.rotation.x = -Math.PI/2; path.position.set(12, 0.03, 11.5); path.receiveShadow = true;
     groups.site.add(path);
 
     const draggables = [];
     const labelSprites = {};
-
     CONFIG.objects.forEach(obj => {
         const builder = Builders[obj.type];
-        if (builder) {
-            const group = builder(obj);
-            group.userData.objectId = obj.id;
-            groups[obj.group || 'site'].add(group);
-            draggables.push({ id: obj.id, group });
-        }
+        if (builder) { const group = builder(obj); group.userData.objectId = obj.id; groups[obj.group || 'site'].add(group); draggables.push({ id: obj.id, group }); }
         const label = Utils.createLabel(obj.label, obj.labelColor || '#fff', obj.labelSize || 0.8);
-        label.position.set(obj.x, obj.y, obj.z);
-        groups.objectLabels.add(label);
+        label.position.set(obj.x, obj.y, obj.z); groups.objectLabels.add(label);
         labelSprites[obj.id] = label;
     });
-
     const draggableGroups = draggables.map(d => d.group);
 
-    for (let z = 24; z <= 32; z += 1.5) {
-        const t1 = makeTree(0.7); t1.position.set(2, 0, z); groups.site.add(t1);
-        const t2 = makeTree(0.7); t2.position.set(23, 0, z); groups.site.add(t2);
-    }
-    for (let x = 6; x <= 19; x += 1.5) {
-        const t = makeTree(0.7); t.position.set(x, 0, 38); groups.site.add(t);
-    }
+    for (let z = 24; z <= 32; z += 1.5) { const t1 = makeTree(0.7); t1.position.set(2, 0, z); groups.site.add(t1); const t2 = makeTree(0.7); t2.position.set(23, 0, z); groups.site.add(t2); }
+    for (let x = 6; x <= 19; x += 1.5) { const t = makeTree(0.7); t.position.set(x, 0, 38); groups.site.add(t); }
 
-    // Забор (InstancedMesh)
     (() => {
         const postGeo = GeoPool.cylinder(0.08, 0.08, 0.6, 8);
         const postMat = MaterialPool.get(0xaaaaaa);
@@ -1160,242 +674,112 @@
         const posts = new THREE.InstancedMesh(postGeo, postMat, count);
         const dummy = new THREE.Object3D();
         let idx = 0;
-        for (let i = 0; i <= CONFIG.plot.w; i += 2) {
-            dummy.position.set(i, 0.3, 0); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
-            dummy.position.set(i, 0.3, CONFIG.plot.d); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
-        }
-        for (let i = 0; i <= CONFIG.plot.d; i += 2) {
-            dummy.position.set(0, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
-            dummy.position.set(CONFIG.plot.w, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
-        }
-        posts.count = idx;
-        posts.instanceMatrix.needsUpdate = true;
-        scene.add(posts);
+        for (let i = 0; i <= CONFIG.plot.w; i += 2) { dummy.position.set(i, 0.3, 0); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); dummy.position.set(i, 0.3, CONFIG.plot.d); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); }
+        for (let i = 0; i <= CONFIG.plot.d; i += 2) { dummy.position.set(0, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); dummy.position.set(CONFIG.plot.w, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); }
+        posts.count = idx; posts.instanceMatrix.needsUpdate = true; scene.add(posts);
     })();
 
-    // ═══════════════════════════════════════════════════════════════
-    // КОММУНИКАЦИИ (живые трассы с якорями)
-    // ═══════════════════════════════════════════════════════════════
     const commLines = [];
-
     function utilityPoints(u) {
         return u.route.map(a => {
-            if (a.obj) {
-                const o = CONFIG.objects.find(x => x.id === a.obj);
-                if (o) return [o.x + (a.dx || 0), o.z + (a.dz || 0)];
-            }
+            if (a.obj) { const o = CONFIG.objects.find(x => x.id === a.obj); if (o) return [o.x + (a.dx || 0), o.z + (a.dz || 0)]; }
             return [a.x, a.z];
         });
     }
-
     function utilityLength(u) {
         const pts = utilityPoints(u);
         let len = 0;
-        for (let i = 1; i < pts.length; i++) {
-            len += Math.hypot(pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]);
-        }
+        for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]);
         return len;
     }
-
-    function toVec3(pts, y) {
-        return pts.map(p => new THREE.Vector3(p[0], y, p[1]));
-    }
-
+    function toVec3(pts, y) { return pts.map(p => new THREE.Vector3(p[0], y, p[1])); }
     function routeMidPoint(pts) {
         let total = 0;
-        for (let i = 1; i < pts.length; i++) {
-            total += Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
-        }
+        for (let i = 1; i < pts.length; i++) total += Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
         let half = total / 2;
         for (let i = 1; i < pts.length; i++) {
             const segLen = Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
-            if (half <= segLen) {
-                const t = segLen === 0 ? 0 : half / segLen;
-                return [
-                    pts[i-1][0] + (pts[i][0]-pts[i-1][0]) * t,
-                    pts[i-1][1] + (pts[i][1]-pts[i-1][1]) * t
-                ];
-            }
+            if (half <= segLen) { const t = segLen === 0 ? 0 : half / segLen; return [ pts[i-1][0] + (pts[i][0]-pts[i-1][0]) * t, pts[i-1][1] + (pts[i][1]-pts[i-1][1]) * t ]; }
             half -= segLen;
         }
         return pts[0];
     }
-
     function createUndergroundLine(u, index) {
         const pts = utilityPoints(u);
-
-        u._line = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05)),
-            new THREE.LineBasicMaterial({ color: u.color })
-        );
-        u._line.userData.utilIndex = index;
-        groups.comms.add(u._line);
-        commLines.push(u._line);
-
-        u._shadow = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01)),
-            new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 })
-        );
-        u._shadow.computeLineDistances();
-        groups.comms.add(u._shadow);
-
-        if (u.name && u.label !== false) {
-            const mid = routeMidPoint(pts);
-            u._label = Utils.createLabel(`${u.icon} ${u.name}`, '#ffffff', 0.6);
-            u._label.position.set(mid[0], 0.5, mid[1]);
-            groups.labels.add(u._label);
-        }
+        u._line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05)), new THREE.LineBasicMaterial({ color: u.color }));
+        u._line.userData.utilIndex = index; groups.comms.add(u._line); commLines.push(u._line);
+        u._shadow = new THREE.Line(new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01)), new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 }));
+        u._shadow.computeLineDistances(); groups.comms.add(u._shadow);
+        if (u.name && u.label !== false) { const mid = routeMidPoint(pts); u._label = Utils.createLabel(`${u.icon} ${u.name}`, '#ffffff', 0.6); u._label.position.set(mid[0], 0.5, mid[1]); groups.labels.add(u._label); }
     }
-
     function refreshUtility(u) {
         const pts = utilityPoints(u);
-        u._line.geometry.dispose();
-        u._line.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05));
-        u._shadow.geometry.dispose();
-        u._shadow.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01));
+        u._line.geometry.dispose(); u._line.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05));
+        u._shadow.geometry.dispose(); u._shadow.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01));
         u._shadow.computeLineDistances();
-        if (u._label) {
-            const mid = routeMidPoint(pts);
-            u._label.position.set(mid[0], 0.5, mid[1]);
-        }
+        if (u._label) { const mid = routeMidPoint(pts); u._label.position.set(mid[0], 0.5, mid[1]); }
     }
-
     function refreshUtilitiesFor(objectId) {
-        CONFIG.utilities.forEach(u => {
-            if (u.route.some(a => a.obj === objectId)) refreshUtility(u);
-        });
+        CONFIG.utilities.forEach(u => { if (u.route.some(a => a.obj === objectId)) refreshUtility(u); });
     }
-
     CONFIG.utilities.forEach((u, i) => createUndergroundLine(u, i));
 
-    const commHighlight = new THREE.Line(
-        new THREE.BufferGeometry(),
-        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
-    );
-    commHighlight.visible = false;
-    scene.add(commHighlight);
-
+    const commHighlight = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 }));
+    commHighlight.visible = false; scene.add(commHighlight);
     const pickRay = new THREE.Raycaster();
     pickRay.params.Line.threshold = 0.45;
-
     let commInfoTimer = null;
-
     function showCommInfo(u) {
         const len = utilityLength(u);
-        DOM.commInfo.innerHTML =
-            `<span class="title">${u.icon} ${u.name}</span><br>` +
-            `Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м ` +
-            `<span class="close" id="comm-info-close">✕</span>`;
+        DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span><br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м <span class="close" id="comm-info-close">✕</span>`;
         DOM.commInfo.classList.add('show');
-
         const pts = utilityPoints(u);
         commHighlight.geometry.dispose();
         commHighlight.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.12));
         commHighlight.visible = true;
         Utils.markDirty();
-
         clearTimeout(commInfoTimer);
         commInfoTimer = setTimeout(hideCommInfo, 6000);
         const closeBtn = document.getElementById('comm-info-close');
         if (closeBtn) closeBtn.addEventListener('click', hideCommInfo);
     }
-
     function hideCommInfo() {
         DOM.commInfo.classList.remove('show');
-        if (commHighlight.visible) {
-            commHighlight.visible = false;
-            Utils.markDirty();
-        }
+        if (commHighlight.visible) { commHighlight.visible = false; Utils.markDirty(); }
     }
-
     function pickUtility(e) {
         const rect = renderer.domElement.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-            ((e.clientX - rect.left) / rect.width) * 2 - 1,
-            -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
+        const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
         pickRay.setFromCamera(mouse, camera);
         const hits = pickRay.intersectObjects(commLines, false);
-        if (hits.length) {
-            showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex]);
-        } else {
-            hideCommInfo();
-        }
+        if (hits.length) showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex]);
+        else hideCommInfo();
     }
 
-    // Ворота
     (() => {
         const pillarMat = MaterialPool.get(0x4a4a4a, { roughness: 0.4, metalness: 0.6 });
         const barMat = MaterialPool.get(0x6a6a6a, { roughness: 0.5, metalness: 0.3 });
         const gateMat = MaterialPool.get(0x3a3a3a, { roughness: 0.7, metalness: 0.2 });
         const railMat = MaterialPool.get(0x888888, { roughness: 0.5, metalness: 0.4 });
         const lampMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 });
-
-        [12.5, 16.5].forEach(x => {
-            const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat);
-            p.position.set(x, 1.25, 0); p.castShadow = p.receiveShadow = true; scene.add(p);
-            const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat);
-            lamp.position.set(x, 2.7, 0); scene.add(lamp);
-        });
-
-        const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat);
-        beam.position.set(14.5, 2.5, 0); beam.castShadow = true; scene.add(beam);
-
-        const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat);
-        rail.position.set(16.5, 0.05, 0); scene.add(rail);
-
+        [12.5, 16.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat); p.position.set(x, 1.25, 0); p.castShadow = p.receiveShadow = true; scene.add(p); const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat); lamp.position.set(x, 2.7, 0); scene.add(lamp); });
+        const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat); beam.position.set(14.5, 2.5, 0); beam.castShadow = true; scene.add(beam);
+        const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat); rail.position.set(16.5, 0.05, 0); scene.add(rail);
         const rollerMat = MaterialPool.get(0x222222, { roughness: 0.3, metalness: 0.8 });
-        for (let x = 13; x <= 19; x += 2) {
-            const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat);
-            r.rotation.x = Math.PI/2; r.position.set(x, 0.08, 0); scene.add(r);
-        }
-
-        const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat);
-        gateLeaf.position.set(18.5, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; scene.add(gateLeaf);
+        for (let x = 13; x <= 19; x += 2) { const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat); r.rotation.x = Math.PI/2; r.position.set(x, 0.08, 0); scene.add(r); }
+        const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat); gateLeaf.position.set(18.5, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; scene.add(gateLeaf);
         const ribMat = MaterialPool.get(0x5a5a5a, { metalness: 0.3 });
-        for (let x = 17; x <= 20; x += 1.5) {
-            const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat);
-            rib.position.set(x, 0.9, 0); scene.add(rib);
-        }
-        const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 }));
-        drive.position.set(16, 0.4, 0.25); scene.add(drive);
-
-        [11.5, 12.5].forEach(x => {
-            const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat);
-            p.position.set(x, 1.0, 0); p.castShadow = p.receiveShadow = true; scene.add(p);
-        });
-        const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat);
-        pedBeam.position.set(12, 2.0, 0); scene.add(pedBeam);
-        const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat);
-        pedLeaf.position.set(12, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; scene.add(pedLeaf);
-        const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00));
-        pedHandle.position.set(11.8, 0.85, 0.1); scene.add(pedHandle);
+        for (let x = 17; x <= 20; x += 1.5) { const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat); rib.position.set(x, 0.9, 0); scene.add(rib); }
+        const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 })); drive.position.set(16, 0.4, 0.25); scene.add(drive);
+        [11.5, 12.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat); p.position.set(x, 1.0, 0); p.castShadow = p.receiveShadow = true; scene.add(p); });
+        const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat); pedBeam.position.set(12, 2.0, 0); scene.add(pedBeam);
+        const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat); pedLeaf.position.set(12, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; scene.add(pedLeaf);
+        const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00)); pedHandle.position.set(11.8, 0.85, 0.1); scene.add(pedHandle);
     })();
 
-    // Направления и оси
-    [
-        { text: '⬆ СЕВЕР', pos: [12.5, 3, 42], color: '#66ccff' },
-        { text: '⬇ ЮГ', pos: [12.5, 3, -6], color: '#ff9966' },
-        { text: '⬅ ЗАПАД', pos: [-4, 3, 20], color: '#99cc99' },
-        { text: '➡ ВОСТОК', pos: [29, 3, 20], color: '#99cc99' }
-    ].forEach(d => {
-        const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48);
-        lbl.position.set(...d.pos);
-        scene.add(lbl);
-    });
+    [ { text: '⬆ СЕВЕР', pos: [12.5, 3, 42], color: '#66ccff' }, { text: '⬇ ЮГ', pos: [12.5, 3, -6], color: '#ff9966' }, { text: '⬅ ЗАПАД', pos: [-4, 3, 20], color: '#99cc99' }, { text: '➡ ВОСТОК', pos: [29, 3, 20], color: '#99cc99' } ].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); scene.add(lbl); });
+    [ { text: 'Ось X (Восток)', pos: [24, 1.5, 20], color: '#ff6666' }, { text: 'Ось Z (Север)', pos: [12.5, 1.5, 39], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
 
-    [
-        { text: 'Ось X (Восток)', pos: [24, 1.5, 20], color: '#ff6666' },
-        { text: 'Ось Z (Север)', pos: [12.5, 1.5, 39], color: '#66aaff' }
-    ].forEach(a => {
-        const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10);
-        lbl.position.set(...a.pos);
-        scene.add(lbl);
-    });
-
-    // ═══════════════════════════════════════════════════════════════
-    // АВТОПРОВЕРКА НОРМ
-    // ═══════════════════════════════════════════════════════════════
     const Norms = {
         rules: [
             { kind: 'dist', a: 'house', b: 'bath', min: 15, doc: 'СП 4.13130 — противопожарный разрыв (дерево)' },
@@ -1409,70 +793,33 @@
             { kind: 'setback', obj: 'bath', min: 1, doc: 'СП 53.13330 — баня' },
             { kind: 'setback', obj: 'shed', min: 1, doc: 'СП 53.13330 — хозпостройка' }
         ],
-
         obj(id) { return CONFIG.objects.find(o => o.id === id); },
-
         bounds(o) {
-            if (o.radius !== undefined) {
-                return { minX: o.x - o.radius, maxX: o.x + o.radius, minZ: o.z - o.radius, maxZ: o.z + o.radius, circle: true };
-            }
+            if (o.radius !== undefined) return { minX: o.x - o.radius, maxX: o.x + o.radius, minZ: o.z - o.radius, maxZ: o.z + o.radius, circle: true };
             return { minX: o.x - o.w/2, maxX: o.x + o.w/2, minZ: o.z - o.d/2, maxZ: o.z + o.d/2, circle: false };
         },
-
         dist(a, b) {
             const A = this.bounds(a), B = this.bounds(b);
             if (A.circle && B.circle) return Math.hypot(a.x - b.x, a.z - b.z) - a.radius - b.radius;
-            if (A.circle) {
-                const px = Math.max(B.minX, Math.min(a.x, B.maxX));
-                const pz = Math.max(B.minZ, Math.min(a.z, B.maxZ));
-                return Math.hypot(a.x - px, a.z - pz) - a.radius;
-            }
-            if (B.circle) {
-                const px = Math.max(A.minX, Math.min(b.x, A.maxX));
-                const pz = Math.max(A.minZ, Math.min(b.z, A.maxZ));
-                return Math.hypot(b.x - px, b.z - pz) - b.radius;
-            }
+            if (A.circle) { const px = Math.max(B.minX, Math.min(a.x, B.maxX)); const pz = Math.max(B.minZ, Math.min(a.z, B.maxZ)); return Math.hypot(a.x - px, a.z - pz) - a.radius; }
+            if (B.circle) { const px = Math.max(A.minX, Math.min(b.x, A.maxX)); const pz = Math.max(A.minZ, Math.min(b.z, A.maxZ)); return Math.hypot(b.x - px, b.z - pz) - b.radius; }
             const dx = Math.max(0, B.minX - A.maxX, A.minX - B.maxX);
             const dz = Math.max(0, B.minZ - A.maxZ, A.minZ - B.maxZ);
             return Math.hypot(dx, dz);
         },
-
-        setbacks(o) {
-            const b = this.bounds(o);
-            return {
-                south: b.minZ,
-                north: CONFIG.plot.d - b.maxZ,
-                west: b.minX,
-                east: CONFIG.plot.w - b.maxX
-            };
-        },
-
-        name(id) {
-            const o = this.obj(id);
-            return o ? o.label.replace(/^[^\s]+\s/, '') : id;
-        },
-
+        setbacks(o) { const b = this.bounds(o); return { south: b.minZ, north: CONFIG.plot.d - b.maxZ, west: b.minX, east: CONFIG.plot.w - b.maxX }; },
+        name(id) { const o = this.obj(id); return o ? o.label.replace(/^[^\s]+\s/, '') : id; },
         checkAll() {
             return this.rules.map(r => {
                 if (r.kind === 'dist') {
                     const A = this.obj(r.a), B = this.obj(r.b);
                     const d = this.dist(A, B);
-                    return {
-                        kind: 'dist', ids: [r.a, r.b],
-                        title: `${this.name(r.a)} → ${this.name(r.b)}`,
-                        actual: d, min: r.min, ok: d >= r.min, soft: !!r.soft, doc: r.doc,
-                        detail: 'между ближайшими краями'
-                    };
+                    return { kind: 'dist', ids: [r.a, r.b], title: `${this.name(r.a)} → ${this.name(r.b)}`, actual: d, min: r.min, ok: d >= r.min, soft: !!r.soft, doc: r.doc, detail: 'между ближайшими краями' };
                 }
                 const O = this.obj(r.obj);
                 const s = this.setbacks(O);
                 const minVal = Math.min(s.south, s.north, s.west, s.east);
-                return {
-                    kind: 'setback', ids: [r.obj],
-                    title: `${this.name(r.obj)} — отступ до границы`,
-                    actual: minVal, min: r.min, ok: minVal >= r.min, soft: !!r.soft, doc: r.doc,
-                    detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м`
-                };
+                return { kind: 'setback', ids: [r.obj], title: `${this.name(r.obj)} — отступ до границы`, actual: minVal, min: r.min, ok: minVal >= r.min, soft: !!r.soft, doc: r.doc, detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м` };
             });
         }
     };
@@ -1482,170 +829,80 @@
             const c = groups.norms.children[0];
             groups.norms.remove(c);
             if (c.geometry) c.geometry.dispose();
-            if (c.material) {
-                if (c.material.map) c.material.map.dispose();
-                c.material.dispose();
-            }
+            if (c.material) { if (c.material.map) c.material.map.dispose(); c.material.dispose(); }
         }
     }
-
     function showHighlights() {
         clearHighlights();
         const failed = Norms.checkAll().filter(c => !c.ok);
         const ids = new Set();
         failed.forEach(c => c.ids.forEach(id => ids.add(id)));
-
         ids.forEach(id => {
             const o = Norms.obj(id);
             const b = Norms.bounds(o);
             const r = Math.max(b.maxX - b.minX, b.maxZ - b.minZ) / 2 + 0.7;
-            const ring = new THREE.Mesh(
-                new THREE.RingGeometry(r, r + 0.35, 40),
-                new THREE.MeshBasicMaterial({ color: 0xff2222, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })
-            );
-            ring.rotation.x = -Math.PI / 2;
-            ring.position.set(o.x, 0.06, o.z);
+            const ring = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.35, 40), new THREE.MeshBasicMaterial({ color: 0xff2222, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false }));
+            ring.rotation.x = -Math.PI / 2; ring.position.set(o.x, 0.06, o.z);
             groups.norms.add(ring);
         });
-
         failed.filter(c => c.kind === 'dist').forEach(c => {
             const A = Norms.obj(c.ids[0]), B = Norms.obj(c.ids[1]);
-            const line = new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints([
-                    new THREE.Vector3(A.x, 0.15, A.z),
-                    new THREE.Vector3(B.x, 0.15, B.z)
-                ]),
-                new THREE.LineDashedMaterial({ color: 0xff2222, dashSize: 0.5, gapSize: 0.25 })
-            );
-            line.computeLineDistances();
-            groups.norms.add(line);
-
+            const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(A.x, 0.15, A.z), new THREE.Vector3(B.x, 0.15, B.z) ]), new THREE.LineDashedMaterial({ color: 0xff2222, dashSize: 0.5, gapSize: 0.25 }));
+            line.computeLineDistances(); groups.norms.add(line);
             const lbl = Utils.createLabel(`⚠ ${Utils.fmt(c.actual)} м`, '#ffdddd', 0.7, [6, 1.5], 512, 128, 44, 'rgba(70,0,0,0.85)');
             lbl.position.set((A.x + B.x) / 2, 1.4, (A.z + B.z) / 2);
             groups.norms.add(lbl);
         });
         Utils.markDirty();
     }
-
     function openNorms() {
         const checks = Norms.checkAll();
         const hard = checks.filter(c => !c.ok && !c.soft);
         const soft = checks.filter(c => !c.ok && c.soft);
-
-        if (!hard.length && !soft.length) {
-            DOM.normsSummary.innerHTML = '<span class="norm-ok">✅ Все нормы соблюдены. Планировка безопасна.</span>';
-        } else {
-            DOM.normsSummary.innerHTML =
-                (hard.length ? `<span class="norm-bad">⚠ Нарушений: ${hard.length}</span>` : '') +
-                (hard.length && soft.length ? ' &nbsp;|&nbsp; ' : '') +
-                (soft.length ? `<span class="norm-warn">Рекомендаций: ${soft.length}</span>` : '') +
-                '<div style="font-size:12px; color:#666; margin-top:6px;">Красные кольца и линии на 3D-сцене показывают проблемные объекты и расстояния.</div>';
-        }
-
+        if (!hard.length && !soft.length) DOM.normsSummary.innerHTML = '<span class="norm-ok">✅ Все нормы соблюдены. Планировка безопасна.</span>';
+        else DOM.normsSummary.innerHTML = (hard.length ? `<span class="norm-bad">⚠ Нарушений: ${hard.length}</span>` : '') + (hard.length && soft.length ? ' &nbsp;|&nbsp; ' : '') + (soft.length ? `<span class="norm-warn">Рекомендаций: ${soft.length}</span>` : '') + '<div style="font-size:12px; color:#666; margin-top:6px;">Красные кольца и линии на 3D-сцене показывают проблемные объекты и расстояния.</div>';
         DOM.normsTbody.innerHTML = '';
         checks.forEach(c => {
             const tr = document.createElement('tr');
-            const st = c.ok
-                ? '<span class="norm-ok">✓ ОК</span>'
-                : (c.soft ? '<span class="norm-warn">⚠ Рекомендация</span>' : '<span class="norm-bad">✗ Нарушение</span>');
-            tr.innerHTML = `
-                <td>${c.title}<div class="norm-doc">${c.doc}</div></td>
-                <td style="text-align:center; white-space:nowrap;">≥ ${c.min} м</td>
-                <td style="text-align:center; font-weight:700; white-space:nowrap;">${Utils.fmt(c.actual)} м</td>
-                <td style="text-align:center;">${st}</td>
-                <td class="norm-detail">${c.detail}</td>`;
+            const st = c.ok ? '<span class="norm-ok">✓ ОК</span>' : (c.soft ? '<span class="norm-warn">⚠ Рекомендация</span>' : '<span class="norm-bad">✗ Нарушение</span>');
+            tr.innerHTML = `<td>${c.title}<div class="norm-doc">${c.doc}</div></td><td style="text-align:center; white-space:nowrap;">≥ ${c.min} м</td><td style="text-align:center; font-weight:700; white-space:nowrap;">${Utils.fmt(c.actual)} м</td><td style="text-align:center;">${st}</td><td class="norm-detail">${c.detail}</td>`;
             DOM.normsTbody.appendChild(tr);
         });
-
         DOM.normsModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         showHighlights();
     }
-
     function updateNormBadge() {
         const checks = Norms.checkAll();
         const hard = checks.filter(c => !c.ok && !c.soft).length;
-        if (hard) {
-            DOM.normBadge.textContent = `⚠ Нормы: нарушений ${hard} — нажмите для проверки`;
-            DOM.normBadge.classList.add('bad');
-        } else {
-            DOM.normBadge.textContent = '✅ Нормы: всё в порядке';
-            DOM.normBadge.classList.remove('bad');
-        }
+        if (hard) { DOM.normBadge.textContent = `⚠ Нормы: нарушений ${hard} — нажмите для проверки`; DOM.normBadge.classList.add('bad'); }
+        else { DOM.normBadge.textContent = '✅ Нормы: всё в порядке'; DOM.normBadge.classList.remove('bad'); }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // АВТОДОКЛАД
-    // ═══════════════════════════════════════════════════════════════
     const ENGINEERING_HTML = `
-        <h3>💧 Водоснабжение</h3>
-        <ul>
-            <li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li>
-            <li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области — 1,4 м).</li>
-            <li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li>
-            <li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li>
-            <li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м, с возможностью консервации на зиму.</li>
-            <li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li>
-        </ul>
-        <h3>🚽 Канализация</h3>
-        <ul>
-            <li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li>
-            <li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li>
-            <li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li>
-        </ul>
-        <h3>⚡ Электроснабжение</h3>
-        <ul>
-            <li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li>
-            <li>Щиток: 12 модулей, автоматы, УЗО, дифавтоматы.</li>
-            <li>К бане: ВВГнг 3×4 мм²; к хозблоку: ВВГнг 3×2,5 мм² — в гофре, глубина 0,8 м.</li>
-            <li>Освещение участка: 4 светодиодных светильника с датчиком освещённости. Влагозащищённые розетки у дома и бани.</li>
-        </ul>
-        <h3>🔥 Газоснабжение</h3>
-        <ul>
-            <li>Магистральный газ низкого давления. Полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li>
-            <li>Ввод через стену: отключающий кран, счётчик. Котёл настенный 24 кВт, закрытая камера сгорания.</li>
-        </ul>`;
+        <h3>💧 Водоснабжение</h3><ul><li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li><li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области — 1,4 м).</li><li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li><li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li><li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м, с возможностью консервации на зиму.</li><li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li></ul>
+        <h3>🚽 Канализация</h3><ul><li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li><li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li><li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li></ul>
+        <h3>⚡ Электроснабжение</h3><ul><li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li><li>Щиток: 12 модулей, автоматы, УЗО, дифавтоматы.</li><li>К бане: ВВГнг 3×4 мм²; к хозблоку: ВВГнг 3×2,5 мм² — в гофре, глубина 0,8 м.</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости. Влагозащищённые розетки у дома и бани.</li></ul>
+        <h3>🔥 Газоснабжение</h3><ul><li>Магистральный газ низкого давления. Полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li><li>Ввод через стену: отключающий кран, счётчик. Котёл настенный 24 кВт, закрытая камера сгорания.</li></ul>`;
 
     function buildReportHTML() {
         const now = new Date().toLocaleDateString('ru-RU');
         const o = id => Norms.obj(id);
         const dims = obj => obj.radius !== undefined ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)}×${Utils.fmt(obj.d)} м`;
-        const sb = obj => {
-            const s = Norms.setbacks(obj);
-            return `север ${Utils.fmt(s.north)} м, юг ${Utils.fmt(s.south)} м, запад ${Utils.fmt(s.west)} м, восток ${Utils.fmt(s.east)} м`;
-        };
+        const sb = obj => { const s = Norms.setbacks(obj); return `север ${Utils.fmt(s.north)} м, юг ${Utils.fmt(s.south)} м, запад ${Utils.fmt(s.west)} м, восток ${Utils.fmt(s.east)} м`; };
         const dist = (a, b) => Utils.fmt(Norms.dist(o(a), o(b)));
-
         const checks = Norms.checkAll();
         const hard = checks.filter(c => !c.ok && !c.soft);
         const soft = checks.filter(c => !c.ok && c.soft);
-
         let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
-        html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br>`;
-        html += `<strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), азимут длинной стороны ~${CONFIG.gps.angle}°<br>`;
-        html += `<strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
-
+        html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), азимут длинной стороны ~${CONFIG.gps.angle}°<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
         html += `<h2>1. Автопроверка норм</h2>`;
-        if (!hard.length && !soft.length) {
-            html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
-        } else {
-            if (hard.length) {
-                html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`;
-                hard.forEach(c => {
-                    html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`;
-                });
-                html += `</ul>`;
-            }
-            if (soft.length) {
-                html += `<p><strong>Рекомендации:</strong></p><ul>`;
-                soft.forEach(c => {
-                    html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`;
-                });
-                html += `</ul>`;
-            }
+        if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
+        else {
+            if (hard.length) { html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
+            if (soft.length) { html += `<p><strong>Рекомендации:</strong></p><ul>`; soft.forEach(c => { html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`; }); html += `</ul>`; }
             html += `<p>Подробная таблица — в разделе «✅ Проверка норм».</p>`;
         }
-
         html += `<h2>2. Объекты и отступы</h2><ul>`;
         const house = o('house'), bath = o('bath'), shed = o('shed');
         html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы до границ: ${sb(house)}. Терраса ${Utils.fmt(house.terrace.w)}×${Utils.fmt(house.terrace.d)} м — с южной стороны, во двор.</li>`;
@@ -1659,7 +916,6 @@
         html += `<li><strong>Септик</strong> — ${dims(o('septic'))}, центр (X=${Utils.fmt(o('septic').x)}, Z=${Utils.fmt(o('septic').z)}).</li>`;
         html += `<li><strong>Скважина</strong> — ${dims(o('well'))}, центр (X=${Utils.fmt(o('well').x)}, Z=${Utils.fmt(o('well').z)}).</li>`;
         html += `</ul>`;
-
         html += `<h2>3. Ключевые расстояния (между краями)</h2><ul>`;
         html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма для деревянных ≥15 м)</li>`;
         html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (норма ≥5 м)</li>`;
@@ -1667,142 +923,67 @@
         html += `<li>Скважина → дом: <strong>${dist('well','house')} м</strong> (рекомендация ≥3 м)</li>`;
         html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong>, → дом: <strong>${dist('firepit','house')} м</strong> (пожарная норма ≥5 м)</li>`;
         html += `</ul>`;
-
         html += `<h2>4. Длины коммуникаций (авторасчёт)</h2><ul>`;
-        CONFIG.utilities.forEach(u => {
-            html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`;
-        });
+        CONFIG.utilities.forEach(u => { html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`; });
         html += `</ul>`;
-
         html += `<h2>5. Инженерные системы</h2>` + ENGINEERING_HTML;
-
         html += `<h2>6. Заключение</h2>`;
-        if (hard.length) {
-            html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 1). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
-        } else {
-            html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха и запас по инженерным системам.</p>`;
-        }
+        if (hard.length) html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 1). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
+        else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха и запас по инженерным системам.</p>`;
         return html;
     }
-
     function openReportModal() {
         DOM.reportBody.innerHTML = buildReportHTML();
         DOM.reportModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // ИЗМЕРЕНИЯ: РАССТОЯНИЕ + ПЛОЩАДЬ
-    // ═══════════════════════════════════════════════════════════════
     const measure = {
-        mode: null,
-        points: [],
-        line: (() => {
-            const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 }));
-            l.visible = false; scene.add(l); return l;
-        })(),
-        marker: (() => {
-            const m = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-            m.visible = false; scene.add(m); return m;
-        })(),
-        sprite: null,
-        areaPoints: [],
-        areaMarkers: [],
-        areaLine: null,
-        areaFill: null,
-        areaSprite: null,
-        areaClosed: false
+        mode: null, points: [],
+        line: (() => { const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 })); l.visible = false; scene.add(l); return l; })(),
+        marker: (() => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 })); m.visible = false; scene.add(m); return m; })(),
+        sprite: null, areaPoints: [], areaMarkers: [], areaLine: null, areaFill: null, areaSprite: null, areaClosed: false
     };
-
     const areaMarkerGeo = new THREE.SphereGeometry(0.22, 8, 8);
     const areaMarkerMat = new THREE.MeshBasicMaterial({ color: 0x3498db });
-
-    function polyArea(pts) {
-        let s = 0;
-        for (let i = 0; i < pts.length; i++) {
-            const a = pts[i], b = pts[(i + 1) % pts.length];
-            s += a.x * b.z - b.x * a.z;
-        }
-        return Math.abs(s) / 2;
-    }
-
-    function polyPerimeter(pts) {
-        let p = 0;
-        for (let i = 0; i < pts.length; i++) {
-            const a = pts[i], b = pts[(i + 1) % pts.length];
-            p += Math.hypot(b.x - a.x, b.z - a.z);
-        }
-        return p;
-    }
-
-    function polyCentroid(pts) {
-        let x = 0, z = 0;
-        pts.forEach(p => { x += p.x; z += p.z; });
-        return { x: x / pts.length, z: z / pts.length };
-    }
-
+    function polyArea(pts) { let s = 0; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; s += a.x * b.z - b.x * a.z; } return Math.abs(s) / 2; }
+    function polyPerimeter(pts) { let p = 0; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; p += Math.hypot(b.x - a.x, b.z - a.z); } return p; }
+    function polyCentroid(pts) { let x = 0, z = 0; pts.forEach(p => { x += p.x; z += p.z; }); return { x: x / pts.length, z: z / pts.length }; }
     function updateMeasureButtons() {
         const d = measure.mode === 'dist', a = measure.mode === 'area';
-        ['toggle-measure', 'toggleMeasureMob'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.toggle('active', d);
-        });
-        ['toggle-area', 'toggleAreaMob'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.toggle('active', a);
-        });
+        ['toggle-measure', 'toggleMeasureMob'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', d); });
+        ['toggle-area', 'toggleAreaMob'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', a); });
     }
-
     function setMeasureMode(mode) {
-        if (measure.mode === mode) {
-            clearMeasure();
-            return;
-        }
+        if (measure.mode === mode) { clearMeasure(); return; }
         clearMeasure(true);
         measure.mode = mode;
         DOM.measureHint.classList.add('show');
-        DOM.measureHint.textContent = mode === 'dist'
-            ? '👆 Коснитесь участка, чтобы поставить точку'
-            : '👆 Кликайте углы контура (мин. 3). Двойной клик или тап по первой точке — завершить';
+        DOM.measureHint.textContent = mode === 'dist' ? '👆 Коснитесь участка, чтобы поставить точку' : '👆 Кликайте углы контура (мин. 3). Двойной клик или тап по первой точке — завершить';
         updateMeasureButtons();
         Utils.markDirty();
     }
-
     function clearMeasure(silent) {
-        measure.mode = null;
-        measure.points = [];
-        measure.line.visible = false;
-        measure.marker.visible = false;
+        measure.mode = null; measure.points = [];
+        measure.line.visible = false; measure.marker.visible = false;
         if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
         measure.areaPoints = [];
         measure.areaMarkers.forEach(m => scene.remove(m));
         measure.areaMarkers = [];
-        if (measure.areaLine) {
-            measure.areaLine.geometry.dispose();
-            measure.areaLine.geometry = new THREE.BufferGeometry();
-            measure.areaLine.visible = false;
-        }
-        if (measure.areaFill) {
-            measure.areaFill.geometry.dispose();
-            measure.areaFill.geometry = new THREE.BufferGeometry();
-            measure.areaFill.visible = false;
-        }
+        if (measure.areaLine) { measure.areaLine.geometry.dispose(); measure.areaLine.geometry = new THREE.BufferGeometry(); measure.areaLine.visible = false; }
+        if (measure.areaFill) { measure.areaFill.geometry.dispose(); measure.areaFill.geometry = new THREE.BufferGeometry(); measure.areaFill.visible = false; }
         if (measure.areaSprite) { scene.remove(measure.areaSprite); measure.areaSprite = null; }
         measure.areaClosed = false;
         if (!silent) DOM.measureHint.classList.remove('show');
         updateMeasureButtons();
         Utils.markDirty();
     }
-
     function updateAreaVisual() {
         const pts = measure.areaPoints;
         if (!measure.areaLine) {
             measure.areaLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x3498db }));
             scene.add(measure.areaLine);
-            measure.areaFill = new THREE.Mesh(
-                new THREE.BufferGeometry(),
-                new THREE.MeshBasicMaterial({ color: 0x3498db, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })
-            );
+            measure.areaFill = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0x3498db, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false }));
             scene.add(measure.areaFill);
         }
         const linePts = pts.map(p => new THREE.Vector3(p.x, 0.1, p.z));
@@ -1810,20 +991,15 @@
         measure.areaLine.geometry.dispose();
         measure.areaLine.geometry = new THREE.BufferGeometry().setFromPoints(linePts);
         measure.areaLine.visible = pts.length > 1;
-
         if (pts.length >= 3) {
             const shape = new THREE.Shape(pts.map(p => new THREE.Vector2(p.x, -p.z)));
             const geo = new THREE.ShapeGeometry(shape);
-            geo.rotateX(-Math.PI / 2);
-            geo.translate(0, 0.04, 0);
+            geo.rotateX(-Math.PI / 2); geo.translate(0, 0.04, 0);
             measure.areaFill.geometry.dispose();
             measure.areaFill.geometry = geo;
             measure.areaFill.visible = true;
-        } else {
-            measure.areaFill.visible = false;
-        }
+        } else measure.areaFill.visible = false;
     }
-
     function closeAreaPolygon() {
         const pts = measure.areaPoints;
         if (pts.length < 3) return;
@@ -1832,16 +1008,12 @@
         measure.areaClosed = true;
         updateAreaVisual();
         const c = polyCentroid(pts);
-        measure.areaSprite = Utils.createLabel(
-            `📐 ${Utils.fmt(area)} м² • периметр ${Utils.fmt(peri)} м`,
-            '#ffffff', 0.9, [7, 1.4], 640, 128, 34, 'rgba(20, 80, 140, 0.9)'
-        );
+        measure.areaSprite = Utils.createLabel(`📐 ${Utils.fmt(area)} м² • периметр ${Utils.fmt(peri)} м`, '#ffffff', 0.9, [7, 1.4], 640, 128, 34, 'rgba(20, 80, 140, 0.9)');
         measure.areaSprite.position.set(c.x, 1.2, c.z);
         scene.add(measure.areaSprite);
         DOM.measureHint.textContent = `✅ Площадь: ${Utils.fmt(area)} м², периметр: ${Utils.fmt(peri)} м. Клик — новый контур`;
         Utils.markDirty();
     }
-
     function resetAreaKeepMode() {
         measure.areaPoints = [];
         measure.areaMarkers.forEach(m => scene.remove(m));
@@ -1850,45 +1022,30 @@
         measure.areaClosed = false;
         updateAreaVisual();
     }
-
     function handleAreaClick(pt) {
         if (measure.areaClosed) resetAreaKeepMode();
-
         const first = measure.areaPoints[0];
         const last = measure.areaPoints[measure.areaPoints.length - 1];
-
         if (last && Math.hypot(pt.x - last.x, pt.z - last.z) < 0.3) return;
-
-        if (first && measure.areaPoints.length >= 3 && Math.hypot(pt.x - first.x, pt.z - first.z) < 0.9) {
-            closeAreaPolygon();
-            return;
-        }
-
+        if (first && measure.areaPoints.length >= 3 && Math.hypot(pt.x - first.x, pt.z - first.z) < 0.9) { closeAreaPolygon(); return; }
         measure.areaPoints.push(pt.clone());
         const m = new THREE.Mesh(areaMarkerGeo, areaMarkerMat);
         m.position.set(pt.x, 0.5, pt.z);
         scene.add(m);
         measure.areaMarkers.push(m);
         updateAreaVisual();
-
-        DOM.measureHint.textContent = measure.areaPoints.length < 3
-            ? `👆 Точек: ${measure.areaPoints.length} (нужно минимум 3)`
-            : `👆 Точек: ${measure.areaPoints.length} • пока ${Utils.fmt(polyArea(measure.areaPoints))} м² • двойной клик — завершить`;
+        DOM.measureHint.textContent = measure.areaPoints.length < 3 ? `👆 Точек: ${measure.areaPoints.length} (нужно минимум 3)` : `👆 Точек: ${measure.areaPoints.length} • пока ${Utils.fmt(polyArea(measure.areaPoints))} м² • двойной клик — завершить`;
         Utils.markDirty();
     }
-
     function handleDistanceClick(pt) {
         if (measure.points.length === 0) {
             if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
-            measure.line.visible = false;
-            measure.marker.visible = false;
+            measure.line.visible = false; measure.marker.visible = false;
             DOM.measureHint.textContent = '👆 Поставьте вторую точку';
         }
         measure.points.push(pt.clone());
-        measure.marker.position.copy(pt); measure.marker.position.y = 0.5;
-        measure.marker.visible = true;
+        measure.marker.position.copy(pt); measure.marker.position.y = 0.5; measure.marker.visible = true;
         Utils.markDirty();
-
         if (measure.points.length === 2) {
             const [p1, p2] = measure.points;
             const dist = Math.sqrt((p1.x-p2.x)**2 + (p1.z-p2.z)**2);
@@ -1902,28 +1059,19 @@
             scene.add(measure.sprite);
             measure.points = [];
             DOM.measureHint.textContent = '✅ Измерено! Клик для новой точки.';
-            setTimeout(() => {
-                if (measure.mode === 'dist') DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
-            }, 2000);
+            setTimeout(() => { if (measure.mode === 'dist') DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 2000);
             Utils.markDirty();
         }
     }
-
     function handleMeasureClick(pt) {
         if (pt.x < 0 || pt.x > CONFIG.plot.w || pt.z < 0 || pt.z > CONFIG.plot.d) {
             DOM.measureHint.textContent = '❌ Клик за пределами участка!';
-            setTimeout(() => {
-                if (!measure.mode) return;
-                DOM.measureHint.textContent = measure.mode === 'dist'
-                    ? '👆 Коснитесь участка, чтобы поставить точку'
-                    : '👆 Кликайте углы контура (мин. 3). Двойной клик — завершить';
-            }, 1500);
+            setTimeout(() => { if (!measure.mode) return; DOM.measureHint.textContent = measure.mode === 'dist' ? '👆 Коснитесь участка, чтобы поставить точку' : '👆 Кликайте углы контура (мин. 3). Двойной клик — завершить'; }, 1500);
             return;
         }
         if (measure.mode === 'dist') handleDistanceClick(pt);
         else if (measure.mode === 'area') handleAreaClick(pt);
     }
-
     function createDistanceLabel(text, x, y, z) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -1947,11 +1095,8 @@
         return sprite;
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // РЕЖИМ РЕДАКТИРОВАНИЯ И ПЕРЕТАСКИВАНИЕ ОБЪЕКТОВ
-    // ═══════════════════════════════════════════════════════════════
     let editMode = false;
-
+    let showViolationRings = false;
     function setEditMode(on) {
         editMode = on;
         DOM.edit.modeBtn.textContent = on ? '✋ Выключить изменения на карте' : '🖐 Включить изменения на карте';
@@ -1961,78 +1106,61 @@
         if (!on && drag.active) endDrag();
         if (on) toast('✋ Изменения включены — перетаскивайте объекты', 2500);
     }
-
-    const drag = {
-        active: false,
-        moved: false,
-        id: null,
-        obj: null,
-        group: null,
-        plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0),
-        raycaster: new THREE.Raycaster(),
-        point: new THREE.Vector3()
-    };
-
+    function buildViolationRings() {
+        while (groups.violRings.children.length) {
+            const c = groups.violRings.children[0];
+            groups.violRings.remove(c);
+            if (c.geometry) c.geometry.dispose();
+            if (c.material) c.material.dispose();
+        }
+        const checks = Norms.checkAll();
+        const failed = checks.filter(c => !c.ok);
+        const ids = new Set();
+        failed.forEach(c => c.ids.forEach(id => ids.add(id)));
+        ids.forEach(id => {
+            const o = Norms.obj(id);
+            if (!o) return;
+            const b = Norms.bounds(o);
+            const r = Math.max(b.maxX - b.minX, b.maxZ - b.minZ) / 2 + 0.5;
+            const ring = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.25, 40), new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }));
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.set(o.x, 0.05, o.z);
+            groups.violRings.add(ring);
+        });
+        Utils.markDirty();
+    }
+    const drag = { active: false, moved: false, id: null, obj: null, group: null, plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), raycaster: new THREE.Raycaster(), point: new THREE.Vector3() };
     let toastTimer = null;
-
     function toast(msg, ms = 2600) {
         clearTimeout(toastTimer);
         DOM.dragHint.textContent = msg;
         DOM.dragHint.classList.add('show');
         toastTimer = setTimeout(() => DOM.dragHint.classList.remove('show'), ms);
     }
-
     function showDragHint() {
         clearTimeout(toastTimer);
         DOM.dragHint.textContent = `✋ ${drag.obj.label} — X: ${Utils.fmt(drag.obj.x)} • Z: ${Utils.fmt(drag.obj.z)}`;
         DOM.dragHint.classList.add('show');
     }
-
-    function hideDragHint() {
-        clearTimeout(toastTimer);
-        DOM.dragHint.classList.remove('show');
-    }
-
-    function chainVisible(o) {
-        let c = o;
-        while (c) { if (!c.visible) return false; c = c.parent; }
-        return true;
-    }
-
-    function findDraggableRoot(object3d) {
-        let cur = object3d;
-        while (cur) {
-            if (cur.userData && cur.userData.objectId) return cur;
-            cur = cur.parent;
-        }
-        return null;
-    }
-
+    function hideDragHint() { clearTimeout(toastTimer); DOM.dragHint.classList.remove('show'); }
+    function chainVisible(o) { let c = o; while (c) { if (!c.visible) return false; c = c.parent; } return true; }
+    function findDraggableRoot(object3d) { let cur = object3d; while (cur) { if (cur.userData && cur.userData.objectId) return cur; cur = cur.parent; } return null; }
     function screenToPlane(e, out) {
         const rect = renderer.domElement.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-            ((e.clientX - rect.left) / rect.width) * 2 - 1,
-            -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
+        const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
         drag.raycaster.setFromCamera(mouse, camera);
         return drag.raycaster.ray.intersectPlane(drag.plane, out);
     }
-
     function tryStartDrag(e) {
         if (!editMode || measure.mode) return false;
         const rect = renderer.domElement.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-            ((e.clientX - rect.left) / rect.width) * 2 - 1,
-            -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
+        const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
         drag.raycaster.setFromCamera(mouse, camera);
         const hits = drag.raycaster.intersectObjects(draggableGroups, true);
         if (!hits.length) return false;
         const root = findDraggableRoot(hits[0].object);
         if (!root || !chainVisible(root)) return false;
-
-        drag.active = true;
-        drag.moved = false;
+        drag.active = true; drag.moved = false;
         drag.id = root.userData.objectId;
         drag.obj = CONFIG.objects.find(o => o.id === drag.id);
         drag.group = root;
@@ -2041,133 +1169,91 @@
         showDragHint();
         return true;
     }
-
     function dragTo(e) {
         if (!screenToPlane(e, drag.point)) return;
-
         const b = Norms.bounds(drag.obj);
         const halfW = (b.maxX - b.minX) / 2;
         const halfD = (b.maxZ - b.minZ) / 2;
-
         let x = Math.round(drag.point.x * 2) / 2;
         let z = Math.round(drag.point.z * 2) / 2;
         x = Math.max(halfW, Math.min(CONFIG.plot.w - halfW, x));
         z = Math.max(halfD, Math.min(CONFIG.plot.d - halfD, z));
-
         if (x !== drag.obj.x || z !== drag.obj.z) {
             drag.moved = true;
-            drag.obj.x = x;
-            drag.obj.z = z;
+            drag.obj.x = x; drag.obj.z = z;
             drag.group.position.set(x, 0, z);
             const lbl = labelSprites[drag.id];
             if (lbl) { lbl.position.x = x; lbl.position.z = z; }
-            refreshUtilitiesFor(drag.id); // трубы и кабели следуют за объектом
+            refreshUtilitiesFor(drag.id);
             renderer.shadowMap.needsUpdate = true;
             Utils.markDirty();
             showDragHint();
         }
     }
-
     function endDrag() {
         if (!drag.active) return;
         const wasMoved = drag.moved;
         const id = drag.id;
-        drag.active = false;
-        drag.id = null;
-        drag.obj = null;
-        drag.group = null;
+        drag.active = false; drag.id = null; drag.obj = null; drag.group = null;
         renderer.domElement.style.cursor = '';
         hideDragHint();
-
         if (wasMoved) {
             saveLayout();
             updateNormBadge();
+            if (showViolationRings) buildViolationRings();
             const o = CONFIG.objects.find(x => x.id === id);
             toast(`💾 ${Norms.name(id)} → X ${Utils.fmt(o.x)}, Z ${Utils.fmt(o.z)} • сохранено`);
             renderer.shadowMap.needsUpdate = true;
         }
         Utils.markDirty();
     }
-
     function syncPositionsToScene() {
-        draggables.forEach(d => {
-            const o = CONFIG.objects.find(x => x.id === d.id);
-            if (o) d.group.position.set(o.x, 0, o.z);
-        });
-        CONFIG.objects.forEach(o => {
-            const lbl = labelSprites[o.id];
-            if (lbl) lbl.position.set(o.x, o.y, o.z);
-        });
+        draggables.forEach(d => { const o = CONFIG.objects.find(x => x.id === d.id); if (o) d.group.position.set(o.x, 0, o.z); });
+        CONFIG.objects.forEach(o => { const lbl = labelSprites[o.id]; if (lbl) lbl.position.set(o.x, o.y, o.z); });
         CONFIG.utilities.forEach(refreshUtility);
         renderer.shadowMap.needsUpdate = true;
         Utils.markDirty();
     }
-
     function resetLayout() {
-        CONFIG.objects.forEach(o => {
-            const d = DEFAULT_LAYOUT[o.id];
-            if (d) { o.x = d.x; o.z = d.z; }
-        });
+        CONFIG.objects.forEach(o => { const d = DEFAULT_LAYOUT[o.id]; if (d) { o.x = d.x; o.z = d.z; } });
         syncPositionsToScene();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         updateNormBadge();
+        if (showViolationRings) buildViolationRings();
         toast('🔄 Планировка сброшена к исходной');
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // ОБРАБОТКА УКАЗАТЕЛЯ
-    // ═══════════════════════════════════════════════════════════════
     let pointerDownPos = null;
-
     document.body.addEventListener('pointerdown', (e) => {
         if (measure.mode) return;
         if (drag.active) return;
         if (e.target !== renderer.domElement) return;
-        if (tryStartDrag(e)) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
+        if (tryStartDrag(e)) { e.stopPropagation(); e.preventDefault(); }
     }, true);
-
     renderer.domElement.addEventListener('pointerdown', (e) => {
         pointerDownPos = { x: e.clientX, y: e.clientY };
         if (!measure.mode) return;
         e.preventDefault();
-
         const rect = renderer.domElement.getBoundingClientRect();
         const clientX = e.clientX || e.pageX;
         const clientY = e.clientY || e.pageY;
-        const mouse = new THREE.Vector2(
-            ((clientX - rect.left) / rect.width) * 2 - 1,
-            -((clientY - rect.top) / rect.height) * 2 + 1
-        );
+        const mouse = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
         const ray = new THREE.Raycaster();
         ray.setFromCamera(mouse, camera);
         const pt = new THREE.Vector3();
         if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), pt)) return;
         handleMeasureClick(pt);
     });
-
     renderer.domElement.addEventListener('pointermove', (e) => {
-        if (drag.active) {
-            dragTo(e);
-            return;
-        }
+        if (drag.active) { dragTo(e); return; }
         if (!editMode || measure.mode || e.buttons !== 0) return;
         const rect = renderer.domElement.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-            ((e.clientX - rect.left) / rect.width) * 2 - 1,
-            -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
+        const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
         drag.raycaster.setFromCamera(mouse, camera);
         const hits = drag.raycaster.intersectObjects(draggableGroups, true);
         renderer.domElement.style.cursor = (hits.length && chainVisible(hits[0].object)) ? 'grab' : '';
     });
-
-    window.addEventListener('pointerup', () => {
-        if (drag.active) endDrag();
-    });
-
+    window.addEventListener('pointerup', () => { if (drag.active) endDrag(); });
     renderer.domElement.addEventListener('pointerup', (e) => {
         if (!pointerDownPos) return;
         const moved = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
@@ -2175,44 +1261,16 @@
         if (moved > 6 || measure.mode || drag.active) return;
         pickUtility(e);
     });
+    renderer.domElement.addEventListener('dblclick', () => { if (measure.mode === 'area' && !measure.areaClosed && measure.areaPoints.length >= 3) closeAreaPolygon(); });
 
-    renderer.domElement.addEventListener('dblclick', () => {
-        if (measure.mode === 'area' && !measure.areaClosed && measure.areaPoints.length >= 3) {
-            closeAreaPolygon();
-        }
-    });
-
-    // ═══════════════════════════════════════════════════════════════
-    // ВИДЫ КАМЕРЫ (плавно)
-    // ═══════════════════════════════════════════════════════════════
     DOM.viewSelect.addEventListener('change', function() {
         const v = this.value;
-        if (v !== 'night') {
-            sunLight.intensity = 1.0;
-            ambientLight.intensity = 0.6;
-            fillLight.intensity = 0.3;
-            hemiLight.intensity = 0.35;
-            scene.background = new THREE.Color(0x87CEEB);
-            sunDisc.visible = true;
-            sunGlow.visible = true;
-        }
-        if (v === 'night') {
-            scene.background = new THREE.Color(0x0a0a1a);
-            sunLight.intensity = 0.05;
-            ambientLight.intensity = 0.15;
-            fillLight.intensity = 0.05;
-            hemiLight.intensity = 0.05;
-            sunDisc.visible = false;
-            sunGlow.visible = false;
-        }
+        if (v !== 'night') { sunLight.intensity = 1.0; ambientLight.intensity = 0.6; fillLight.intensity = 0.3; hemiLight.intensity = 0.35; scene.background = new THREE.Color(0x87CEEB); sunDisc.visible = true; sunGlow.visible = true; }
+        if (v === 'night') { scene.background = new THREE.Color(0x0a0a1a); sunLight.intensity = 0.05; ambientLight.intensity = 0.15; fillLight.intensity = 0.05; hemiLight.intensity = 0.05; sunDisc.visible = false; sunGlow.visible = false; }
         const pos = CONFIG.camera[v] || CONFIG.camera.default;
-        cameraTween.start(
-            new THREE.Vector3(pos[0], pos[1], pos[2]),
-            new THREE.Vector3(CONFIG.center.x, 0, CONFIG.center.z)
-        );
+        cameraTween.start(new THREE.Vector3(pos[0], pos[1], pos[2]), new THREE.Vector3(CONFIG.center.x, 0, CONFIG.center.z));
         Utils.markDirty();
     });
-
     function exportPNG() {
         renderer.render(scene, camera);
         const link = document.createElement('a');
@@ -2221,46 +1279,35 @@
         link.click();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // СОЛНЦЕ + ПЛЕЕР
-    // ═══════════════════════════════════════════════════════════════
     function updateSun(hoursOverride) {
         const mi = parseInt(DOM.monthSlider.value) - 1;
         const month = CONFIG.months[mi];
         const dayLength = month.sunset - month.sunrise;
-
         let hours = (hoursOverride !== undefined) ? hoursOverride : parseFloat(DOM.hourSlider.value);
         const minH = Math.max(0, month.sunrise - 0.5);
         const maxH = Math.min(24, month.sunset + 0.5);
         hours = Math.max(minH, Math.min(maxH, hours));
-
         const latRad = CONFIG.latitude * Math.PI / 180;
         const decRad = month.declination * Math.PI / 180;
         const hourAngle = (hours - 12) * 15 * Math.PI / 180;
         const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
         const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
         const isNight = altitude < -2;
-
         const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
         const sunNorth = Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
-
         let x, y, z;
         const distance = 50;
         if (isNight) {
             x = 0; y = -10; z = 0;
             sunLight.intensity = 0.05;
             scene.background = new THREE.Color(0x0a0a1a);
-            ambientLight.intensity = 0.15;
-            fillLight.intensity = 0.05;
-            hemiLight.intensity = 0.05;
-            sunDisc.visible = false;
-            sunGlow.visible = false;
+            ambientLight.intensity = 0.15; fillLight.intensity = 0.05; hemiLight.intensity = 0.05;
+            sunDisc.visible = false; sunGlow.visible = false;
         } else {
             x = distance * sunEast;
             y = distance * Math.max(sinAlt, 0.02);
             z = distance * sunNorth;
             sunLight.intensity = Math.min(altitude < 20 ? 0.3 + (altitude / 20) * 0.7 : 1.0, 1.2);
-
             const blue = new THREE.Color(0x87CEEB);
             const golden = new THREE.Color(0xffaa66);
             const orange = new THREE.Color(0xff7733);
@@ -2268,7 +1315,6 @@
             if (altitude > 25) skyColor = blue;
             else if (altitude > 10) skyColor = golden.clone().lerp(blue, (altitude - 10) / 15);
             else skyColor = orange.clone().lerp(golden, (altitude + 2) / 12);
-
             scene.background = skyColor;
             ambientLight.intensity = 0.4 + (altitude / 60) * 0.3;
             fillLight.intensity = 0.2 + (altitude / 60) * 0.2;
@@ -2278,48 +1324,29 @@
             sunDisc.position.set(x, y, z);
             sunGlow.position.set(x, y, z);
         }
-
         sunLight.position.set(x, y, z);
         sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
-
         const monthName = CONFIG.monthNames[mi];
         const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
         DOM.monthLabel.textContent = monthName;
         DOM.timeLabel.textContent = hoursStr;
-
         DOM.hourSlider.value = hours;
-        if (DOM.sun.monthSlider && document.activeElement !== DOM.sun.monthSlider) {
-            DOM.sun.monthSlider.value = DOM.monthSlider.value;
-        }
-        if (DOM.sun.hourSlider && document.activeElement !== DOM.sun.hourSlider) {
-            DOM.sun.hourSlider.value = hours;
-        }
+        if (DOM.sun.monthSlider && document.activeElement !== DOM.sun.monthSlider) DOM.sun.monthSlider.value = DOM.monthSlider.value;
+        if (DOM.sun.hourSlider && document.activeElement !== DOM.sun.hourSlider) DOM.sun.hourSlider.value = hours;
         if (DOM.sun.monthLabel) DOM.sun.monthLabel.textContent = monthName;
         if (DOM.sun.hourLabel) DOM.sun.hourLabel.textContent = hoursStr;
-
         const dayH = Math.floor(dayLength);
         const dayM = Math.round((dayLength - dayH) * 60);
         const status = isNight ? '🌙 Ночь' : '☀️ Высота: ' + Math.round(Math.max(altitude, 0)) + '°';
         const statusStr = `${status} | День: ${dayH}ч ${String(dayM).padStart(2, '0')}м`;
         DOM.timeDisplay.textContent = statusStr;
         if (DOM.sun.status) DOM.sun.status.textContent = statusStr;
-
         renderer.shadowMap.needsUpdate = true;
         Utils.markDirty();
     }
-
     const sunPlayer = {
-        playing: false,
-        rafId: null,
-        lastTs: 0,
-        hour: 12,
-        durationSec: 20,
-
-        toggle() {
-            if (this.playing) this.stop();
-            else this.start();
-        },
-
+        playing: false, rafId: null, lastTs: 0, hour: 12, durationSec: 20,
+        toggle() { if (this.playing) this.stop(); else this.start(); },
         start() {
             const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
             this.hour = Math.max(0, m.sunrise - 0.5);
@@ -2331,33 +1358,22 @@
             if (this.rafId) cancelAnimationFrame(this.rafId);
             this.rafId = requestAnimationFrame(this.step);
         },
-
         step: (now) => {
             const sp = sunPlayer;
             if (!sp.playing) return;
-
             let dt = (now - sp.lastTs) / 1000;
             sp.lastTs = now;
             if (dt > 0.1) dt = 0.1;
             if (dt < 0) dt = 0;
-
             const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
             const start = Math.max(0, m.sunrise - 0.5);
             const end = Math.min(24, m.sunset + 0.5);
             const speed = (end - start) / sp.durationSec;
-
             sp.hour += dt * speed;
-
-            if (sp.hour >= end) {
-                sp.hour = end;
-                updateSun(sp.hour);
-                sp.stop();
-                return;
-            }
+            if (sp.hour >= end) { sp.hour = end; updateSun(sp.hour); sp.stop(); return; }
             updateSun(sp.hour);
             sp.rafId = requestAnimationFrame(sp.step);
         },
-
         stop() {
             this.playing = false;
             if (this.rafId) cancelAnimationFrame(this.rafId);
@@ -2366,60 +1382,28 @@
             DOM.sun.playBtn.classList.remove('playing');
         }
     };
-
     DOM.monthSlider.addEventListener('input', () => updateSun());
     DOM.hourSlider.addEventListener('input', () => updateSun());
-
-    if (DOM.sun.monthSlider) {
-        DOM.sun.monthSlider.addEventListener('input', () => {
-            if (sunPlayer.playing) sunPlayer.stop();
-            DOM.monthSlider.value = DOM.sun.monthSlider.value;
-            updateSun();
-        });
-    }
-    if (DOM.sun.hourSlider) {
-        DOM.sun.hourSlider.addEventListener('input', () => {
-            if (sunPlayer.playing) sunPlayer.stop();
-            DOM.hourSlider.value = DOM.sun.hourSlider.value;
-            updateSun();
-        });
-    }
+    if (DOM.sun.monthSlider) DOM.sun.monthSlider.addEventListener('input', () => { if (sunPlayer.playing) sunPlayer.stop(); DOM.monthSlider.value = DOM.sun.monthSlider.value; updateSun(); });
+    if (DOM.sun.hourSlider) DOM.sun.hourSlider.addEventListener('input', () => { if (sunPlayer.playing) sunPlayer.stop(); DOM.hourSlider.value = DOM.sun.hourSlider.value; updateSun(); });
     DOM.sun.playBtn.addEventListener('click', () => sunPlayer.toggle());
-
     function setSunPanelCollapsed(collapsed) {
         DOM.sun.panel.style.display = collapsed ? 'none' : 'block';
         DOM.sun.fab.style.display = collapsed ? 'flex' : 'none';
     }
-    DOM.sun.toggle.addEventListener('click', () => {
-        const isCollapsed = DOM.sun.panel.style.display === 'none';
-        setSunPanelCollapsed(!isCollapsed);
-        DOM.sun.toggle.textContent = !isCollapsed ? '+' : '–';
-    });
-    DOM.sun.fab.addEventListener('click', () => {
-        setSunPanelCollapsed(false);
-        DOM.sun.toggle.textContent = '–';
-    });
+    DOM.sun.toggle.addEventListener('click', () => { const isCollapsed = DOM.sun.panel.style.display === 'none'; setSunPanelCollapsed(!isCollapsed); DOM.sun.toggle.textContent = !isCollapsed ? '+' : '–'; });
+    DOM.sun.fab.addEventListener('click', () => { setSunPanelCollapsed(false); DOM.sun.toggle.textContent = '–'; });
     if (window.innerWidth < 769) setSunPanelCollapsed(true);
 
-    // ═══════════════════════════════════════════════════════════════
-    // АНИМАЦИЯ
-    // ═══════════════════════════════════════════════════════════════
     function animate() {
         requestAnimationFrame(animate);
         const tweening = cameraTween.update();
-        if (tweening) {
-            Utils.markDirty();
-        } else if (controls.update()) {
-            Utils.markDirty();
-        }
-        if (Utils.dirty) {
-            renderer.render(scene, camera);
-            Utils.dirty = false;
-        }
+        if (tweening) Utils.markDirty();
+        else if (controls.update()) Utils.markDirty();
+        if (Utils.dirty) { renderer.render(scene, camera); Utils.dirty = false; }
     }
     Utils.markDirty();
     animate();
-
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -2427,44 +1411,17 @@
         Utils.markDirty();
     });
 
-    // ═══════════════════════════════════════════════════════════════
-    // МОДАЛКИ
-    // ═══════════════════════════════════════════════════════════════
     function setupModal(modal, closeIds, onClose) {
-        closeIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('click', () => {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                if (onClose) onClose();
-            });
-        });
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                if (onClose) onClose();
-            }
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                if (onClose) onClose();
-            }
-        });
+        closeIds.forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('click', () => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; if (onClose) onClose(); }); });
+        window.addEventListener('click', (e) => { if (e.target === modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; if (onClose) onClose(); } });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'block') { modal.style.display = 'none'; document.body.style.overflow = 'auto'; if (onClose) onClose(); } });
     }
-
     setupModal(DOM.reportModal, ['close-report', 'close-report-btn']);
     setupModal(DOM.normsModal, ['close-norms-modal', 'close-norms-btn'], () => { clearHighlights(); Utils.markDirty(); });
     DOM.openReport.addEventListener('click', openReportModal);
     DOM.normBadge.addEventListener('click', openNorms);
 
-    // ═══════════════════════════════════════════════════════════════
-    // ПЛАН ДОМА
-    // ═══════════════════════════════════════════════════════════════
     const planState = { scene: null, camera: null, renderer: null, controls: null, group: null, currentPlan: 'main', isTopView: false };
-
     const MAIN_PLAN = {
         rooms: [
             { name: 'Крыльцо_верх', x: -7.25, z: 4.25, w: 1.5, d: 1.5, color: 0xbc8f8f, labelColor: '#aa7755' },
@@ -2483,7 +1440,6 @@
         ],
         width: 16, depth: 10
     };
-
     function initPlanScene() {
         if (!planState.renderer) {
             planState.scene = new THREE.Scene();
@@ -2491,213 +1447,90 @@
             planState.camera = new THREE.PerspectiveCamera(40, DOM.planContainer.clientWidth / DOM.planContainer.clientHeight, 0.1, 100);
             planState.camera.position.set(0, 12, 18);
             planState.camera.lookAt(0, 0, 0);
-
             planState.renderer = new THREE.WebGLRenderer({ antialias: true });
             planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight);
             planState.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             DOM.planContainer.appendChild(planState.renderer.domElement);
-
             planState.controls = new THREE.OrbitControls(planState.camera, planState.renderer.domElement);
             planState.controls.target.set(0, 0, 0);
             planState.controls.enableDamping = true;
             planState.controls.dampingFactor = 0.05;
             planState.controls.maxPolarAngle = Math.PI / 2.2;
-
             planState.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
             const dirL = new THREE.DirectionalLight(0xffffff, 0.5);
             dirL.position.set(5, 15, 10);
             planState.scene.add(dirL);
-
             planState.group = new THREE.Group();
             planState.scene.add(planState.group);
-
             (function animatePlan() {
                 if (!planState.renderer) return;
                 requestAnimationFrame(animatePlan);
                 planState.controls.update();
-                if (DOM.planModal.style.display === 'block') {
-                    planState.renderer.render(planState.scene, planState.camera);
-                }
+                if (DOM.planModal.style.display === 'block') planState.renderer.render(planState.scene, planState.camera);
             })();
-
             const footer = DOM.planModal.querySelector('.modal-footer');
             footer.innerHTML = '';
-            [
-                { text: 'Основной план', fn: () => { planState.currentPlan = 'main'; rebuildPlanModal(); } },
-                { text: 'Зеркальный план', fn: () => { planState.currentPlan = 'mirror'; rebuildPlanModal(); } },
-                { text: '📷 Вид сверху', fn: (btn) => {
-                    planState.isTopView = !planState.isTopView;
-                    planState.camera.position.set(...(planState.isTopView ? [0, 30, 0] : [0, 12, 18]));
-                    btn.textContent = planState.isTopView ? '📷 Перспектива' : '📷 Вид сверху';
-                    planState.controls.target.set(0, 0, 0);
-                    planState.controls.update();
-                }},
-                { text: 'Закрыть', fn: () => { DOM.planModal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
-            ].forEach(b => {
-                const btn = document.createElement('button');
-                btn.textContent = b.text;
-                btn.style.marginRight = '10px';
-                btn.onclick = () => b.fn(btn);
-                footer.appendChild(btn);
-            });
+            [ { text: 'Основной план', fn: () => { planState.currentPlan = 'main'; rebuildPlanModal(); } }, { text: 'Зеркальный план', fn: () => { planState.currentPlan = 'mirror'; rebuildPlanModal(); } }, { text: '📷 Вид сверху', fn: (btn) => { planState.isTopView = !planState.isTopView; planState.camera.position.set(...(planState.isTopView ? [0, 30, 0] : [0, 12, 18])); btn.textContent = planState.isTopView ? '📷 Перспектива' : '📷 Вид сверху'; planState.controls.target.set(0, 0, 0); planState.controls.update(); } }, { text: 'Закрыть', fn: () => { DOM.planModal.style.display = 'none'; document.body.style.overflow = 'auto'; } } ].forEach(b => { const btn = document.createElement('button'); btn.textContent = b.text; btn.style.marginRight = '10px'; btn.onclick = () => b.fn(btn); footer.appendChild(btn); });
         }
         rebuildPlanModal();
     }
-
     function rebuildPlanModal() {
         if (!planState.group) return;
-        while (planState.group.children.length) {
-            const c = planState.group.children[0];
-            planState.group.remove(c);
-            if (c.geometry) c.geometry.dispose();
-            if (c.material && c.material.map) c.material.map.dispose();
-        }
-
-        const data = planState.currentPlan === 'mirror'
-            ? { ...MAIN_PLAN, rooms: MAIN_PLAN.rooms.map(r => ({ ...r, x: -r.x })) }
-            : MAIN_PLAN;
+        while (planState.group.children.length) { const c = planState.group.children[0]; planState.group.remove(c); if (c.geometry) c.geometry.dispose(); if (c.material && c.material.map) c.material.map.dispose(); }
+        const data = planState.currentPlan === 'mirror' ? { ...MAIN_PLAN, rooms: MAIN_PLAN.rooms.map(r => ({ ...r, x: -r.x })) } : MAIN_PLAN;
         const halfW = data.width / 2, halfD = data.depth / 2;
-
         const wallMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-        planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(-halfW, 0.05, -halfD), new THREE.Vector3(halfW, 0.05, -halfD),
-            new THREE.Vector3(halfW, 0.05, halfD), new THREE.Vector3(-halfW, 0.05, halfD),
-            new THREE.Vector3(-halfW, 0.05, -halfD)
-        ]), wallMat));
-
+        planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(-halfW, 0.05, -halfD), new THREE.Vector3(halfW, 0.05, -halfD), new THREE.Vector3(halfW, 0.05, halfD), new THREE.Vector3(-halfW, 0.05, halfD), new THREE.Vector3(-halfW, 0.05, -halfD) ]), wallMat));
         const intWallMat = new THREE.LineBasicMaterial({ color: 0x888888 });
         data.rooms.forEach(r => {
             const mesh = new THREE.Mesh(GeoPool.plane(r.w, r.d), new THREE.MeshStandardMaterial({ color: r.color, side: THREE.DoubleSide }));
-            mesh.rotation.x = -Math.PI/2;
-            mesh.position.set(r.x, 0.02, r.z);
-            mesh.receiveShadow = true;
+            mesh.rotation.x = -Math.PI/2; mesh.position.set(r.x, 0.02, r.z); mesh.receiveShadow = true;
             planState.group.add(mesh);
-
-            planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2), new THREE.Vector3(r.x + r.w/2, 0.04, r.z - r.d/2),
-                new THREE.Vector3(r.x + r.w/2, 0.04, r.z + r.d/2), new THREE.Vector3(r.x - r.w/2, 0.04, r.z + r.d/2),
-                new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2)
-            ]), intWallMat));
-
+            planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2), new THREE.Vector3(r.x + r.w/2, 0.04, r.z - r.d/2), new THREE.Vector3(r.x + r.w/2, 0.04, r.z + r.d/2), new THREE.Vector3(r.x - r.w/2, 0.04, r.z + r.d/2), new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2) ]), intWallMat));
             const nameLbl = Utils.createLabel(r.name.replace(/_/g, ' '), r.labelColor || '#fff', 0.8, [5, 1.25], 1024, 256, 60);
             nameLbl.position.set(r.x, 0.3, r.z + 0.25);
             planState.group.add(nameLbl);
-
             const sizeLbl = Utils.createLabel(`${r.w.toFixed(1)}×${r.d.toFixed(1)} м`, '#cccccc', 0.5, [5, 1.25], 1024, 256, 60);
             sizeLbl.position.set(r.x, 0.1, r.z - 0.35);
             planState.group.add(sizeLbl);
         });
-
-        [
-            { text: '🚪 Вход', pos: [0, 0.1, -halfD - 0.6], size: 0.9 },
-            { text: `Дом: ${data.width}×${data.depth} м`, pos: [0, 0.1, halfD + 1.2], size: 0.8 },
-            { text: '16 м', pos: [0, 0.3, halfD + 1.7], size: 0.6 },
-            { text: '16 м', pos: [0, 0.3, -halfD - 1.7], size: 0.6 },
-            { text: '10 м', pos: [-halfW - 1.7, 0.3, 0], size: 0.6 },
-            { text: '10 м', pos: [halfW + 1.7, 0.3, 0], size: 0.6 }
-        ].forEach(d => {
-            const lbl = Utils.createLabel(d.text, '#ffaa00', d.size, [5, 1.25], 1024, 256, 60);
-            lbl.position.set(...d.pos);
-            planState.group.add(lbl);
-        });
-
-        [
-            { text: '⬆ СЕВЕР', pos: [0, 0.3, halfD + 2.5] },
-            { text: '⬇ ЮГ', pos: [0, 0.3, -halfD - 2.5] },
-            { text: '⬅ ЗАПАД', pos: [-halfW - 2.5, 0.3, 0] },
-            { text: '➡ ВОСТОК', pos: [halfW + 2.5, 0.3, 0] }
-        ].forEach(d => {
-            const lbl = Utils.createLabel(d.text, '#66ccff', 0.9, [5, 1.25], 1024, 256, 60, 'rgba(0,0,0,0.5)');
-            lbl.position.set(...d.pos);
-            planState.group.add(lbl);
-        });
+        [ { text: '🚪 Вход', pos: [0, 0.1, -halfD - 0.6], size: 0.9 }, { text: `Дом: ${data.width}×${data.depth} м`, pos: [0, 0.1, halfD + 1.2], size: 0.8 }, { text: '16 м', pos: [0, 0.3, halfD + 1.7], size: 0.6 }, { text: '16 м', pos: [0, 0.3, -halfD - 1.7], size: 0.6 }, { text: '10 м', pos: [-halfW - 1.7, 0.3, 0], size: 0.6 }, { text: '10 м', pos: [halfW + 1.7, 0.3, 0], size: 0.6 } ].forEach(d => { const lbl = Utils.createLabel(d.text, '#ffaa00', d.size, [5, 1.25], 1024, 256, 60); lbl.position.set(...d.pos); planState.group.add(lbl); });
+        [ { text: '⬆ СЕВЕР', pos: [0, 0.3, halfD + 2.5] }, { text: '⬇ ЮГ', pos: [0, 0.3, -halfD - 2.5] }, { text: '⬅ ЗАПАД', pos: [-halfW - 2.5, 0.3, 0] }, { text: '➡ ВОСТОК', pos: [halfW + 2.5, 0.3, 0] } ].forEach(d => { const lbl = Utils.createLabel(d.text, '#66ccff', 0.9, [5, 1.25], 1024, 256, 60, 'rgba(0,0,0,0.5)'); lbl.position.set(...d.pos); planState.group.add(lbl); });
     }
-
-    DOM.openPlan.addEventListener('click', () => {
-        DOM.planModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        initPlanScene();
-    });
+    DOM.openPlan.addEventListener('click', () => { DOM.planModal.style.display = 'block'; document.body.style.overflow = 'hidden'; initPlanScene(); });
     setupModal(DOM.planModal, ['close-plan-modal', 'close-plan-modal-btn']);
+    window.addEventListener('resize', () => { if (DOM.planModal.style.display === 'block' && planState.renderer) { planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight); planState.camera.aspect = DOM.planContainer.clientWidth / DOM.planContainer.clientHeight; planState.camera.updateProjectionMatrix(); } });
 
-    window.addEventListener('resize', () => {
-        if (DOM.planModal.style.display === 'block' && planState.renderer) {
-            planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight);
-            planState.camera.aspect = DOM.planContainer.clientWidth / DOM.planContainer.clientHeight;
-            planState.camera.updateProjectionMatrix();
-        }
-    });
-
-    // ═══════════════════════════════════════════════════════════════
-    // КНОПКИ
-    // ═══════════════════════════════════════════════════════════════
     let showCommsOnly = false;
-    DOM.toggleComm.addEventListener('click', function() {
-        showCommsOnly = !showCommsOnly;
-        groups.site.visible = !showCommsOnly;
-        groups.house.visible = !showCommsOnly;
-        this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации';
-    });
-
-    DOM.toggleLabels.addEventListener('click', function() {
-        groups.objectLabels.visible = !groups.objectLabels.visible;
-        this.textContent = groups.objectLabels.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия';
-    });
-
+    DOM.toggleComm.addEventListener('click', function() { showCommsOnly = !showCommsOnly; groups.site.visible = !showCommsOnly; groups.house.visible = !showCommsOnly; this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации'; });
+    DOM.toggleLabels.addEventListener('click', function() { groups.objectLabels.visible = !groups.objectLabels.visible; this.textContent = groups.objectLabels.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия'; });
     DOM.exportPng.addEventListener('click', exportPNG);
-
     document.getElementById('toggle-measure').addEventListener('click', () => setMeasureMode('dist'));
     document.getElementById('toggle-area').addEventListener('click', () => setMeasureMode('area'));
 
-    // ═══════════════════════════════════════════════════════════════
-    // PDF
-    // ═══════════════════════════════════════════════════════════════
     async function exportPDF() {
         DOM.pdfLoader.classList.add('active');
         try {
             renderer.render(scene, camera);
             const sceneImage = renderer.domElement.toDataURL('image/png');
             const date = new Date().toLocaleDateString('ru-RU');
-
-            DOM.pdfCover.innerHTML = `
-                <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 0; background: white;">
-                    <div class="cover-title">📐 Проект Берн — 3D план участка</div>
-                    <div class="cover-info">
-                        <div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div>
-                        <div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div>
-                        <div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div>
-                        <div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div>
-                        <div><strong>🌐 GPS центра:</strong> ${CONFIG.gps.lat}, ${CONFIG.gps.lng}</div>
-                        <div><strong>📅 Дата отчёта:</strong> ${date}</div>
-                    </div>
-                    <img src="${sceneImage}" style="width:100%; border-radius:12px; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
-                    <div class="cover-footer">© 3D-планировщик «Проект Берн» • ${date}</div>
-                </div>`;
-
+            DOM.pdfCover.innerHTML = `<div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 0; background: white;"><div class="cover-title">📐 Проект Берн — 3D план участка</div><div class="cover-info"><div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div><div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div><div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div><div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div><div><strong>🌐 GPS центра:</strong> ${CONFIG.gps.lat}, ${CONFIG.gps.lng}</div><div><strong>📅 Дата отчёта:</strong> ${date}</div></div><img src="${sceneImage}" style="width:100%; border-radius:12px; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.1);" /><div class="cover-footer">© 3D-планировщик «Проект Берн» • ${date}</div></div>`;
             DOM.pdfReport.innerHTML = buildReportHTML();
-
             await new Promise(r => setTimeout(r, 300));
-
             const coverCanvas = await html2canvas(DOM.pdfCover, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false, width: 780, height: DOM.pdfCover.scrollHeight });
             const reportCanvas = await html2canvas(DOM.pdfReport, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false, width: 780, height: DOM.pdfReport.scrollHeight });
-
             const coverImage = coverCanvas.toDataURL('image/png');
             const reportImage = reportCanvas.toDataURL('image/png');
-
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const pageW = 210, pageH = 297, margin = 14;
             const imgW = pageW - margin * 2;
             const coverH = (coverCanvas.height / coverCanvas.width) * imgW;
             doc.addImage(coverImage, 'PNG', margin, margin, imgW, Math.min(coverH, pageH - margin * 2));
-
             const reportH = (reportCanvas.height / reportCanvas.width) * imgW;
             const maxH = pageH - margin * 2;
-
-            if (reportH <= maxH) {
-                doc.addPage();
-                doc.addImage(reportImage, 'PNG', margin, margin, imgW, reportH);
-            } else {
+            if (reportH <= maxH) { doc.addPage(); doc.addImage(reportImage, 'PNG', margin, margin, imgW, reportH); }
+            else {
                 const totalPx = reportCanvas.height;
                 const maxPx = maxH * (totalPx / reportH);
                 let offset = 0, first = true;
@@ -2711,140 +1544,73 @@
                     ctx.drawImage(img, 0, offset, reportCanvas.width, hPx, 0, 0, reportCanvas.width, hPx);
                     if (!first) doc.addPage();
                     doc.addImage(c.toDataURL('image/png'), 'PNG', margin, margin, imgW, (hPx / totalPx) * reportH);
-                    offset += hPx;
-                    first = false;
+                    offset += hPx; first = false;
                 }
             }
-
             doc.save('Проект_Берн_Отчет.pdf');
-        } catch (error) {
-            console.error('Ошибка PDF:', error);
-            alert('Не удалось создать PDF. Проверьте консоль.');
-        } finally {
-            DOM.pdfLoader.classList.remove('active');
-        }
+        } catch (error) { console.error('Ошибка PDF:', error); alert('Не удалось создать PDF. Проверьте консоль.'); }
+        finally { DOM.pdfLoader.classList.remove('active'); }
     }
-
     DOM.exportPdf.addEventListener('click', exportPDF);
 
-    // ═══════════════════════════════════════════════════════════════
-    // GPS
-    // ═══════════════════════════════════════════════════════════════
     function localToGPS(x, z) {
         const dx = x - CONFIG.center.x;
         const dz = z - CONFIG.center.z;
         const a = CONFIG.gps.angle * Math.PI / 180;
         const rx = dx * Math.cos(a) - dz * Math.sin(a);
         const rz = dx * Math.sin(a) + dz * Math.cos(a);
-        return {
-            lat: CONFIG.gps.lat + rz * CONFIG.gps.latPerM,
-            lng: CONFIG.gps.lng + rx * CONFIG.gps.lngPerM
-        };
+        return { lat: CONFIG.gps.lat + rz * CONFIG.gps.latPerM, lng: CONFIG.gps.lng + rx * CONFIG.gps.lngPerM };
     }
-
     function showGPS() {
         DOM.gpsTbody.innerHTML = '';
         CONFIG.objects.forEach(obj => {
             const gps = localToGPS(obj.x, obj.z);
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #eee';
-            tr.innerHTML = `
-                <td style="padding: 6px 8px;">${obj.label.replace(/[^\w\sА-Яа-я"]/g, '').trim()}</td>
-                <td style="padding: 6px 8px; text-align: center;">${obj.x.toFixed(1)}, ${obj.z.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: center;">${gps.lat.toFixed(6)}</td>
-                <td style="padding: 6px 8px; text-align: center;">${gps.lng.toFixed(6)}</td>`;
+            tr.innerHTML = `<td style="padding: 6px 8px;">${obj.label.replace(/[^\w\sА-Яа-я"]/g, '').trim()}</td><td style="padding: 6px 8px; text-align: center;">${obj.x.toFixed(1)}, ${obj.z.toFixed(1)}</td><td style="padding: 6px 8px; text-align: center;">${gps.lat.toFixed(6)}</td><td style="padding: 6px 8px; text-align: center;">${gps.lng.toFixed(6)}</td>`;
             DOM.gpsTbody.appendChild(tr);
         });
         DOM.gpsModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
     }
-
     setupModal(DOM.gpsModal, ['close-gps-modal', 'close-gps-btn']);
 
-    // ═══════════════════════════════════════════════════════════════
-    // МЕНЮ
-    // ═══════════════════════════════════════════════════════════════
     function toggleMenu() { DOM.mobileMenu.classList.toggle('open'); }
     function closeMenu() { DOM.mobileMenu.classList.remove('open'); }
-
     DOM.hamburger.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
     DOM.closeMenu.addEventListener('click', closeMenu);
-    document.addEventListener('click', (e) => {
-        if (DOM.mobileMenu.classList.contains('open') && !DOM.mobileMenu.contains(e.target) && e.target !== DOM.hamburger) {
-            closeMenu();
-        }
-    });
-
-    document.querySelectorAll('#mobile-menu .ctrl-btn[data-view]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            DOM.viewSelect.value = this.dataset.view;
-            DOM.viewSelect.dispatchEvent(new Event('change'));
-            closeMenu();
-        });
-    });
-
-    DOM.mobile.comms.addEventListener('click', function() {
-        DOM.toggleComm.click();
-        this.textContent = DOM.toggleComm.textContent;
-        closeMenu();
-    });
-
-    DOM.mobile.labels.addEventListener('click', function() {
-        DOM.toggleLabels.click();
-        this.textContent = DOM.toggleLabels.textContent;
-        closeMenu();
-    });
-
+    document.addEventListener('click', (e) => { if (DOM.mobileMenu.classList.contains('open') && !DOM.mobileMenu.contains(e.target) && e.target !== DOM.hamburger) closeMenu(); });
+    document.querySelectorAll('#mobile-menu .ctrl-btn[data-view]').forEach(btn => { btn.addEventListener('click', function() { DOM.viewSelect.value = this.dataset.view; DOM.viewSelect.dispatchEvent(new Event('change')); closeMenu(); }); });
+    DOM.mobile.comms.addEventListener('click', function() { DOM.toggleComm.click(); this.textContent = DOM.toggleComm.textContent; closeMenu(); });
+    DOM.mobile.labels.addEventListener('click', function() { DOM.toggleLabels.click(); this.textContent = DOM.toggleLabels.textContent; closeMenu(); });
     DOM.mobile.measure.addEventListener('click', () => { setMeasureMode('dist'); closeMenu(); });
     DOM.mobile.area.addEventListener('click', () => { setMeasureMode('area'); closeMenu(); });
     DOM.mobile.norms.addEventListener('click', () => { openNorms(); closeMenu(); });
     DOM.mobile.report.addEventListener('click', () => { openReportModal(); closeMenu(); });
-    DOM.mobile.plan.addEventListener('click', () => {
-        DOM.planModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        initPlanScene();
-        closeMenu();
-    });
+    DOM.mobile.plan.addEventListener('click', () => { DOM.planModal.style.display = 'block'; document.body.style.overflow = 'hidden'; initPlanScene(); closeMenu(); });
     DOM.mobile.png.addEventListener('click', () => { exportPNG(); closeMenu(); });
     DOM.mobile.pdf.addEventListener('click', () => { exportPDF(); closeMenu(); });
     DOM.mobile.gps.addEventListener('click', () => { showGPS(); closeMenu(); });
 
-    // ═══════════════════════════════════════════════════════════════
-    // ПАНЕЛЬ ПЛАНИРОВКИ (режим изменений / сохранить / сброс)
-    // ═══════════════════════════════════════════════════════════════
     DOM.edit.modeBtn.addEventListener('click', () => setEditMode(!editMode));
-
-    DOM.edit.saveBtn.addEventListener('click', () => {
-        saveLayout();
-        toast('💾 Планировка сохранена');
+    DOM.edit.violationsBtn.addEventListener('click', function() {
+        showViolationRings = !showViolationRings;
+        this.textContent = showViolationRings ? '⭕ Скрыть нарушения' : '🔴 Показать нарушения';
+        this.classList.toggle('viol-active', showViolationRings);
+        groups.violRings.visible = showViolationRings;
+        if (showViolationRings) buildViolationRings();
     });
+    DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast('💾 Планировка сохранена'); });
+    DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка будет удалена.')) return; resetLayout(); });
+    DOM.edit.toggle.addEventListener('click', () => { const collapsed = DOM.edit.panel.classList.toggle('collapsed'); DOM.edit.toggle.textContent = collapsed ? '+' : '–'; DOM.edit.fab.style.display = collapsed ? 'flex' : 'none'; });
+    DOM.edit.fab.addEventListener('click', () => { DOM.edit.panel.classList.remove('collapsed'); DOM.edit.toggle.textContent = '–'; DOM.edit.fab.style.display = 'none'; });
 
-    DOM.edit.resetBtn.addEventListener('click', () => {
-        if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка будет удалена.')) return;
-        resetLayout();
-    });
-
-    DOM.edit.toggle.addEventListener('click', () => {
-        const collapsed = DOM.edit.panel.classList.toggle('collapsed');
-        DOM.edit.toggle.textContent = collapsed ? '+' : '–';
-        DOM.edit.fab.style.display = collapsed ? 'flex' : 'none';
-    });
-    DOM.edit.fab.addEventListener('click', () => {
-        DOM.edit.panel.classList.remove('collapsed');
-        DOM.edit.toggle.textContent = '–';
-        DOM.edit.fab.style.display = 'none';
-    });
-
-    // Инициализация
     updateNormBadge();
     setTimeout(() => {
-        if (hadSavedLayout) {
-            toast('📂 Загружена сохранённая планировка', 3500);
-        } else {
-            toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
-        }
+        if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
+        else toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: панель планировки + живые коммуникации активны.');
+    console.log('✅ Проект Берн: панель планировки + живые коммуникации + кольца нарушений активны.');
     </script>
 </body>
 </html>
