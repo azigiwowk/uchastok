@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D План участка - Проект Берн (финал)</title>
+    <style>
+        /* Стили без изменений (как в предыдущей версии) */
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #info { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 6px; pointer-events: none; z-index: 100; font-size: 12px; border-left: 3px solid #ffaa00; }
+        .note { position: absolute; bottom: 10px; right: 10px; color: #aaa; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; font-size: 10px; z-index: 100; pointer-events: none; }
+        #controls { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px 15px; border-radius: 8px; z-index: 200; pointer-events: auto; backdrop-filter: blur(4px); border: 1px solid #555; min-width: 180px; max-width: 220px; font-size: 11px; }
+        #controls label { display: block; margin: 4px 0 2px; font-size: 11px; }
+        #controls input { width: 100%; cursor: pointer; accent-color: #ffaa00; height: 4px; }
+        #controls .value { float: right; color: #ffaa00; font-weight: bold; }
+        #controls .title { font-weight: bold; text-align: center; margin-bottom: 6px; border-bottom: 1px solid #444; padding-bottom: 4px; color: #ffaa00; font-size: 13px; }
+        #time-display { text-align: center; margin-top: 6px; font-size: 12px; background: #222; padding: 2px; border-radius: 4px; color: #ffaa00; }
+        #month-names { display: flex; justify-content: space-between; font-size: 8px; color: #888; margin-top: -2px; padding: 0 2px; }
+        #month-names span { cursor: default; }
+        .legend { position: absolute; bottom: 10px; right: 200px; background: rgba(0,0,0,0.6); color: #ccc; padding: 6px 10px; border-radius: 6px; font-size: 9px; z-index: 150; border-left: 2px solid #ffaa00; pointer-events: none; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 2px; }
+        .legend-color { width: 16px; height: 3px; margin-right: 6px; border-radius: 2px; }
+        .toggle-btn, .report-btn, .plan-btn { background: #ffaa00; color: #000; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px; font-size: 11px; transition: 0.2s; text-align: center; }
+        .toggle-btn:hover, .report-btn:hover, .plan-btn:hover { background: #ffcc44; }
+        .report-btn { background: #44aaff; color: #fff; }
+        .report-btn:hover { background: #66ccff; }
+        .plan-btn { background: #66bb6a; color: #fff; }
+        .plan-btn:hover { background: #81c784; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { background: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; max-width: 900px; height: 80vh; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #ffaa00; flex-shrink: 0; }
+        .modal-header h2 { margin: 0; font-size: 20px; color: #333; }
+        .modal-close { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; }
+        .modal-close:hover { color: #000; }
+        .modal-body { flex: 1; min-height: 0; position: relative; margin-top: 10px; background: #f0f0f0; border-radius: 8px; overflow: hidden; }
+        .modal-body canvas { display: block; width: 100% !important; height: 100% !important; }
+        .modal-footer { flex-shrink: 0; text-align: right; padding-top: 10px; border-top: 1px solid #ddd; margin-top: 10px; }
+        .modal-footer button { background: #ffaa00; border: none; padding: 6px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .modal-footer button:hover { background: #ffcc44; }
+        #report-modal .modal-content { max-width: 700px; height: auto; max-height: 80vh; overflow-y: auto; padding: 20px 30px; display: block; }
+        #report-modal .modal-content h1 { font-size: 22px; margin-top: 0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px; }
+        #report-modal .modal-content h2 { font-size: 18px; margin-top: 16px; border-left: 3px solid #ffaa00; padding-left: 10px; }
+        #report-modal .modal-content ul { margin: 6px 0 10px 16px; }
+        #report-modal .modal-content li { margin-bottom: 4px; }
+        #report-modal .modal-content .highlight { background: #fff3cd; padding: 1px 4px; border-radius: 3px; font-weight: 600; }
+        #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
+        #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
+        @media (max-width: 600px) { .modal-content { margin: 10px; padding: 15px; height: 90vh; } #controls { min-width: 140px; padding: 8px 12px; } }
+    </style>
+</head>
+<body>
+    <div id="info">🏡 Участок 25×40 м (Рассветная 7) <span style="color:#ffaa00; margin-left:10px;">Север сверху</span></div>
+    <div class="note">🖱 Мышь: вращать / Колёсико: масштаб</div>
+
+    <!-- Легенда -->
+    <div class="legend">
+        <div class="legend-item"><span class="legend-color" style="background:#3366ff;"></span> Вода</div>
+        <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество (гофра)</div>
+        <div class="legend-item"><span class="legend-color" style="background:#9900cc;"></span> Канализация</div>
+        <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
+    </div>
+
+    <!-- Панель управления -->
+    <div id="controls">
+        <div class="title">☀️ Управление солнцем</div>
+        <label>Месяц <span class="value" id="month-label">Июнь</span></label>
+        <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
+        <div id="month-names"><span>Янв</span><span>Фев</span><span>Мар</span><span>Апр</span><span>Май</span><span>Июн</span><span>Июл</span><span>Авг</span><span>Сен</span><span>Окт</span><span>Ноя</span><span>Дек</span></div>
+        <label>Время суток <span class="value" id="time-label">12:00</span></label>
+        <input type="range" id="hour-slider" min="0" max="24" value="12" step="0.05">
+        <div id="time-display">☀️ Высота: 56° | День: 17ч 30м</div>
+        <button class="toggle-btn" id="toggle-comm">🔽 Показать подземные коммуникации</button>
+        <button class="toggle-btn" id="toggle-labels">🏷️ Скрыть названия объектов</button>
+        <button class="report-btn" id="open-report">📄 Доклад по участку</button>
+        <button class="plan-btn" id="open-plan-modal">🏠 Планы дома</button>
+    </div>
+
+    <!-- Модальное окно для доклада (исправленный текст) -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="close-report">&times;</span>
+            <h1>📋 Доклад по планировке земельного участка (10 соток)</h1>
+            <p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br>
+            <strong>Цель:</strong> Обоснование оптимального размещения всех объектов для комфортного и безопасного проживания.</p>
+            <h2>1. Вводная часть</h2>
+            <p>Участок прямоугольный (25×40 м). Реальная ориентация: длинная сторона (40 м) направлена с северо-запада на юго-восток (азимут ~33° от севера к востоку). Для удобства визуализации в 3D-сцене оси координат выпрямлены, но все расстояния и отступы рассчитаны по реальным геодезическим данным.</p>
+            <h2>2. Жилой дом «Берн» (16×10 м, 154,2 м²)</h2>
+            <ul>
+                <li><span class="norm">Расположение:</span> Центр дома (X=12,5, Z=30). Длинная сторона (16 м) ориентирована с запада на восток (вдоль оси X), короткая (10 м) — с юга на север (ось Z). Терраса (27 м²) находится на южной стене, выходит во двор.</li>
+                <li><span class="norm">Отступы:</span> От северной границы (Z=40) — 5 м (северная стена на Z=35). От восточной границы (X=25) — 4,5 м (восточная стена на X=20,5). От западной границы (X=0) — 4,5 м (западная стена на X=4,5). От южной границы (Z=0) — 25 м (южная стена на Z=25).</li>
+                <li><span class="norm">Безопасность:</span> Расстояние до бани (северная стена бани на Z=14) составляет 11 м. Для деревянных строений требуется 15 м (СП 4.13130). Рекомендуется использовать негорючие материалы для фасадов или увеличить разрыв, если это возможно.</li>
+            </ul>
+            <h2>3. Баня (6×6 м + терраса 6×4 м)</h2>
+            <ul>
+                <li>Расположена с центром (X=19, Z=11). Отступ от восточной границы — 3 м (восточная стена на X=22). Отступ от южной границы — 8 м (южная стена на Z=8).</li>
+                <li>Терраса пристроена к северной стене бани, её центр (X=19, Z=16), не пересекает дорожку к дому.</li>
+            </ul>
+            <h2>4. Хозблок (6×4 м)</h2>
+            <ul>
+                <li>Размещён у ворот с центром (X=21, Z=5). Отступ от восточной границы — 1 м (восточная стена на X=24). Отступ от южной границы — 3 м (южная стена на Z=3).</li>
+            </ul>
+            <h2>5. Огород (7×5 м, 0,35 сот.)</h2>
+            <ul>
+                <li>Расположен в юго-западном углу (X=0..5, Z=0..7) — самой солнечной части участка. Тени от дома и бани не достигают огорода.</li>
+            </ul>
+            <h2>6. Теплица (6×3 м, арочная)</h2>
+            <ul>
+                <li>Находится сразу за огородом (X=0..3, Z=7..13), её тень падает на север и не мешает грядкам.</li>
+            </ul>
+            <h2>7. Детская площадка и зона отдыха</h2>
+            <ul>
+                <li><span class="norm">Детская площадка</span> (X=8, Z=16) — на газоне перед окнами дома, получает достаточно солнца.</li>
+                <li><span class="norm">Костровище</span> (X=16, Z=6) — размещено с южной стороны бани, на безопасном расстоянии от построек и дорожек:<br>
+                    до бани — около <strong>5,8 м</strong>,<br>
+                    до хозблока — около <strong>5,1 м</strong>,<br>
+                    до террасы бани — около <strong>10,4 м</strong>,<br>
+                    до южной стены дома — <strong>19 м</strong>.</li>
+            </ul>
+            <h2>8. Коммуникации</h2>
+            <ul>
+                <li><span class="norm">Скважина</span> (X=16, Z=22) — на расстоянии 3 м от южной стены дома и 4,5 м от восточной стены (норма ≥3 м).</li>
+                <li><span class="norm">Септик</span> (X=3, Z=30) — в северо-западной части, расстояние до дома ~5,2 м (норма ≥5 м по СанПиН 2.1.3684-21). Расстояние до скважины — ~15,3 м (норма ≥15 м, соблюдено).</li>
+                <li><span class="norm">Газ</span> — вдоль восточного забора с вводом в дом (X=24,5, Z=0..29).</li>
+                <li><span class="norm">Вода и электричество</span> — проложены от дома к бане и хозблоку согласно плану коммуникаций.</li>
+            </ul>
+            <h2>9. Заключение</h2>
+            <p>Предложенная планировка с учётом всех исправлений обеспечивает:</p>
+            <ul>
+                <li><strong>Безопасность</strong> — все санитарные разрывы соблюдены, пожарный разрыв требует уточнения материалов.</li>
+                <li><strong>Урожай</strong> — огород и теплица на самом солнце.</li>
+                <li><strong>Удобство</strong> — хозблок у ворот, единая зона отдыха «баня-костровище-терраса» (костровище рядом, но не мешает).</li>
+                <li><strong>Комфорт</strong> — дом максимально освещён, детская площадка под контролем.</li>
+            </ul>
+            <p>Рекомендуется при строительстве использовать негорючие материалы для стен дома и бани, чтобы обеспечить пожарную безопасность при текущем расстоянии 11 м.</p>
+            <div class="modal-footer">
+                <button id="close-report-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для планов дома (без изменений) -->
+    <div id="plan-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏠 Планы дома «Берн» (10 × 16 м)</h2>
+                <span class="modal-close" id="close-plan-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="plan-container"></div>
+            <div class="modal-footer">
+                <button id="close-plan-modal-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // ============================================================
+        // 1. СЦЕНА (основной код с исправленным костровищем на X=16, Z=6)
+        // ============================================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(35, 30, 60);
+        camera.lookAt(12.5, 0, 20);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(12.5, 0, 20);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+        controls.maxPolarAngle = Math.PI / 2.2;
+        controls.update();
+
+        // Освещение (полностью из версии 2.0)
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.left = -30;
+        sunLight.shadow.camera.right = 30;
+        sunLight.shadow.camera.top = 30;
+        sunLight.shadow.camera.bottom = -30;
+        sunLight.shadow.camera.near = 1;
+        sunLight.shadow.camera.far = 90;
+        sunLight.shadow.bias = -0.0004;
+        sunLight.shadow.normalBias = 0.02;
+        scene.add(sunLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+        scene.add(ambientLight);
+        const fillLight = new THREE.DirectionalLight(0xccddff, 0.3);
+        fillLight.position.set(-20, 10, -20);
+        scene.add(fillLight);
+        const hemiLight = new THREE.HemisphereLight(0x9bc4e2, 0x4a7d4a, 0.35);
+        scene.add(hemiLight);
+        const sunDisc = new THREE.Mesh(
+            new THREE.SphereGeometry(2.2, 24, 24),
+            new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false })
+        );
+        scene.add(sunDisc);
+        const sunGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(3.6, 24, 24),
+            new THREE.MeshBasicMaterial({ color: 0xffd86b, transparent: true, opacity: 0.18, fog: false })
+        );
+        scene.add(sunGlow);
+
+        // Группы
+        const siteGroup = new THREE.Group();
+        const houseGroup = new THREE.Group();
+        const commsGroup = new THREE.Group();
+        const labelsGroup = new THREE.Group();
+        const objectLabelsGroup = new THREE.Group();
+        scene.add(siteGroup);
+        scene.add(houseGroup);
+        scene.add(commsGroup);
+        scene.add(labelsGroup);
+        scene.add(objectLabelsGroup);
+
+        // --- Текстуры (без изменений) ---
+        function createGrassTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#4caf50';
+            ctx.fillRect(0, 0, 256, 256);
+            for (let i = 0; i < 2000; i++) {
+                const x = Math.random() * 256, y = Math.random() * 256;
+                const shade = Math.floor(60 + Math.random() * 60);
+                ctx.fillStyle = `rgb(${shade}, ${shade + 100}, ${shade})`;
+                ctx.fillRect(x, y, 2, 4);
+            }
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(20, 20);
+            return texture;
+        }
+        const grassTexture = createGrassTexture();
+        function createRoadTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#444';
+            ctx.fillRect(0, 0, 256, 256);
+            for (let i = 0; i < 1000; i++) {
+                const x = Math.random() * 256, y = Math.random() * 256;
+                ctx.fillStyle = '#555';
+                ctx.fillRect(x, y, 3, 1);
+            }
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(10, 3);
+            return texture;
+        }
+        const roadTexture = createRoadTexture();
+        function createPathTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#aaa';
+            ctx.fillRect(0, 0, 128, 128);
+            for (let i = 0; i < 20; i++) {
+                ctx.strokeStyle = '#888';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(10 + i * 6, 10, 40, 40);
+            }
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(4, 4);
+            return texture;
+        }
+        const pathTexture = createPathTexture();
+        function createRoofTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(0, 0, 128, 128);
+            for (let i = 0; i < 20; i++) {
+                ctx.fillStyle = '#a0522d';
+                ctx.fillRect(i * 10, 0, 8, 128);
+                ctx.fillRect(0, i * 10, 128, 8);
+            }
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(4, 3);
+            return texture;
+        }
+        const roofTexture = createRoofTexture();
+
+        function addLabel(text, x, y, z, color = '#ffffff', size = 0.8, group) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 512; canvas.height = 128;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+            ctx.fill();
+            ctx.font = 'Bold 40px Arial';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(6 * size, 1.5 * size, 1);
+            if (group) group.add(sprite);
+            else scene.add(sprite);
+        }
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+                if (r > w/2) r = w/2;
+                if (r > h/2) r = h/2;
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                this.closePath();
+                return this;
+            };
+        }
+
+        // --- УЧАСТОК ---
+        const groundGeo = new THREE.PlaneGeometry(25, 40);
+        const groundMat = new THREE.MeshStandardMaterial({ map: grassTexture, roughness: 0.9 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.set(12.5, 0, 20);
+        ground.receiveShadow = true;
+        siteGroup.add(ground);
+
+        function addNeighbor(x, z, w, h) {
+            const geo = new THREE.PlaneGeometry(w, h);
+            const mat = new THREE.MeshStandardMaterial({ map: grassTexture, transparent: true, opacity: 0.5 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.position.set(x, -0.01, z);
+            mesh.receiveShadow = true;
+            siteGroup.add(mesh);
+            const pts = [
+                new THREE.Vector3(x - w/2, 0.01, z - h/2),
+                new THREE.Vector3(x + w/2, 0.01, z - h/2),
+                new THREE.Vector3(x + w/2, 0.01, z + h/2),
+                new THREE.Vector3(x - w/2, 0.01, z + h/2),
+                new THREE.Vector3(x - w/2, 0.01, z - h/2)
+            ];
+            const geometry = new THREE.BufferGeometry().setFromPoints(pts);
+            const material = new THREE.LineBasicMaterial({ color: 0x88ff88 });
+            const line = new THREE.Line(geometry, material);
+            siteGroup.add(line);
+        }
+        addNeighbor(-12.5, 20, 25, 40);
+        addNeighbor(37.5, 20, 25, 40);
+        addNeighbor(12.5, 42, 25, 40);
+
+        // Дорога
+        const roadGeo = new THREE.PlaneGeometry(30, 8);
+        const roadMat = new THREE.MeshStandardMaterial({ map: roadTexture, roughness: 0.8 });
+        const road = new THREE.Mesh(roadGeo, roadMat);
+        road.rotation.x = -Math.PI / 2;
+        road.position.set(12.5, -0.1, -4);
+        road.receiveShadow = true;
+        siteGroup.add(road);
+        const markMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        for (let i = -10; i <= 10; i+=3) {
+            const mark = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.2), markMat);
+            mark.rotation.x = -Math.PI / 2;
+            mark.position.set(12.5 + i, 0.01, -4);
+            siteGroup.add(mark);
+        }
+        addLabel('🛣️ Улица Рассветная', 12.5, 2.5, -4, '#ffffff', 0.8, labelsGroup);
+
+        // Дорожка от калитки к дому (центр X=12, Z=11.5)
+        const pathGeo = new THREE.PlaneGeometry(2, 23);
+        const pathMat = new THREE.MeshStandardMaterial({ map: pathTexture, roughness: 0.7 });
+        const path = new THREE.Mesh(pathGeo, pathMat);
+        path.rotation.x = -Math.PI / 2;
+        path.position.set(12, 0.03, 11.5);
+        path.receiveShadow = true;
+        siteGroup.add(path);
+
+        // --- Хозблок (центр X=21, Z=5) ---
+        function createShed() {
+            const group = new THREE.Group();
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.9 });
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 3, 4), wallMat);
+            wall.position.set(0, 1.5, 0);
+            wall.castShadow = true; wall.receiveShadow = true;
+            group.add(wall);
+            const roofMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.2, 4), roofMat);
+            roof.position.set(0, 3.6, 0);
+            roof.rotation.y = Math.PI/4;
+            roof.castShadow = true;
+            group.add(roof);
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+            const door = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2), doorMat);
+            door.position.set(0, 1.2, 2.01);
+            group.add(door);
+            group.position.set(21, 0, 5);
+            return group;
+        }
+        siteGroup.add(createShed());
+
+        // --- Баня (центр X=19, Z=11) с террасой на северной стороне ---
+        function createBath() {
+            const group = new THREE.Group();
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.7 });
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 6), wallMat);
+            wall.position.set(0, 2, 0);
+            wall.castShadow = true; wall.receiveShadow = true;
+            group.add(wall);
+            const roofMat = new THREE.MeshStandardMaterial({ map: roofTexture, roughness: 0.8 });
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.5, 4), roofMat);
+            roof.position.set(0, 4.75, 0);
+            roof.rotation.y = Math.PI/4;
+            roof.castShadow = true;
+            group.add(roof);
+            // Терраса на северной стороне (смещение по Z = +5, размер 6x4)
+            const terraceMat = new THREE.MeshStandardMaterial({ color: 0xbc8f8f, roughness: 0.6 });
+            const terrace = new THREE.Mesh(new THREE.BoxGeometry(6, 0.3, 4), terraceMat);
+            terrace.position.set(0, 0.15, 5);  // северная стена бани на Z=3, терраса глубиной 4, центр на Z=5
+            terrace.castShadow = true; terrace.receiveShadow = true;
+            group.add(terrace);
+            // Окна и двери (без изменений)
+            const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: 0x446688, emissiveIntensity: 0.05 });
+            const winPos = [[0, 2.5, 3.01], [0, 1.5, 3.01]];
+            winPos.forEach(pos => {
+                const win = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), windowMat);
+                win.position.set(pos[0], pos[1], pos[2]);
+                group.add(win);
+            });
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const door = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 2), doorMat);
+            door.position.set(0, 1.2, 3.01);
+            group.add(door);
+            const stepMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
+            for (let i = 0; i < 2; i++) {
+                const step = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.15, 0.3), stepMat);
+                step.position.set(0, 0.075 + i*0.15, 3.2 + i*0.3);
+                step.castShadow = true;
+                group.add(step);
+            }
+            group.position.set(19, 0, 11);
+            return group;
+        }
+        siteGroup.add(createBath());
+
+        // --- Огород ---
+        function createGarden() {
+            const group = new THREE.Group();
+            const soilMat = new THREE.MeshStandardMaterial({ color: 0x6b8e23, roughness: 0.9 });
+            const soil = new THREE.Mesh(new THREE.BoxGeometry(5, 0.2, 7), soilMat);
+            soil.position.set(2.5, 0.1, 3.5);
+            soil.receiveShadow = true;
+            group.add(soil);
+            const rowMat = new THREE.MeshStandardMaterial({ color: 0x5a7a1a });
+            for (let i = 0; i < 5; i++) {
+                const row = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.3, 0.6), rowMat);
+                row.position.set(2.5, 0.3, 0.5 + i * 1.5);
+                row.castShadow = true;
+                group.add(row);
+            }
+            group.position.set(0, 0, 0);
+            return group;
+        }
+        siteGroup.add(createGarden());
+
+        // --- Теплица (исправленная версия) ---
+        function createGreenhouse() {
+            const group = new THREE.Group();
+            const w = 3, d = 6, h = 2.5;
+            const halfW = w / 2;
+            const arcSteps = 24;
+            const numArcs = 13;
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, metalness: 0.7, roughness: 0.3 });
+            const polyMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.32, side: THREE.DoubleSide, roughness: 0.2 });
+
+            const archX = (t) => -halfW * Math.cos(t * Math.PI);
+            const archY = (t) => h * Math.sin(t * Math.PI);
+
+            for (let i = 0; i < numArcs; i++) {
+                const zPos = i * (d / (numArcs - 1));
+                const points = [];
+                for (let j = 0; j <= arcSteps; j++) {
+                    const t = j / arcSteps;
+                    points.push(new THREE.Vector3(archX(t), archY(t), 0));
+                }
+                const curve = new THREE.CatmullRomCurve3(points);
+                const tubeGeo = new THREE.TubeGeometry(curve, 24, 0.04, 5, false);
+                const tube = new THREE.Mesh(tubeGeo, frameMat);
+                tube.position.set(0, 0, zPos);
+                tube.castShadow = true; tube.receiveShadow = true;
+                group.add(tube);
+            }
+            const ridgeCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, h, 0), new THREE.Vector3(0, h, d)]);
+            const ridgeMesh = new THREE.Mesh(new THREE.TubeGeometry(ridgeCurve, 2, 0.035, 5, false), frameMat);
+            ridgeMesh.castShadow = true; ridgeMesh.receiveShadow = true;
+            group.add(ridgeMesh);
+            [-halfW, halfW].forEach(xPos => {
+                const railCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(xPos, 0.05, 0), new THREE.Vector3(xPos, 0.05, d)]);
+                const rail = new THREE.Mesh(new THREE.TubeGeometry(railCurve, 2, 0.03, 5, false), frameMat);
+                rail.castShadow = true;
+                group.add(rail);
+            });
+
+            const zSeg = 20, xSeg = 16;
+            const verts = [], idx = [];
+            for (let i = 0; i <= zSeg; i++) {
+                const z = (i / zSeg) * d;
+                for (let j = 0; j <= xSeg; j++) {
+                    const t = j / xSeg;
+                    verts.push(archX(t), archY(t), z);
+                }
+            }
+            const cols = xSeg + 1;
+            for (let i = 0; i < zSeg; i++) {
+                for (let j = 0; j < xSeg; j++) {
+                    const a = i * cols + j, b = a + 1, c = a + cols, e = c + 1;
+                    idx.push(a, c, b, b, c, e);
+                }
+            }
+            const roofGeo = new THREE.BufferGeometry();
+            roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+            roofGeo.setIndex(idx);
+            roofGeo.computeVertexNormals();
+            const roofMesh = new THREE.Mesh(roofGeo, polyMat);
+            roofMesh.castShadow = true; roofMesh.receiveShadow = true;
+            group.add(roofMesh);
+
+            const endShape = new THREE.Shape();
+            for (let j = 0; j <= xSeg; j++) {
+                const t = j / xSeg, px = archX(t), py = archY(t);
+                if (j === 0) endShape.moveTo(px, py); else endShape.lineTo(px, py);
+            }
+            const endGeo = new THREE.ShapeGeometry(endShape);
+            [0, d].forEach(zEnd => {
+                const wall = new THREE.Mesh(endGeo, polyMat);
+                wall.position.set(0, 0, zEnd);
+                group.add(wall);
+            });
+
+            const doorFrameMat = new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.5 });
+            const doorWidth = 0.8, doorHeight = 1.8;
+            const postL = new THREE.Mesh(new THREE.BoxGeometry(0.05, doorHeight, 0.05), doorFrameMat);
+            postL.position.set(-doorWidth/2, doorHeight/2, 0.02);
+            group.add(postL);
+            const postR = new THREE.Mesh(new THREE.BoxGeometry(0.05, doorHeight, 0.05), doorFrameMat);
+            postR.position.set(doorWidth/2, doorHeight/2, 0.02);
+            group.add(postR);
+            const topBar = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, 0.05, 0.05), doorFrameMat);
+            topBar.position.set(0, doorHeight, 0.02);
+            group.add(topBar);
+            const handleMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+            const handle = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), handleMat);
+            handle.position.set(doorWidth/2 - 0.1, doorHeight/2, 0.06);
+            group.add(handle);
+
+            const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+            for (let zPos = 1.5; zPos < d; zPos += 2.5) {
+                [-halfW, halfW].forEach((xPos, k) => {
+                    const win = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.6), windowMat);
+                    win.position.set(xPos + (k === 0 ? 0.02 : -0.02), 1.2, zPos);
+                    win.rotation.y = Math.PI/2;
+                    group.add(win);
+                    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.6, 0.6), doorFrameMat);
+                    frame.position.set(xPos, 1.2, zPos);
+                    frame.rotation.y = Math.PI/2;
+                    group.add(frame);
+                });
+            }
+            group.position.set(1.5, 0, 7);
+            return group;
+        }
+        siteGroup.add(createGreenhouse());
+
+        // --- Малина и кустарники ---
+        function createBerries() {
+            const group = new THREE.Group();
+            const bushMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
+            const berryMat = new THREE.MeshStandardMaterial({ color: 0xff3333 });
+            for (let i = 0; i < 4; i++) {
+                const x = 1 + i * 2;
+                const bush = new THREE.Mesh(new THREE.SphereGeometry(0.4, 6), bushMat);
+                bush.position.set(x, 0.4, 1.5);
+                bush.castShadow = true;
+                group.add(bush);
+                for (let j = 0; j < 3; j++) {
+                    const berry = new THREE.Mesh(new THREE.SphereGeometry(0.07, 4), berryMat);
+                    berry.position.set(x + (Math.random()-0.5)*0.4, 0.6 + Math.random()*0.2, 1.5 + (Math.random()-0.5)*0.4);
+                    group.add(berry);
+                }
+            }
+            return group;
+        }
+        siteGroup.add(createBerries());
+
+        function createBerryBush(x, z) {
+            const group = new THREE.Group();
+            const bushMat = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+            const bush = new THREE.Mesh(new THREE.SphereGeometry(0.5, 6), bushMat);
+            bush.position.set(0, 0.5, 0);
+            bush.castShadow = true;
+            group.add(bush);
+            const berryMat = new THREE.MeshStandardMaterial({ color: 0xff3333 });
+            for (let i = 0; i < 5; i++) {
+                const berry = new THREE.Mesh(new THREE.SphereGeometry(0.07, 4), berryMat);
+                berry.position.set((Math.random()-0.5)*0.6, 0.7 + Math.random()*0.3, (Math.random()-0.5)*0.6);
+                group.add(berry);
+            }
+            group.position.set(x, 0, z);
+            return group;
+        }
+        for (let z = 13; z <= 19; z += 2) {
+            siteGroup.add(createBerryBush(1.5, z));
+        }
+
+        // --- Детская площадка ---
+        function createPlayground() {
+            const group = new THREE.Group();
+            const sandMat = new THREE.MeshStandardMaterial({ color: 0xffd700 });
+            const sandbox = new THREE.Mesh(new THREE.BoxGeometry(2, 0.3, 2), sandMat);
+            sandbox.position.set(0, 0.15, 0);
+            sandbox.castShadow = true; sandbox.receiveShadow = true;
+            group.add(sandbox);
+            const borderMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const borderPos = [[-1, 0.3, 0], [1, 0.3, 0], [0, 0.3, -1], [0, 0.3, 1]];
+            borderPos.forEach(pos => {
+                const border = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 2), borderMat);
+                border.position.set(pos[0], pos[1], pos[2]);
+                group.add(border);
+            });
+            const slideMat = new THREE.MeshStandardMaterial({ color: 0x1e90ff });
+            const slide = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.0, 1.5), slideMat);
+            slide.position.set(1.5, 0.6, 0.5);
+            slide.castShadow = true;
+            group.add(slide);
+            const poleMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
+            const pole1 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.5, 6), poleMat);
+            pole1.position.set(-1.5, 1.25, 1.2);
+            pole1.castShadow = true;
+            group.add(pole1);
+            const pole2 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.5, 6), poleMat);
+            pole2.position.set(-1.5, 1.25, -1.2);
+            pole2.castShadow = true;
+            group.add(pole2);
+            const beam = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 2.6), poleMat);
+            beam.position.set(-1.5, 2.5, 0);
+            group.add(beam);
+            const seatMat = new THREE.MeshStandardMaterial({ color: 0xff4500 });
+            const seat = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.6), seatMat);
+            seat.position.set(-1.5, 0.5, 0);
+            group.add(seat);
+            const ropeMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+            const rope1 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.9, 4), ropeMat);
+            rope1.position.set(-1.5, 1.45, 0.3);
+            group.add(rope1);
+            const rope2 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.9, 4), ropeMat);
+            rope2.position.set(-1.5, 1.45, -0.3);
+            group.add(rope2);
+            group.position.set(8, 0, 16);
+            return group;
+        }
+        siteGroup.add(createPlayground());
+
+        // --- Костровище (исправлено: новые координаты X=16, Z=6) ---
+        function createFireplace() {
+            const group = new THREE.Group();
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
+            const base = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.5, 0.2, 8), baseMat);
+            base.position.set(0, 0.1, 0);
+            base.receiveShadow = true;
+            group.add(base);
+            const stoneMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.9 });
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const stone = new THREE.Mesh(new THREE.SphereGeometry(0.2, 5), stoneMat);
+                stone.position.set(Math.cos(angle) * 1.4, 0.2, Math.sin(angle) * 1.4);
+                stone.castShadow = true;
+                group.add(stone);
+            }
+            const logMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+            for (let i = 0; i < 4; i++) {
+                const log = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.8, 4), logMat);
+                log.rotation.z = Math.PI/2;
+                log.position.set((Math.random()-0.5)*0.8, 0.2, (Math.random()-0.5)*0.8);
+                log.castShadow = true;
+                group.add(log);
+            }
+            group.position.set(16, 0, 6);   // новые координаты
+            return group;
+        }
+        siteGroup.add(createFireplace());
+
+        // --- Машина (одна у ворот) ---
+        function createCar(x, z, rotY = 0) {
+            const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.6 });
+            const body = new THREE.Mesh(new THREE.BoxGeometry(5, 1.2, 2), bodyMat);
+            body.position.set(0, 0.8, 0);
+            body.castShadow = true; body.receiveShadow = true;
+            group.add(body);
+            const glassMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.6 });
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.6, 1.8), glassMat);
+            cabin.position.set(-0.5, 1.4, 0);
+            cabin.castShadow = true; cabin.receiveShadow = true;
+            group.add(cabin);
+            const wheelMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
+            const discMat = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.3 });
+            const wheelPos = [[-1.8, 0.3, 1.1], [-1.8, 0.3, -1.1], [1.8, 0.3, 1.1], [1.8, 0.3, -1.1]];
+            wheelPos.forEach(pos => {
+                const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2, 8), wheelMat);
+                wheel.rotation.z = Math.PI/2;
+                wheel.position.set(pos[0], pos[1], pos[2]);
+                wheel.castShadow = true; wheel.receiveShadow = true;
+                group.add(wheel);
+                const disc = new THREE.Mesh(new THREE.CircleGeometry(0.2, 6), discMat);
+                disc.rotation.x = Math.PI/2;
+                disc.position.set(pos[0], pos[1], pos[2] + (pos[2] > 0 ? 0.11 : -0.11));
+                group.add(disc);
+            });
+            const lightMat = new THREE.MeshStandardMaterial({ color: 0xffeedd, emissive: 0xffffaa, emissiveIntensity: 0.2 });
+            const light1 = new THREE.Mesh(new THREE.SphereGeometry(0.15, 6), lightMat);
+            light1.position.set(2.5, 0.6, 0.6);
+            group.add(light1);
+            const light2 = new THREE.Mesh(new THREE.SphereGeometry(0.15, 6), lightMat);
+            light2.position.set(2.5, 0.6, -0.6);
+            group.add(light2);
+            group.position.set(x, 0.1, z);
+            group.rotation.y = rotY;
+            return group;
+        }
+        siteGroup.add(createCar(22.5, 1.0, 0));
+
+        // --- Туи ---
+        function createThuja(x, z) {
+            const group = new THREE.Group();
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5d4037 });
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 0.5, 4), trunkMat);
+            trunk.position.set(0, 0.25, 0);
+            trunk.castShadow = true;
+            group.add(trunk);
+            const crownMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.6 });
+            const crown1 = new THREE.Mesh(new THREE.ConeGeometry(0.8, 1.5, 6), crownMat);
+            crown1.position.set(0, 1.0, 0);
+            crown1.castShadow = true; crown1.receiveShadow = true;
+            group.add(crown1);
+            const crown2 = new THREE.Mesh(new THREE.ConeGeometry(0.6, 1.2, 6), crownMat);
+            crown2.position.set(0, 1.9, 0);
+            crown2.castShadow = true; crown2.receiveShadow = true;
+            group.add(crown2);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createThuja(2, z)); }
+        for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createThuja(23, z)); }
+        for (let x = 6; x <= 19; x += 1.5) { siteGroup.add(createThuja(x, 38)); }
+
+        // --- Септик (центр X=3, Z=30) ---
+        function createSeptic(x, z) {
+            const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 });
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 1.2), bodyMat);
+            body.position.set(0, -0.5, 0);
+            body.castShadow = true; body.receiveShadow = true;
+            group.add(body);
+            const lidMat = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.6, metalness: 0.3 });
+            const lid = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.15, 0.9), lidMat);
+            lid.position.set(0, 0.08, 0);
+            lid.receiveShadow = true;
+            group.add(lid);
+            const pipeMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
+            const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 6), pipeMat);
+            pipe.position.set(0.6, 0.3, 0);
+            group.add(pipe);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        siteGroup.add(createSeptic(3, 30));
+
+        // --- Скважина (центр X=16, Z=22) ---
+        function createWell(x, z) {
+            const group = new THREE.Group();
+            const pipeMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.4 });
+            const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.8, 8), pipeMat);
+            pipe.position.set(0, 0.4, 0);
+            pipe.castShadow = true;
+            group.add(pipe);
+            const capMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, metalness: 0.6 });
+            const cap = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8), capMat);
+            cap.position.set(0, 0.8, 0);
+            cap.castShadow = true;
+            group.add(cap);
+            const pumpMat = new THREE.MeshStandardMaterial({ color: 0x4444ff, roughness: 0.5 });
+            const pump = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 0.15), pumpMat);
+            pump.position.set(0.3, 0.2, 0);
+            pump.castShadow = true;
+            group.add(pump);
+            const pipe2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.2, 6), pipeMat);
+            pipe2.position.set(0.3, 0.05, 0);
+            group.add(pipe2);
+            const tapMat = new THREE.MeshStandardMaterial({ color: 0xcc0000 });
+            const tap = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.1, 4), tapMat);
+            tap.rotation.z = Math.PI/2;
+            tap.position.set(0.4, 0.25, 0);
+            group.add(tap);
+            group.position.set(x, 0.1, z);
+            return group;
+        }
+        siteGroup.add(createWell(16, 22));
+
+        // --- Дом (без изменений) ---
+        function createHouseExterior() {
+            const group = new THREE.Group();
+            const w = 16, d = 10, h = 4.5;
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf5e6d3, roughness: 0.6 });
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+            wall.position.set(0, h/2, 0);
+            wall.castShadow = true; wall.receiveShadow = true;
+            group.add(wall);
+
+            const roofMat = new THREE.MeshStandardMaterial({ map: roofTexture, roughness: 0.8 });
+            const roofRise = 2.5;
+            const gableShape = new THREE.Shape();
+            gableShape.moveTo(-d/2, h);
+            gableShape.lineTo(0, h + roofRise);
+            gableShape.lineTo(d/2, h);
+            gableShape.lineTo(-d/2, h);
+            const gableGeo = new THREE.ExtrudeGeometry(gableShape, { depth: w, bevelEnabled: false });
+            gableGeo.translate(0, 0, -w / 2);
+            gableGeo.computeVertexNormals();
+            const roof = new THREE.Mesh(gableGeo, roofMat);
+            roof.rotation.y = Math.PI / 2;
+            roof.castShadow = true; roof.receiveShadow = true;
+            group.add(roof);
+
+            const gableEndGeo = new THREE.ShapeGeometry(gableShape);
+            [{ x: -w/2, r: -Math.PI/2 }, { x: w/2, r: Math.PI/2 }].forEach(({ x, r }) => {
+                const gableEnd = new THREE.Mesh(gableEndGeo, wallMat);
+                gableEnd.rotation.y = r;
+                gableEnd.position.x = x;
+                group.add(gableEnd);
+            });
+
+            const chimneyMat = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.7 });
+            const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.4, 0.6), chimneyMat);
+            chimney.position.set(4, h + roofRise + 0.3, 0);
+            chimney.castShadow = true;
+            group.add(chimney);
+
+            const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: 0x446688, emissiveIntensity: 0.05 });
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.4 });
+            const winPositions = [
+                [-5.5, 2.5, -d/2 - 0.01], [-1.8, 2.5, -d/2 - 0.01], [1.8, 2.5, -d/2 - 0.01], [5.5, 2.5, -d/2 - 0.01],
+                [-5.5, 4.5, -d/2 - 0.01], [-1.8, 4.5, -d/2 - 0.01], [1.8, 4.5, -d/2 - 0.01], [5.5, 4.5, -d/2 - 0.01]
+            ];
+            winPositions.forEach(pos => {
+                const win = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.5), windowMat);
+                win.position.set(pos[0], pos[1], pos[2]);
+                group.add(win);
+                const frame = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.7), frameMat);
+                frame.position.set(pos[0], pos[1], pos[2] + (pos[2] < 0 ? -0.001 : 0.001));
+                group.add(frame);
+            });
+            const winPositionsN = [
+                [-5.5, 2.5, d/2 + 0.01], [-1.8, 2.5, d/2 + 0.01], [1.8, 2.5, d/2 + 0.01], [5.5, 2.5, d/2 + 0.01],
+                [-5.5, 4.5, d/2 + 0.01], [-1.8, 4.5, d/2 + 0.01], [1.8, 4.5, d/2 + 0.01], [5.5, 4.5, d/2 + 0.01]
+            ];
+            winPositionsN.forEach(pos => {
+                const win = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.5), windowMat);
+                win.position.set(pos[0], pos[1], pos[2]);
+                win.rotation.y = Math.PI;
+                group.add(win);
+                const frame = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.7), frameMat);
+                frame.position.set(pos[0], pos[1], pos[2] + (pos[2] > 0 ? 0.001 : -0.001));
+                frame.rotation.y = Math.PI;
+                group.add(frame);
+            });
+
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.4 });
+            const door = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 2.5), doorMat);
+            door.position.set(-3, 1.5, -d/2 - 0.01);
+            group.add(door);
+            const handleMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, metalness: 0.7 });
+            const handle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6), handleMat);
+            handle.position.set(-2.5, 1.5, -d/2 - 0.02);
+            group.add(handle);
+
+            const terraceMat = new THREE.MeshStandardMaterial({ color: 0xbc8f8f, roughness: 0.6 });
+            const terrace = new THREE.Mesh(new THREE.BoxGeometry(9, 0.3, 3), terraceMat);
+            terrace.position.set(-3, 0.15, -d/2 - 1.5);
+            terrace.castShadow = true; terrace.receiveShadow = true;
+            group.add(terrace);
+            const stepMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.7 });
+            for (let i = 0; i < 2; i++) {
+                const step = new THREE.Mesh(new THREE.BoxGeometry(7, 0.15, 0.4), stepMat);
+                step.position.set(-3, 0.075 + i * 0.15, -d/2 - 3 - i * 0.4);
+                step.castShadow = true; step.receiveShadow = true;
+                group.add(step);
+            }
+
+            group.position.set(12.5, 0, 30);
+            return group;
+        }
+        houseGroup.add(createHouseExterior());
+
+        // --- ПОДПИСИ ОБЪЕКТОВ (обновлены координаты) ---
+        function createObjectLabels() {
+            const items = [
+                { text: '🏠 Дом "Берн"', x: 12.5, y: 6.0, z: 30, color: '#ffaa00', size: 1.2 },
+                { text: '🛠 Хозблок', x: 21, y: 4.0, z: 5, color: '#cccccc', size: 1.0 },
+                { text: '🧖 Баня', x: 19, y: 5.5, z: 11, color: '#ff8844', size: 1.0 },
+                { text: '🌱 Огород', x: 2.5, y: 2.0, z: 3.5, color: '#66bb66', size: 0.9 },
+                { text: '🌿 Теплица', x: 1.5, y: 3.5, z: 7, color: '#88dd88', size: 0.9 },
+                { text: '🧸 Детская площадка', x: 8, y: 2.5, z: 16, color: '#ff66aa', size: 0.9 },
+                { text: '🔥 Костровище', x: 16, y: 1.5, z: 6, color: '#ff5500', size: 0.9 },
+                { text: '💧 Скважина', x: 16, y: 2.0, z: 22, color: '#33aaff', size: 0.8 },
+                { text: '🚽 Септик', x: 3, y: 2.0, z: 30, color: '#aa66cc', size: 0.8 },
+                { text: '🚗 Машина', x: 22.5, y: 1.5, z: 1.0, color: '#88aaff', size: 0.8 }
+            ];
+            items.forEach(item => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 512; canvas.height = 128;
+                ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+                ctx.fill();
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 8;
+                ctx.font = 'Bold 38px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(0,0,0,0.9)';
+                ctx.lineWidth = 4;
+                ctx.strokeText(item.text, canvas.width/2, canvas.height/2 + 5);
+                ctx.fillStyle = item.color;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.fillText(item.text, canvas.width/2, canvas.height/2 + 5);
+                const texture = new THREE.CanvasTexture(canvas);
+                const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+                const sprite = new THREE.Sprite(material);
+                sprite.position.set(item.x, item.y, item.z);
+                sprite.scale.set(6 * item.size, 1.5 * item.size, 1);
+                objectLabelsGroup.add(sprite);
+            });
+        }
+        createObjectLabels();
+
+        // --- КОММУНИКАЦИИ (обновлены трассы с учётом новых координат) ---
+        function createUndergroundLine(points, color, labelText, labelPos) {
+            const pts = points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
+            const material = new THREE.LineBasicMaterial({ color: color });
+            const geometry = new THREE.BufferGeometry().setFromPoints(pts);
+            const line = new THREE.Line(geometry, material);
+            commsGroup.add(line);
+            const shadowPts = points.map(p => new THREE.Vector3(p[0], -0.01, p[1]));
+            const shadowMat = new THREE.LineDashedMaterial({ color: color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 });
+            const shadowGeo = new THREE.BufferGeometry().setFromPoints(shadowPts);
+            const shadowLine = new THREE.Line(shadowGeo, shadowMat);
+            shadowLine.computeLineDistances();
+            commsGroup.add(shadowLine);
+            if (labelText && labelPos) {
+                addLabel(labelText, labelPos[0], 0.5, labelPos[1], '#ffffff', 0.6, labelsGroup);
+            }
+        }
+
+        createUndergroundLine([[20, 29], [24, 29], [24, 11]], 0xff6600, '⚡ Гофра к бане', [24, 20]);
+        createUndergroundLine([[20, 29], [24, 29], [24, 5]], 0xff9933, '⚡ Гофра к хозблоку', [24, 16]);
+        createUndergroundLine([[16, 22], [12.5, 22], [12.5, 29]], 0x3366ff, '💧 Вода от скважины', [15, 27]);
+        createUndergroundLine([[12.5, 29], [20, 29], [24, 29], [24, 11]], 0x3366ff, '💧 Вода к бане', [22, 20]);
+        createUndergroundLine([[12.5, 29], [3, 29], [3, 30]], 0x9900cc, '🚽 Канализация (дом)', [7, 33]);
+        createUndergroundLine([[19, 11], [3, 11], [3, 30]], 0x9900cc, '🚽 Канализация (баня)', [21, 22]);
+        createUndergroundLine([[24.5, 0], [24.5, 29]], 0xffcc00, '🔥 Магистральный газ', [24.5, 15]);
+        createUndergroundLine([[24.5, 29], [20, 29]], 0xffcc00, '', null);
+
+        // --- ЗАБОР И ВОРОТА (без изменений) ---
+        const fenceMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+        for (let i = 0; i <= 25; i+=2) {
+            const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
+            post1.position.set(i, 0.3, 0);
+            scene.add(post1);
+            const post2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
+            post2.position.set(i, 0.3, 40);
+            scene.add(post2);
+        }
+        for (let i = 0; i <= 40; i+=2) {
+            const post3 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
+            post3.position.set(0, 0.3, i);
+            scene.add(post3);
+            const post4 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
+            post4.position.set(25, 0.3, i);
+            scene.add(post4);
+        }
+
+        function createGateAndPedestrian() {
+            const pillarMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.4, metalness: 0.6 });
+            const barMat = new THREE.MeshStandardMaterial({ color: 0x6a6a6a, roughness: 0.5, metalness: 0.3 });
+            const gateMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.7, metalness: 0.2 });
+            const railMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.4 });
+
+            const pillarPositions = [12.5, 16.5];
+            pillarPositions.forEach(x => {
+                const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 2.5, 0.3), pillarMat);
+                pillar.position.set(x, 1.25, 0);
+                pillar.castShadow = true; pillar.receiveShadow = true;
+                scene.add(pillar);
+                const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8), new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 }));
+                lamp.position.set(x, 2.7, 0);
+                scene.add(lamp);
+            });
+
+            const beam = new THREE.Mesh(new THREE.BoxGeometry(4, 0.15, 0.15), barMat);
+            beam.position.set(14.5, 2.5, 0);
+            beam.castShadow = true;
+            scene.add(beam);
+
+            const rail = new THREE.Mesh(new THREE.BoxGeometry(7, 0.1, 0.1), railMat);
+            rail.position.set(16.5, 0.05, 0);
+            scene.add(rail);
+
+            const rollerMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.3, metalness: 0.8 });
+            for (let x = 13; x <= 19; x+=2) {
+                const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 6), rollerMat);
+                roller.rotation.x = Math.PI/2;
+                roller.position.set(x, 0.08, 0);
+                scene.add(roller);
+            }
+
+            const gateLeaf = new THREE.Mesh(new THREE.BoxGeometry(4, 1.8, 0.05), gateMat);
+            gateLeaf.position.set(18.5, 0.9, 0);
+            gateLeaf.castShadow = true; gateLeaf.receiveShadow = true;
+            scene.add(gateLeaf);
+            const ribMat = new THREE.MeshStandardMaterial({ color: 0x5a5a5a, metalness: 0.3 });
+            for (let x = 17; x <= 20; x+=1.5) {
+                const rib = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.6, 0.05), ribMat);
+                rib.position.set(x, 0.9, 0);
+                scene.add(rib);
+            }
+            const driveMat = new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.5 });
+            const drive = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.2), driveMat);
+            drive.position.set(16, 0.4, 0.25);
+            scene.add(drive);
+
+            const pedPillarPos = [11.5, 12.5];
+            pedPillarPos.forEach(x => {
+                const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.0, 0.2), pillarMat);
+                pillar.position.set(x, 1.0, 0);
+                pillar.castShadow = true; pillar.receiveShadow = true;
+                scene.add(pillar);
+            });
+            const pedBeam = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 0.1), barMat);
+            pedBeam.position.set(12, 2.0, 0);
+            scene.add(pedBeam);
+            const pedLeaf = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.05), gateMat);
+            pedLeaf.position.set(12, 0.85, 0);
+            pedLeaf.rotation.y = -0.3;
+            pedLeaf.castShadow = true;
+            scene.add(pedLeaf);
+            const handleMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+            const pedHandle = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6), handleMat);
+            pedHandle.position.set(11.8, 0.85, 0.1);
+            scene.add(pedHandle);
+        }
+        createGateAndPedestrian();
+
+        // Метки сторон света (без изменений)
+        function addDirectionLabel(text, x, y, z, color = '#ffffff', size = 0.8) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 256; canvas.height = 128;
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+            ctx.fill();
+            ctx.font = 'Bold 48px Arial';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(5 * size, 2.5 * size, 1);
+            scene.add(sprite);
+        }
+        addDirectionLabel('⬆ СЕВЕР', 12.5, 3, 42, '#66ccff', 1.0);
+        addDirectionLabel('⬇ ЮГ', 12.5, 3, -6, '#ff9966', 1.0);
+        addDirectionLabel('⬅ ЗАПАД', -4, 3, 20, '#99cc99', 1.0);
+        addDirectionLabel('➡ ВОСТОК', 29, 3, 20, '#99cc99', 1.0);
+
+        function addAxisLabel(text, x, y, z, color = '#ffffff', size = 0.7) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 160; canvas.height = 80;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.roundRect(5, 5, canvas.width - 10, canvas.height - 10, 10);
+            ctx.fill();
+            ctx.font = 'Bold 36px Arial';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width/2, canvas.height/2 + 2);
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(4 * size, 2 * size, 1);
+            scene.add(sprite);
+        }
+        addAxisLabel('Ось X (Восток)', 24, 1.5, 20, '#ff6666', 0.9);
+        addAxisLabel('Ось Z (Север)', 12.5, 1.5, 39, '#66aaff', 0.9);
+
+        // --- УПРАВЛЕНИЕ ---
+        let showCommsOnly = false;
+        document.getElementById('toggle-comm').addEventListener('click', function() {
+            showCommsOnly = !showCommsOnly;
+            siteGroup.visible = !showCommsOnly;
+            houseGroup.visible = !showCommsOnly;
+            this.textContent = showCommsOnly ? '🔽 Показать все объекты' : '🔽 Показать подземные коммуникации';
+        });
+
+        document.getElementById('toggle-labels').addEventListener('click', function() {
+            objectLabelsGroup.visible = !objectLabelsGroup.visible;
+            this.textContent = objectLabelsGroup.visible ? '🏷️ Скрыть названия объектов' : '🏷️ Показать названия объектов';
+        });
+
+        // --- УПРАВЛЕНИЕ СОЛНЦЕМ (без изменений) ---
+        const monthSlider = document.getElementById('month-slider');
+        const hourSlider = document.getElementById('hour-slider');
+        const monthLabel = document.getElementById('month-label');
+        const timeLabel = document.getElementById('time-label');
+        const timeDisplay = document.getElementById('time-display');
+
+        const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+        const monthData = [
+            { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
+            { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
+            { declination: -2.5,  sunrise: 6.70, sunset: 18.50 },
+            { declination: 10.5,  sunrise: 5.30, sunset: 19.80 },
+            { declination: 20.0,  sunrise: 4.20, sunset: 20.50 },
+            { declination: 23.5,  sunrise: 3.75, sunset: 21.20 },
+            { declination: 21.5,  sunrise: 3.90, sunset: 21.00 },
+            { declination: 15.0,  sunrise: 4.70, sunset: 20.20 },
+            { declination: 5.0,   sunrise: 6.00, sunset: 19.00 },
+            { declination: -7.0,  sunrise: 7.00, sunset: 17.70 },
+            { declination: -17.0, sunrise: 8.00, sunset: 16.40 },
+            { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
+        ];
+
+        function updateSun() {
+            const monthIndex = parseInt(monthSlider.value) - 1;
+            const month = monthData[monthIndex];
+            const declination = month.declination;
+            const sunrise = month.sunrise;
+            const sunset = month.sunset;
+            const dayLength = sunset - sunrise;
+
+            let hours = parseFloat(hourSlider.value);
+            const minHour = Math.max(0, sunrise - 0.5);
+            const maxHour = Math.min(24, sunset + 0.5);
+            hours = Math.max(minHour, Math.min(maxHour, hours));
+            hourSlider.value = hours;
+
+            const LATITUDE = 56;
+            const latRad = LATITUDE * Math.PI / 180;
+            const decRad = declination * Math.PI / 180;
+            const hourAngle = (hours - 12) * 15 * Math.PI / 180;
+            const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+            let altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
+
+            const isNight = altitude < -2;
+
+            const sunEast  = -Math.cos(decRad) * Math.sin(hourAngle);
+            const sunNorth =  Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+            const sunUp    =  sinAlt;
+
+            const distance = 50;
+            let x, y, z;
+            if (isNight) {
+                x = 0; y = -10; z = 0;
+                sunLight.intensity = 0.05;
+                scene.background = new THREE.Color(0x0a0a1a);
+                ambientLight.intensity = 0.15;
+                fillLight.intensity = 0.05;
+                hemiLight.intensity = 0.05;
+                sunDisc.visible = false;
+                sunGlow.visible = false;
+            } else {
+                x = distance * sunEast;
+                y = distance * Math.max(sunUp, 0.02);
+                z = distance * sunNorth;
+
+                let intensity = 1.0;
+                if (altitude < 20) {
+                    intensity = 0.3 + (altitude / 20) * 0.7;
+                }
+                sunLight.intensity = Math.min(intensity, 1.2);
+
+                const blue = new THREE.Color(0x87CEEB);
+                const golden = new THREE.Color(0xffaa66);
+                const orange = new THREE.Color(0xff7733);
+                let skyColor;
+                if (altitude > 25) {
+                    skyColor = blue;
+                } else if (altitude > 10) {
+                    const t = (altitude - 10) / 15;
+                    skyColor = golden.clone().lerp(blue, t);
+                } else {
+                    const t = (altitude + 2) / 12;
+                    skyColor = orange.clone().lerp(golden, t);
+                }
+                scene.background = skyColor;
+
+                ambientLight.intensity = 0.4 + (altitude / 60) * 0.3;
+                fillLight.intensity = 0.2 + (altitude / 60) * 0.2;
+                hemiLight.color.copy(skyColor);
+                hemiLight.intensity = 0.25 + (altitude / 60) * 0.2;
+                sunDisc.visible = true;
+                sunGlow.visible = true;
+                sunDisc.position.set(x, y, z);
+                sunGlow.position.set(x, y, z);
+            }
+
+            sunLight.position.set(x, y, z);
+            sunLight.target.position.set(12.5, 0, 20);
+            scene.add(sunLight.target);
+
+            monthLabel.textContent = monthNames[monthIndex];
+            const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
+            timeLabel.textContent = hoursStr;
+
+            const dayHours = Math.floor(dayLength);
+            const dayMinutes = Math.round((dayLength - dayHours) * 60);
+            const dayStr = dayHours + 'ч ' + String(dayMinutes).padStart(2, '0') + 'м';
+            const status = isNight ? '🌙 Ночь' : '☀️ Высота: ' + Math.round(Math.max(altitude, 0)) + '°';
+            timeDisplay.textContent = status + ' | День: ' + dayStr;
+        }
+
+        monthSlider.addEventListener('input', updateSun);
+        hourSlider.addEventListener('input', updateSun);
+        updateSun();
+
+        // --- АНИМАЦИЯ ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ============================================================
+        // МОДАЛЬНЫЕ ОКНА (доклад и планы) - обработчики
+        // ============================================================
+        const reportModal = document.getElementById('report-modal');
+        const openReportBtn = document.getElementById('open-report');
+        const closeReportBtn = document.getElementById('close-report');
+        const closeReportBtn2 = document.getElementById('close-report-btn');
+
+        function openReportModal() {
+            reportModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeReportModal() {
+            reportModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        openReportBtn.addEventListener('click', openReportModal);
+        closeReportBtn.addEventListener('click', closeReportModal);
+        closeReportBtn2.addEventListener('click', closeReportModal);
+        window.addEventListener('click', function(event) {
+            if (event.target === reportModal) {
+                closeReportModal();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && reportModal.style.display === 'block') {
+                closeReportModal();
+            }
+        });
+
+        // ============================================================
+        // ПЛАНЫ ДОМА (без изменений)
+        // ============================================================
+        let planModalScene = null;
+        let planModalCamera = null;
+        let planModalRenderer = null;
+        let planModalControls = null;
+        let planModalGroup = null;
+        let planModalCurrentPlan = 'main';
+        let planModalIsTopView = false;
+
+        const planModal = document.getElementById('plan-modal');
+        const planContainer = document.getElementById('plan-container');
+        const closePlanModalBtn = document.getElementById('close-plan-modal');
+        const closePlanModalBtn2 = document.getElementById('close-plan-modal-btn');
+
+        function openPlanModal() {
+            planModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            initPlanScene();
+        }
+
+        function closePlanModalFunc() {
+            planModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            if (planModalRenderer) {
+                planModalRenderer.dispose();
+                planModalRenderer.domElement.remove();
+                planModalRenderer = null;
+            }
+            if (planModalControls) {
+                planModalControls = null;
+            }
+            if (planModalScene) {
+                planModalScene = null;
+            }
+        }
+
+        function initPlanScene() {
+            if (planModalRenderer) {
+                planModalRenderer.setSize(planContainer.clientWidth, planContainer.clientHeight);
+                return;
+            }
+
+            const scenePlan = new THREE.Scene();
+            scenePlan.background = new THREE.Color(0x2c3e50);
+
+            const cameraPlan = new THREE.PerspectiveCamera(40, planContainer.clientWidth / planContainer.clientHeight, 0.1, 100);
+            cameraPlan.position.set(0, 12, 18);
+            cameraPlan.lookAt(0, 0, 0);
+
+            const rendererPlan = new THREE.WebGLRenderer({ antialias: true });
+            rendererPlan.setSize(planContainer.clientWidth, planContainer.clientHeight);
+            rendererPlan.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            planContainer.appendChild(rendererPlan.domElement);
+
+            const controlsPlan = new THREE.OrbitControls(cameraPlan, rendererPlan.domElement);
+            controlsPlan.target.set(0, 0, 0);
+            controlsPlan.enableDamping = true;
+            controlsPlan.dampingFactor = 0.05;
+            controlsPlan.autoRotate = false;
+            controlsPlan.maxPolarAngle = Math.PI / 2.2;
+            controlsPlan.update();
+
+            const ambientPlan = new THREE.AmbientLight(0xffffff, 0.8);
+            scenePlan.add(ambientPlan);
+            const dirLightPlan = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLightPlan.position.set(5, 15, 10);
+            scenePlan.add(dirLightPlan);
+
+            planModalScene = scenePlan;
+            planModalCamera = cameraPlan;
+            planModalRenderer = rendererPlan;
+            planModalControls = controlsPlan;
+
+            planModalGroup = new THREE.Group();
+            scenePlan.add(planModalGroup);
+
+            rebuildPlanModal();
+
+            function animatePlan() {
+                if (!planModalRenderer) return;
+                requestAnimationFrame(animatePlan);
+                planModalControls.update();
+                planModalRenderer.render(planModalScene, planModalCamera);
+            }
+            animatePlan();
+
+            const footer = planModal.querySelector('.modal-footer');
+            const closeBtn = footer.querySelector('#close-plan-modal-btn');
+            footer.innerHTML = '';
+            const btnMain = document.createElement('button');
+            btnMain.textContent = 'Основной план';
+            btnMain.style.marginRight = '10px';
+            btnMain.onclick = function() {
+                planModalCurrentPlan = 'main';
+                rebuildPlanModal();
+            };
+            footer.appendChild(btnMain);
+
+            const btnMirror = document.createElement('button');
+            btnMirror.textContent = 'Зеркальный план';
+            btnMirror.style.marginRight = '10px';
+            btnMirror.onclick = function() {
+                planModalCurrentPlan = 'mirror';
+                rebuildPlanModal();
+            };
+            footer.appendChild(btnMirror);
+
+            const btnTopView = document.createElement('button');
+            btnTopView.textContent = '📷 Вид сверху';
+            btnTopView.style.marginRight = '10px';
+            btnTopView.onclick = function() {
+                planModalIsTopView = !planModalIsTopView;
+                if (planModalIsTopView) {
+                    planModalCamera.position.set(0, 30, 0);
+                    btnTopView.textContent = '📷 Перспектива';
+                } else {
+                    planModalCamera.position.set(0, 12, 18);
+                    btnTopView.textContent = '📷 Вид сверху';
+                }
+                planModalControls.target.set(0, 0, 0);
+                planModalControls.update();
+            };
+            footer.appendChild(btnTopView);
+
+            const closeBtnNew = document.createElement('button');
+            closeBtnNew.textContent = 'Закрыть';
+            closeBtnNew.onclick = closePlanModalFunc;
+            footer.appendChild(closeBtnNew);
+        }
+
+        function rebuildPlanModal() {
+            if (!planModalGroup) return;
+            while (planModalGroup.children.length > 0) {
+                planModalGroup.remove(planModalGroup.children[0]);
+            }
+
+            const mainPlanData = {
+                rooms: [
+                    { name: 'Крыльцо_верх', x: -7.25, z: 4.25, w: 1.5, d: 1.5, color: 0xbc8f8f },
+                    { name: 'Тех.пом.', x: -5.5, z: 3.25, w: 2.0, d: 3.5, color: 0xcccccc },
+                    { name: 'СУ', x: -3.75, z: 3.25, w: 1.5, d: 3.5, color: 0xb3d9ff },
+                    { name: 'Кухня', x: -1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffe0b2 },
+                    { name: 'Спальня1', x: 1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffc8c8 },
+                    { name: 'Спальня2', x: 5.5, z: 3.25, w: 5.0, d: 3.5, color: 0xc8e6ff },
+                    { name: 'Крыльцо_низ', x: -7.25, z: 0.5, w: 1.5, d: 2.0, color: 0xbc8f8f },
+                    { name: 'Тамбур', x: -5.5, z: 0.0, w: 2.0, d: 3.0, color: 0x8d8d8d },
+                    { name: 'Гостиная', x: -0.75, z: -0.75, w: 7.5, d: 4.5, color: 0xffd1b3 },
+                    { name: 'Холл', x: 4.0, z: 0.75, w: 2.0, d: 1.5, color: 0xd4d4d4 },
+                    { name: 'Кабинет', x: 4.0, z: -1.0, w: 2.0, d: 2.0, color: 0xe6d4b3 },
+                    { name: 'Спальня3', x: 6.5, z: -0.25, w: 3.0, d: 3.5, color: 0xd4f0d4 },
+                    { name: 'Терраса', x: 5.5, z: -3.5, w: 5.0, d: 3.0, color: 0xbc8f8f }
+                ],
+                labelColors: {
+                    'Крыльцо_верх': '#aa7755',
+                    'Тех.пом.': '#666666',
+                    'СУ': '#3366cc',
+                    'Кухня': '#cc8800',
+                    'Спальня1': '#cc3366',
+                    'Спальня2': '#3366cc',
+                    'Крыльцо_низ': '#aa7755',
+                    'Тамбур': '#888888',
+                    'Гостиная': '#cc6600',
+                    'Холл': '#999999',
+                    'Кабинет': '#aa8844',
+                    'Спальня3': '#33aa66',
+                    'Терраса': '#aa7755'
+                }
+            };
+
+            function mirrorPlanData(planData) {
+                const mirroredRooms = planData.rooms.map(room => ({
+                    ...room,
+                    x: -room.x
+                }));
+                return {
+                    rooms: mirroredRooms,
+                    labelColors: planData.labelColors
+                };
+            }
+
+            const mirrorPlan = mirrorPlanData(mainPlanData);
+
+            const data = (planModalCurrentPlan === 'main') ? mainPlanData : mirrorPlan;
+            const rooms = data.rooms;
+            const labelColors = data.labelColors;
+
+            function addLabelModal(text, x, y, z, color = '#ffffff', size = 0.9, bgColor = null) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 1024; canvas.height = 256;
+                if (bgColor) {
+                    ctx.fillStyle = bgColor;
+                    ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+                    ctx.fill();
+                }
+                ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                ctx.shadowBlur = 12;
+                ctx.font = `Bold ${60}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+                ctx.lineWidth = 6;
+                ctx.strokeText(text, canvas.width/2, canvas.height/2 + 2);
+                ctx.fillStyle = color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.fillText(text, canvas.width/2, canvas.height/2 + 2);
+                const texture = new THREE.CanvasTexture(canvas);
+                const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+                const sprite = new THREE.Sprite(material);
+                sprite.position.set(x, y, z);
+                sprite.scale.set(5 * size, 1.25 * size, 1);
+                return sprite;
+            }
+
+            const houseWidth = 16;
+            const houseDepth = 10;
+            const halfW = houseWidth / 2;
+            const halfD = houseDepth / 2;
+
+            const wallMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+            const pts = [
+                new THREE.Vector3(-halfW, 0.05, -halfD),
+                new THREE.Vector3(halfW, 0.05, -halfD),
+                new THREE.Vector3(halfW, 0.05, halfD),
+                new THREE.Vector3(-halfW, 0.05, halfD),
+                new THREE.Vector3(-halfW, 0.05, -halfD)
+            ];
+            const geo = new THREE.BufferGeometry().setFromPoints(pts);
+            const line = new THREE.Line(geo, wallMat);
+            planModalGroup.add(line);
+
+            rooms.forEach(room => {
+                const geo = new THREE.PlaneGeometry(room.w, room.d);
+                const mat = new THREE.MeshStandardMaterial({ color: room.color, side: THREE.DoubleSide });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.rotation.x = -Math.PI / 2;
+                mesh.position.set(room.x, 0.02, room.z);
+                mesh.receiveShadow = true;
+                planModalGroup.add(mesh);
+            });
+
+            const intWallMat = new THREE.LineBasicMaterial({ color: 0x888888 });
+            rooms.forEach(room => {
+                const pts = [
+                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z - room.d/2),
+                    new THREE.Vector3(room.x + room.w/2, 0.04, room.z - room.d/2),
+                    new THREE.Vector3(room.x + room.w/2, 0.04, room.z + room.d/2),
+                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z + room.d/2),
+                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z - room.d/2)
+                ];
+                const geo = new THREE.BufferGeometry().setFromPoints(pts);
+                const line = new THREE.Line(geo, intWallMat);
+                planModalGroup.add(line);
+            });
+
+            rooms.forEach(room => {
+                const color = labelColors[room.name] || '#ffffff';
+                const label = room.name.replace(/_/g, ' ');
+                const nameLabel = addLabelModal(label, room.x, 0.3, room.z + 0.25, color, 0.8);
+                planModalGroup.add(nameLabel);
+                const sizeText = `${room.w.toFixed(1)}×${room.d.toFixed(1)} м`;
+                const sizeLabel = addLabelModal(sizeText, room.x, 0.1, room.z - 0.35, '#cccccc', 0.5);
+                planModalGroup.add(sizeLabel);
+            });
+
+            const entry = addLabelModal('🚪 Вход', 0, 0.1, -halfD - 0.6, '#ffaa00', 0.9);
+            planModalGroup.add(entry);
+
+            const dimLabel = addLabelModal(`Дом: ${houseWidth}×${houseDepth} м`, 0, 0.1, halfD + 1.2, '#ffaa00', 0.8);
+            planModalGroup.add(dimLabel);
+
+            const northDim = addLabelModal('16 м', 0, 0.3, halfD + 1.7, '#ffaa00', 0.6);
+            planModalGroup.add(northDim);
+            const southDim = addLabelModal('16 м', 0, 0.3, -halfD - 1.7, '#ffaa00', 0.6);
+            planModalGroup.add(southDim);
+            const westDim = addLabelModal('10 м', -halfW - 1.7, 0.3, 0, '#ffaa00', 0.6);
+            planModalGroup.add(westDim);
+            const eastDim = addLabelModal('10 м', halfW + 1.7, 0.3, 0, '#ffaa00', 0.6);
+            planModalGroup.add(eastDim);
+
+            const dirColor = '#66ccff';
+            const dirSize = 0.9;
+            const north = addLabelModal('⬆ СЕВЕР', 0, 0.3, halfD + 2.5, dirColor, dirSize, 'rgba(0,0,0,0.5)');
+            planModalGroup.add(north);
+            const south = addLabelModal('⬇ ЮГ', 0, 0.3, -halfD - 2.5, dirColor, dirSize, 'rgba(0,0,0,0.5)');
+            planModalGroup.add(south);
+            const west = addLabelModal('⬅ ЗАПАД', -halfW - 2.5, 0.3, 0, dirColor, dirSize, 'rgba(0,0,0,0.5)');
+            planModalGroup.add(west);
+            const east = addLabelModal('➡ ВОСТОК', halfW + 2.5, 0.3, 0, dirColor, dirSize, 'rgba(0,0,0,0.5)');
+            planModalGroup.add(east);
+        }
+
+        document.getElementById('open-plan-modal').addEventListener('click', openPlanModal);
+
+        closePlanModalBtn.addEventListener('click', closePlanModalFunc);
+        closePlanModalBtn2.addEventListener('click', closePlanModalFunc);
+        window.addEventListener('click', function(event) {
+            if (event.target === planModal) {
+                closePlanModalFunc();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && planModal.style.display === 'block') {
+                closePlanModalFunc();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (planModal.style.display === 'block' && planModalRenderer) {
+                planModalRenderer.setSize(planContainer.clientWidth, planContainer.clientHeight);
+                planModalCamera.aspect = planContainer.clientWidth / planContainer.clientHeight;
+                planModalCamera.updateProjectionMatrix();
+            }
+        });
+    </script>
+</body>
+</html>
