@@ -137,7 +137,7 @@
     </style>
 </head>
 <body>
-    <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север</span></div>
+    <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север (условный)</span></div>
     <div id="norm-badge"></div>
     <div class="note">🖱 Вращать / Масштаб • ✏️ Редактирование — в панели слева</div>
     <div class="legend">
@@ -267,7 +267,7 @@
                     <tbody id="gps-tbody"></tbody>
                 </table>
             </div>
-            <div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">* Координаты рассчитаны на основе привязки к центру участка (56.042291, 38.417342) и его реальной ориентации (азимут 33°).</div>
+            <div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">* Привязка к центру участка (56.042291, 38.417342). Оси сцены повёрнуты на 57,3° относительно истинного севера (длинная сторона идёт СЗ–ЮВ, азимут 122,7°) — по данным акта выноса границ (МСК‑50, зона 2).</div>
             <div class="modal-footer"><button id="close-gps-btn">Закрыть</button></div>
         </div>
     </div>
@@ -285,7 +285,7 @@
     const CONFIG = {
         plot: { w: 25, d: 40 },
         center: { x: 12.5, z: 20 },
-        gps: { lat: 56.042291, lng: 38.417342, angle: 33, latPerM: 0.000009, lngPerM: 0.000012 },
+        gps: { lat: 56.042291, lng: 38.417342, angle: 57.3, latPerM: 0.000009, lngPerM: 0.0000161, solarNoon: 12.44 },
         latitude: 56,
         camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [12.5, 2, -2] },
         objects: [
@@ -894,21 +894,36 @@
         const checks = Norms.checkAll();
         const hard = checks.filter(c => !c.ok && !c.soft);
         const soft = checks.filter(c => !c.ok && c.soft);
+
         let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
-        html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), азимут длинной стороны ~${CONFIG.gps.angle}°<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
-        html += `<h2>1. Автопроверка норм</h2>`;
+        html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
+
+        // ── Раздел 1: ориентация и солнце (памятка) ──
+        html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
+        html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» на 3D‑сцене означают стороны вдоль границ участка, а не истинные стороны света. Это сделано для удобства планировки.</p>`;
+        html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая сторона вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты относительно истинного севера на 57,3°. <strong>Зеркального перепутывания сторон нет</strong> — соответствие проверено по четырём межевым знакам из акта: знак 4 = юго‑западный угол (у калитки), 3 = юго‑восточный, 2 = северо‑восточный, 1 = северо‑западный.</p>`;
+        html += `<p><strong>Где истинные стороны света на экране</strong> (вид «🎥 Стандартный»): истинный север — влево‑вверх (между подписями «СЕВЕР» и «ВОСТОК»); истинный юг — вправо‑вниз; истинный восток — влево‑вниз; истинный запад — вправо‑вверх.</p>`;
+        html += `<p><strong>Солнце считается по реальным координатам</strong> (широта 56,04° с.ш., долгота 38,42° в.д., истинный солнечный полдень ≈ 12:26 по московскому времени), а затем поворачивается в оси сцены на 57,3° — поэтому тени на сцене совпадают с реальными.</p>`;
+        html += `<p><strong>Примеры для самопроверки:</strong></p><ul>`;
+        html += `<li>Июнь, 12:20 — солнце почти в истинном юге, тень падает на истинный север: на экране тень ложится влево, к подписи «ВОСТОК». Это правильно, а не ошибка!</li>`;
+        html += `<li>Июнь, ~06:00 — солнце слева‑внизу (истинный восток‑северо‑восток), тени длинные, направлены вправо‑вверх.</li>`;
+        html += `<li>Июнь, ~21:00 — солнце у подписи «СЕВЕР» (истинный северо‑запад), тени вправо‑вниз (истинный юго‑восток).</li>`;
+        html += `<li>Декабрь, 12:20 — солнце низко справа (высота ≈ 10°), тени в 2–3 раза длиннее июньских и направлены влево‑вверх (истинный север).</li>`;
+        html += `</ul>`;
+
+        html += `<h2>2. Автопроверка норм</h2>`;
         if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
         else {
             if (hard.length) { html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
             if (soft.length) { html += `<p><strong>Рекомендации:</strong></p><ul>`; soft.forEach(c => { html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`; }); html += `</ul>`; }
             html += `<p>Подробная таблица — в разделе «✅ Проверка норм».</p>`;
         }
-        html += `<h2>2. Объекты и отступы</h2><ul>`;
+        html += `<h2>3. Объекты и отступы</h2><ul>`;
         const house = o('house'), bath = o('bath'), shed = o('shed');
         html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы до границ: ${sb(house)}. Терраса ${Utils.fmt(house.terrace.w)}×${Utils.fmt(house.terrace.d)} м — с южной стороны, во двор.</li>`;
         html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.fmt(bath.x)}, Z=${Utils.fmt(bath.z)}). Отступы: ${sb(bath)}. Терраса ${Utils.fmt(bath.terrace.w)}×${Utils.fmt(bath.terrace.d)} м — с северной стороны.</li>`;
         html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
-        html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго-западный угол — самая солнечная часть участка.</li>`;
+        html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго‑западный угол — самая солнечная часть участка.</li>`;
         html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, сразу за огородом.</li>`;
         html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}, на газоне перед окнами дома.</li>`;
         html += `<li><strong>Костровище</strong> — ${dims(o('firepit'))}, центр (X=${Utils.fmt(o('firepit').x)}, Z=${Utils.fmt(o('firepit').z)}).</li>`;
@@ -916,19 +931,19 @@
         html += `<li><strong>Септик</strong> — ${dims(o('septic'))}, центр (X=${Utils.fmt(o('septic').x)}, Z=${Utils.fmt(o('septic').z)}).</li>`;
         html += `<li><strong>Скважина</strong> — ${dims(o('well'))}, центр (X=${Utils.fmt(o('well').x)}, Z=${Utils.fmt(o('well').z)}).</li>`;
         html += `</ul>`;
-        html += `<h2>3. Ключевые расстояния (между краями)</h2><ul>`;
+        html += `<h2>4. Ключевые расстояния (между краями)</h2><ul>`;
         html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма для деревянных ≥15 м)</li>`;
         html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (норма ≥5 м)</li>`;
         html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (норма ≥15 м)</li>`;
         html += `<li>Скважина → дом: <strong>${dist('well','house')} м</strong> (рекомендация ≥3 м)</li>`;
         html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong>, → дом: <strong>${dist('firepit','house')} м</strong> (пожарная норма ≥5 м)</li>`;
         html += `</ul>`;
-        html += `<h2>4. Длины коммуникаций (авторасчёт)</h2><ul>`;
+        html += `<h2>5. Длины коммуникаций (авторасчёт)</h2><ul>`;
         CONFIG.utilities.forEach(u => { html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`; });
         html += `</ul>`;
-        html += `<h2>5. Инженерные системы</h2>` + ENGINEERING_HTML;
-        html += `<h2>6. Заключение</h2>`;
-        if (hard.length) html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 1). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
+        html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
+        html += `<h2>7. Заключение</h2>`;
+        if (hard.length) html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 2). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
         else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха и запас по инженерным системам.</p>`;
         return html;
     }
@@ -1287,26 +1302,32 @@
         const minH = Math.max(0, month.sunrise - 0.5);
         const maxH = Math.min(24, month.sunset + 0.5);
         hours = Math.max(minH, Math.min(maxH, hours));
-        const latRad = CONFIG.latitude * Math.PI / 180;
+
+        const latRad = CONFIG.gps.lat * Math.PI / 180;
         const decRad = month.declination * Math.PI / 180;
-        const hourAngle = (hours - 12) * 15 * Math.PI / 180;
+        const hourAngle = (hours - CONFIG.gps.solarNoon) * 15 * Math.PI / 180;
         const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
         const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
         const isNight = altitude < -2;
+
         const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
         const sunNorth = Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+
         let x, y, z;
         const distance = 50;
         if (isNight) {
-            x = 0; y = -10; z = 0;
+            x = CONFIG.center.x; y = -10; z = CONFIG.center.z;
             sunLight.intensity = 0.05;
             scene.background = new THREE.Color(0x0a0a1a);
             ambientLight.intensity = 0.15; fillLight.intensity = 0.05; hemiLight.intensity = 0.05;
             sunDisc.visible = false; sunGlow.visible = false;
         } else {
-            x = distance * sunEast;
+            const ang = CONFIG.gps.angle * Math.PI / 180;
+            const sceneX = sunEast * Math.cos(ang) + sunNorth * Math.sin(ang);
+            const sceneZ = -sunEast * Math.sin(ang) + sunNorth * Math.cos(ang);
+            x = CONFIG.center.x + distance * sceneX;
             y = distance * Math.max(sinAlt, 0.02);
-            z = distance * sunNorth;
+            z = CONFIG.center.z + distance * sceneZ;
             sunLight.intensity = Math.min(altitude < 20 ? 0.3 + (altitude / 20) * 0.7 : 1.0, 1.2);
             const blue = new THREE.Color(0x87CEEB);
             const golden = new THREE.Color(0xffaa66);
@@ -1326,6 +1347,7 @@
         }
         sunLight.position.set(x, y, z);
         sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
+
         const monthName = CONFIG.monthNames[mi];
         const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
         DOM.monthLabel.textContent = monthName;
@@ -1610,7 +1632,7 @@
         if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
         else toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: панель планировки + живые коммуникации + кольца нарушений активны.');
+    console.log('✅ Проект Берн: в доклад добавлен раздел «Ориентация и солнце».');
     </script>
 </body>
 </html>
