@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D План участка - Проект Берн</title>
     <style>
-        /* ===== ОРИГИНАЛЬНЫЕ СТИЛИ (БЕЗ ИЗМЕНЕНИЙ) ===== */
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #info { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 6px; pointer-events: none; z-index: 100; font-size: 12px; border-left: 3px solid #ffaa00; }
         .note { position: absolute; bottom: 10px; right: 10px; color: #aaa; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; font-size: 10px; z-index: 100; pointer-events: none; }
@@ -13,159 +12,88 @@
         .legend-item { display: flex; align-items: center; margin-bottom: 2px; }
         .legend-color { width: 16px; height: 3px; margin-right: 6px; border-radius: 2px; }
 
-        /* ===== СТАРАЯ ПАНЕЛЬ (СКРЫТА) ===== */
         #controls { display: none; }
 
-        /* ===== ГАМБУРГЕР ===== */
+        /* ===== БЕЙДЖ НОРМ ===== */
+        #norm-badge {
+            position: absolute; top: 44px; left: 10px;
+            background: rgba(0,0,0,0.65); color: #eaffea;
+            padding: 5px 12px; border-radius: 6px;
+            font-size: 12px; z-index: 100; cursor: pointer;
+            border-left: 3px solid #27ae60;
+            backdrop-filter: blur(2px);
+        }
+        #norm-badge.bad { border-left-color: #e74c3c; color: #ffd9d9; }
+
         #hamburger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 300;
-            background: rgba(20, 25, 35, 0.92);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            width: 56px;
-            height: 56px;
-            font-size: 28px;
-            color: #fff;
-            cursor: pointer;
-            touch-action: manipulation;
+            position: fixed; bottom: 20px; right: 20px; z-index: 300;
+            background: rgba(20, 25, 35, 0.92); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%;
+            width: 56px; height: 56px; font-size: 28px; color: #fff;
+            cursor: pointer; touch-action: manipulation;
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.2s;
-            user-select: none;
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.2s; user-select: none;
         }
         #hamburger:active { transform: scale(0.92); }
 
         #mobile-menu {
-            display: none;
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            z-index: 299;
-            background: rgba(16, 20, 30, 0.94);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 16px 18px;
-            min-width: 210px;
-            max-width: 90vw;
-            flex-direction: column;
-            gap: 8px;
+            display: none; position: fixed; bottom: 90px; right: 20px; z-index: 299;
+            background: rgba(16, 20, 30, 0.94); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px;
+            padding: 16px 18px; min-width: 210px; max-width: 90vw;
+            flex-direction: column; gap: 8px;
             box-shadow: 0 12px 50px rgba(0, 0, 0, 0.8);
-            max-height: 70vh;
-            overflow-y: auto;
+            max-height: 70vh; overflow-y: auto;
         }
         #mobile-menu.open { display: flex; }
         #mobile-menu .ctrl-btn {
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 8px 14px;
-            color: #eee;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            touch-action: manipulation;
-            min-height: 38px;
-            width: 100%;
-            justify-content: center;
+            border-radius: 30px; padding: 8px 14px; color: #eee;
+            font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+            touch-action: manipulation; min-height: 38px; width: 100%; justify-content: center;
         }
         #mobile-menu .ctrl-btn:hover { background: rgba(255, 255, 255, 0.15); }
         #mobile-menu .ctrl-btn.active {
-            background: rgba(52, 152, 219, 0.45);
-            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.45); border-color: #3498db;
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.25);
         }
-        #mobile-menu .ctrl-btn.pdf-btn {
-            background: rgba(231, 76, 60, 0.35);
-            border-color: #e74c3c;
-        }
+        #mobile-menu .ctrl-btn.pdf-btn { background: rgba(231, 76, 60, 0.35); border-color: #e74c3c; }
         #mobile-menu .ctrl-btn.pdf-btn:hover { background: rgba(231, 76, 60, 0.55); }
         #mobile-menu .ctrl-slider {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #bbb;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 6px 12px;
-            border-radius: 30px;
-            min-height: 34px;
-            width: 100%;
-            justify-content: space-between;
+            display: flex; align-items: center; gap: 8px; color: #bbb; font-size: 12px;
+            background: rgba(0, 0, 0, 0.25); padding: 6px 12px; border-radius: 30px;
+            min-height: 34px; width: 100%; justify-content: space-between;
         }
         #mobile-menu .ctrl-slider input[type="range"] {
-            flex: 1;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #555;
-            border-radius: 4px;
-            outline: none;
-            margin: 0 8px;
+            flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+            background: #555; border-radius: 4px; outline: none; margin: 0 8px;
         }
         #mobile-menu .ctrl-slider input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #3498db;
-            cursor: pointer;
+            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+            background: #3498db; cursor: pointer;
         }
         #mobile-menu .ctrl-slider input[type="range"]::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #3498db;
-            cursor: pointer;
-            border: none;
+            width: 14px; height: 14px; border-radius: 50%; background: #3498db;
+            cursor: pointer; border: none;
         }
-        #mobile-menu .ctrl-slider span {
-            min-width: 28px;
-            text-align: center;
-            color: #fff;
-        }
+        #mobile-menu .ctrl-slider span { min-width: 28px; text-align: center; color: #fff; }
         #mobile-menu .close-menu {
-            color: #ffaa00;
-            border-top: 1px solid #444;
-            margin-top: 6px;
-            padding-top: 10px;
-            text-align: center;
-            font-weight: bold;
-            background: transparent;
-            border: none;
-            border-top: 1px solid #444;
-            cursor: pointer;
-            padding: 10px 0 0 0;
-            width: 100%;
-            font-size: 14px;
+            color: #ffaa00; margin-top: 6px; text-align: center; font-weight: bold;
+            background: transparent; border: none; border-top: 1px solid #444;
+            cursor: pointer; padding: 10px 0 0 0; width: 100%; font-size: 14px;
         }
         #mobile-menu .close-menu:hover { color: #ffcc44; }
 
         @media (min-width: 769px) {
-            #mobile-menu {
-                min-width: 280px;
-                max-width: 400px;
-                right: 20px;
-                bottom: 90px;
-                padding: 18px 22px;
-            }
+            #mobile-menu { min-width: 280px; max-width: 400px; right: 20px; bottom: 90px; padding: 18px 22px; }
             #mobile-menu .ctrl-btn { font-size: 14px; padding: 10px 16px; }
             #mobile-menu .ctrl-slider { font-size: 13px; padding: 8px 14px; }
             #mobile-menu .ctrl-slider input[type="range"] { height: 5px; }
         }
 
-        /* ===== МОДАЛКИ ===== */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
         .modal-content { background: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; max-width: 900px; height: 80vh; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #ffaa00; flex-shrink: 0; }
@@ -180,152 +108,79 @@
         #report-modal .modal-content { max-width: 700px; height: auto; max-height: 80vh; overflow-y: auto; padding: 20px 30px; display: block; }
         #report-modal .modal-content h1 { font-size: 22px; margin-top: 0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px; }
         #report-modal .modal-content h2 { font-size: 18px; margin-top: 16px; border-left: 3px solid #ffaa00; padding-left: 10px; }
+        #report-modal .modal-content h3 { font-size: 16px; margin-top: 14px; color: #1e4a6b; }
         #report-modal .modal-content ul { margin: 6px 0 10px 16px; }
         #report-modal .modal-content li { margin-bottom: 4px; }
-        #report-modal .modal-content .highlight { background: #fff3cd; padding: 1px 4px; border-radius: 3px; font-weight: 600; }
+        #report-modal .modal-content em { color: #888; font-size: 12px; }
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
 
+        /* ===== ТАБЛИЦА НОРМ ===== */
+        #norms-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+        #norms-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
+        #norms-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .norm-ok { color: #27ae60; font-weight: 700; white-space: nowrap; }
+        .norm-bad { color: #c0392b; font-weight: 700; white-space: nowrap; }
+        .norm-warn { color: #e67e22; font-weight: 700; white-space: nowrap; }
+        .norm-doc { font-size: 11px; color: #888; margin-top: 2px; }
+        .norm-detail { font-size: 11px; color: #555; }
+        #norms-summary { background: #f5f8fc; padding: 12px 16px; border-radius: 10px; font-size: 14px; }
+
         #measure-hint {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            z-index: 250;
-            pointer-events: none;
-            display: none;
-            text-align: center;
-            backdrop-filter: blur(4px);
-            border: 1px solid #ffaa00;
+            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 8px;
+            font-size: 14px; z-index: 250; pointer-events: none; display: none;
+            text-align: center; backdrop-filter: blur(4px); border: 1px solid #ffaa00;
         }
         #measure-hint.show { display: block; }
 
         #pdf-loader {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(6px);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 20px;
-            color: #fff;
-            font-size: 18px;
-            font-weight: 500;
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+            justify-content: center; align-items: center; flex-direction: column;
+            gap: 20px; color: #fff; font-size: 18px; font-weight: 500;
         }
         #pdf-loader.active { display: flex; }
         .spinner {
-            width: 56px;
-            height: 56px;
-            border: 6px solid rgba(255,255,255,0.15);
-            border-top-color: #ffaa00;
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
+            width: 56px; height: 56px;
+            border: 6px solid rgba(255,255,255,0.15); border-top-color: #ffaa00;
+            border-radius: 50%; animation: spin 0.9s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         #pdf-cover-container, #pdf-report-container {
-            position: absolute;
-            left: -9999px;
-            top: 0;
-            width: 780px;
-            background: white;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 40px 45px;
-            z-index: -1;
-            pointer-events: none;
+            position: absolute; left: -9999px; top: 0; width: 780px;
+            background: white; font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 40px 45px; z-index: -1; pointer-events: none;
         }
         #pdf-cover-container .cover-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a2a3a;
-            border-bottom: 4px solid #ffaa00;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-            text-align: center;
+            font-size: 32px; font-weight: 700; color: #1a2a3a;
+            border-bottom: 4px solid #ffaa00; padding-bottom: 12px; margin-bottom: 20px; text-align: center;
         }
         #pdf-cover-container .cover-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 30px;
-            background: #f5f8fc;
-            padding: 18px 22px;
-            border-radius: 14px;
-            margin-bottom: 24px;
-            font-size: 15px;
-            line-height: 1.7;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px;
+            background: #f5f8fc; padding: 18px 22px; border-radius: 14px;
+            margin-bottom: 24px; font-size: 15px; line-height: 1.7;
         }
         #pdf-cover-container .cover-info strong { color: #1e3b5a; }
-        #pdf-cover-container .cover-image {
-            width: 100%;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
         #pdf-cover-container .cover-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-            border-top: 1px solid #ccc;
-            padding-top: 16px;
+            text-align: center; margin-top: 20px; font-size: 14px; color: #666;
+            border-top: 1px solid #ccc; padding-top: 16px;
         }
 
-        #pdf-report-container h1 {
-            font-size: 28px;
-            color: #1a2a3a;
-            border-bottom: 3px solid #ffaa00;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        #pdf-report-container .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 24px;
-            background: #f5f8fc;
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin: 16px 0 24px 0;
-        }
-        #pdf-report-container .info-grid strong { color: #1e3b5a; }
-        #pdf-report-container h2 {
-            font-size: 20px;
-            color: #1e3b5a;
-            margin: 24px 0 12px 0;
-            border-left: 6px solid #ffaa00;
-            padding-left: 14px;
-        }
-        #pdf-report-container h3 {
-            font-size: 17px;
-            color: #1e4a6b;
-            margin: 18px 0 6px 0;
-        }
-        #pdf-report-container p, #pdf-report-container li {
-            font-size: 14px;
-            color: #222;
-        }
-        #pdf-report-container ul {
-            padding-left: 22px;
-            margin: 6px 0 10px 0;
-        }
-        #pdf-report-container .footer {
-            margin-top: 30px;
-            border-top: 1px solid #ccc;
-            padding-top: 16px;
-            font-size: 13px;
-            color: #666;
-            text-align: center;
-        }
+        #pdf-report-container h1 { font-size: 26px; color: #1a2a3a; border-bottom: 3px solid #ffaa00; padding-bottom: 12px; margin-bottom: 20px; }
+        #pdf-report-container h2 { font-size: 19px; color: #1e3b5a; margin: 22px 0 10px 0; border-left: 6px solid #ffaa00; padding-left: 14px; }
+        #pdf-report-container h3 { font-size: 16px; color: #1e4a6b; margin: 16px 0 6px 0; }
+        #pdf-report-container p, #pdf-report-container li { font-size: 13px; color: #222; }
+        #pdf-report-container ul { padding-left: 22px; margin: 6px 0 10px 0; }
+        #pdf-report-container .norm { color: #c0392b; font-weight: 600; }
+        #pdf-report-container table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+        #pdf-report-container th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 6px; text-align: left; }
+        #pdf-report-container td { padding: 5px 6px; border-bottom: 1px solid #eee; }
 
         @media (max-width: 768px) {
             #info { font-size: 10px; padding: 4px 8px; top: 8px; left: 8px; }
+            #norm-badge { top: 36px; left: 8px; font-size: 10px; padding: 4px 8px; }
             .note { display: none; }
             .legend { top: 8px; right: 8px; font-size: 7px; padding: 4px 6px; }
             .legend-color { width: 12px; height: 2px; }
@@ -338,14 +193,10 @@
             .modal-header h2 { font-size: 16px; }
             .modal-close { font-size: 24px; }
             .modal-footer button { font-size: 12px; padding: 4px 14px; }
+            #norms-table { font-size: 11px; }
+            #norms-table th, #norms-table td { padding: 5px 4px; }
             #measure-hint { font-size: 12px; bottom: 70px; padding: 6px 12px; }
-            #mobile-menu {
-                min-width: 180px;
-                max-width: 85vw;
-                bottom: 80px;
-                right: 10px;
-                padding: 14px 14px;
-            }
+            #mobile-menu { min-width: 180px; max-width: 85vw; bottom: 80px; right: 10px; padding: 14px 14px; }
             #mobile-menu .ctrl-btn { font-size: 12px; padding: 6px 10px; }
         }
         @media (max-width: 480px) {
@@ -356,6 +207,7 @@
 </head>
 <body>
     <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север</span></div>
+    <div id="norm-badge"></div>
     <div class="note">🖱 Вращать / Масштаб</div>
     <div class="legend">
         <div class="legend-item"><span class="legend-color" style="background:#3366ff;"></span> Вода</div>
@@ -364,40 +216,32 @@
         <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
     </div>
 
-    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта) ===== -->
+    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта, нужна для слайдеров) ===== -->
     <div id="controls">
-        <div class="panel-header">
-            <div class="title">☀️ Управление солнцем</div>
-            <button class="hide-btn" id="toggle-panel">✕</button>
-        </div>
-        <label>Месяц <span class="value" id="month-label">Июнь</span></label>
+        <label>Месяц <span id="month-label">Июнь</span></label>
         <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
-        <div id="month-names"><span>Янв</span><span>Фев</span><span>Мар</span><span>Апр</span><span>Май</span><span>Июн</span><span>Июл</span><span>Авг</span><span>Сен</span><span>Окт</span><span>Ноя</span><span>Дек</span></div>
-        <label>Время суток <span class="value" id="time-label">12:00</span></label>
+        <label>Время суток <span id="time-label">12:00</span></label>
         <input type="range" id="hour-slider" min="0" max="24" value="12" step="0.05">
         <div id="time-display">☀️ Высота: 56° | День: 17ч 30м</div>
-
-        <button class="toggle-btn measure-btn" id="toggle-measure">📏 Измерить расстояние</button>
-        <select id="view-select" class="view-btn" style="width:100%; margin-top:4px; background:#aa66cc; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer;">
+        <button id="toggle-measure">📏 Измерить расстояние</button>
+        <select id="view-select">
             <option value="default">🎥 Стандартный</option>
             <option value="top">⬇ Вид сверху</option>
             <option value="night">🌙 Ночной режим</option>
             <option value="gate">🚪 От калитки</option>
         </select>
-        <button class="export-btn" id="export-png">📸 Сохранить PNG</button>
-        <button class="export-btn" id="export-pdf" style="background:#e74c3c; margin-top:4px;">📄 Экспорт PDF</button>
-        <button class="toggle-btn" id="toggle-comm">🔽 Коммуникации</button>
-        <button class="toggle-btn" id="toggle-labels">🏷️ Названия</button>
-        <button class="report-btn" id="open-report">📄 Доклад</button>
-        <button class="plan-btn" id="open-plan-modal">🏠 Планы дома</button>
+        <button id="export-png">📸 Сохранить PNG</button>
+        <button id="export-pdf">📄 Экспорт PDF</button>
+        <button id="toggle-comm">🔽 Коммуникации</button>
+        <button id="toggle-labels">🏷️ Названия</button>
+        <button id="open-report">📄 Доклад</button>
+        <button id="open-plan-modal">🏠 Планы дома</button>
     </div>
 
     <div id="measure-hint">👆 Коснитесь участка, чтобы поставить точку</div>
 
-    <!-- ===== ГАМБУРГЕР ===== -->
     <button id="hamburger" aria-label="Меню">☰</button>
 
-    <!-- ===== МЕНЮ ===== -->
     <div id="mobile-menu">
         <button class="ctrl-btn" data-view="default">📷 Стандартный</button>
         <button class="ctrl-btn" data-view="top">⬇ Вид сверху</button>
@@ -406,113 +250,57 @@
         <button class="ctrl-btn" id="toggleCommsMob">🔌 Коммуникации</button>
         <button class="ctrl-btn" id="toggleLabelsMob">🏷️ Названия</button>
         <button class="ctrl-btn" id="toggleMeasureMob">📏 Измерить</button>
+        <button class="ctrl-btn" id="showNormsBtnMob">✅ Проверка норм</button>
         <button class="ctrl-btn" id="showReportBtnMob">📋 Доклад</button>
         <button class="ctrl-btn" id="showHousePlanBtnMob">🏠 План дома</button>
         <button class="ctrl-btn" id="exportPngBtnMob">🖼 PNG</button>
         <button class="ctrl-btn pdf-btn" id="exportPdfBtnMob">📄 PDF</button>
+        <button class="ctrl-btn" id="showGpsBtnMob">🌍 GPS координаты</button>
         <div class="ctrl-slider">
-            🌞 <input type="range" id="sunMonthMob" min="0" max="11" value="5" /> <span id="monthLabelMob">Июнь</span>
+            🌞 <input type="range" id="sunMonthMob" min="1" max="12" value="6" step="1" /> <span id="monthLabelMob">Июнь</span>
         </div>
         <div class="ctrl-slider">
-            🕒 <input type="range" id="sunHourMob" min="4" max="21" value="12" /> <span id="hourLabelMob">12:00</span>
+            🕒 <input type="range" id="sunHourMob" min="0" max="24" value="12" step="0.05" /> <span id="hourLabelMob">12:00</span>
         </div>
         <button class="close-menu" id="closeMenu">✕ Закрыть меню</button>
     </div>
 
-    <!-- ===== МОДАЛКИ ===== -->
+    <!-- ===== ДОКЛАД (наполняется автоматически) ===== -->
     <div id="report-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="close-report">&times;</span>
-            <h1>📋 Доклад по планировке земельного участка (10 соток)</h1>
-            <p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br>
-            <strong>Цель:</strong> Обоснование оптимального размещения всех объектов для комфортного и безопасного проживания.</p>
-            <h2>1. Вводная часть</h2>
-            <p>Участок прямоугольный (25×40 м). Реальная ориентация: длинная сторона (40 м) направлена с северо-запада на юго-восток (азимут ~33° от севера к востоку). Для удобства визуализации в 3D-сцене оси координат выпрямлены, но все расстояния и отступы рассчитаны по реальным геодезическим данным.</p>
-            <h2>2. Жилой дом «Берн» (16×10 м, 154,2 м²)</h2>
-            <ul>
-                <li><span class="norm">Расположение:</span> Центр дома (X=12,5, Z=30). Длинная сторона (16 м) ориентирована с запада на восток (вдоль оси X), короткая (10 м) — с юга на север (ось Z). Терраса (27 м²) находится на южной стене, выходит во двор.</li>
-                <li><span class="norm">Отступы:</span> От северной границы (Z=40) — 5 м (северная стена на Z=35). От восточной границы (X=25) — 4,5 м (восточная стена на X=20,5). От западной границы (X=0) — 4,5 м (западная стена на X=4,5). От южной границы (Z=0) — 25 м (южная стена на Z=25).</li>
-                <li><span class="norm">Безопасность:</span> Расстояние до бани (северная стена бани на Z=14) составляет 11 м. Для деревянных строений требуется 15 м (СП 4.13130). Рекомендуется использовать негорючие материалы для фасадов или увеличить разрыв, если это возможно.</li>
-            </ul>
-            <h2>3. Баня (6×6 м + терраса 6×4 м)</h2>
-            <ul>
-                <li>Расположена с центром (X=19, Z=11). Отступ от восточной границы — 3 м (восточная стена на X=22). Отступ от южной границы — 8 м (южная стена на Z=8).</li>
-                <li>Терраса пристроена к северной стене бани, её центр (X=19, Z=16), не пересекает дорожку к дому.</li>
-            </ul>
-            <h2>4. Хозблок (6×4 м)</h2>
-            <ul>
-                <li>Размещён у ворот с центром (X=21, Z=5). Отступ от восточной границы — 1 м (восточная стена на X=24). Отступ от южной границы — 3 м (южная стена на Z=3).</li>
-            </ul>
-            <h2>5. Огород (7×5 м, 0,35 сот.)</h2>
-            <ul>
-                <li>Расположен в юго-западном углу (X=0..5, Z=0..7) — самой солнечной части участка. Тени от дома и бани не достигают огорода.</li>
-            </ul>
-            <h2>6. Теплица (6×3 м, арочная)</h2>
-            <ul>
-                <li>Находится сразу за огородом (X=0..3, Z=7..13), её тень падает на север и не мешает грядкам.</li>
-            </ul>
-            <h2>7. Детская площадка и зона отдыха</h2>
-            <ul>
-                <li><span class="norm">Детская площадка</span> (X=8, Z=16) — на газоне перед окнами дома, получает достаточно солнца.</li>
-                <li><span class="norm">Костровище</span> (X=16, Z=6) — размещено с южной стороны бани, на безопасном расстоянии от построек и дорожек:<br>
-                    до бани — около <strong>5,8 м</strong>,<br>
-                    до хозблока — около <strong>5,1 м</strong>,<br>
-                    до террасы бани — около <strong>10,4 м</strong>,<br>
-                    до южной стены дома — <strong>19 м</strong>.</li>
-            </ul>
-            <h2>8. Коммуникации</h2>
-            <ul>
-                <li><span class="norm">Скважина</span> (X=16, Z=22) — на расстоянии 3 м от южной стены дома и 4,5 м от восточной стены (норма ≥3 м).</li>
-                <li><span class="norm">Септик</span> (X=3, Z=30) — в северо-западной части, расстояние до дома ~5,2 м (норма ≥5 м по СанПиН 2.1.3684-21). Расстояние до скважины — ~15,3 м (норма ≥15 м, соблюдено).</li>
-                <li><span class="norm">Газ</span> — вдоль восточного забора с вводом в дом (X=24,5, Z=0..29).</li>
-                <li><span class="norm">Вода и электричество</span> — проложены от дома к бане и хозблоку; от дома проложена отдельная линия водопровода для полива огорода и теплицы.</li>
-            </ul>
-            <h2>9. Детализация инженерных систем</h2>
-            <h3>Водоснабжение</h3>
-            <ul>
-                <li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной, установлен на глубине 20 м.</li>
-                <li>Труба от скважины до дома: ПНД Ø32 мм, глубина заложения 1,5 м (ниже глубины промерзания для Московской области – 1,4 м).</li>
-                <li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li>
-                <li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, проложен в одной траншее с электрической гофрой.</li>
-                <li>Водопровод для полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м (с возможностью консервации на зиму), с кранами в точках подключения.</li>
-                <li>Давление в системе: 3 атм, регулируется реле давления. Предусмотрен гидроаккумулятор на 50 л.</li>
-            </ul>
-            <h3>Канализация</h3>
-            <ul>
-                <li>Септик: трёхкамерный, объём 3 м³, глубина заложения 2,0 м (до верхней крышки).</li>
-                <li>Трубы канализации: ПВХ Ø110 мм, уклон 2 см на 1 м.</li>
-                <li>Канализация от дома до септика: длина ~10 м, уклон 2%, глубина заложения 1,2 м у дома, 1,5 м у септика.</li>
-                <li>Канализация от бани до септика: длина ~14 м, уклон 2%, глубина заложения 1,0 м у бани, 1,5 м у септика.</li>
-                <li>Ревизионные колодцы: предусмотрены на поворотах (два колодца: на выходе из дома и на соединении веток).</li>
-                <li>Вентиляция: фановые трубы выведены выше крыш дома и бани.</li>
-            </ul>
-            <h3>Электроснабжение</h3>
-            <ul>
-                <li>Ввод в дом: кабель ВВГнг 5×10 мм² от столба до щитка, глубина заложения 0,8 м в гофре.</li>
-                <li>Щиток: на 12 модулей, автоматические выключатели, УЗО, дифференциальные автоматы.</li>
-                <li>Электричество к бане: кабель ВВГнг 3×4 мм² в гофре, глубина 0,8 м, проложен в одной траншее с водопроводом.</li>
-                <li>Электричество к хозблоку: кабель ВВГнг 3×2,5 мм² в гофре, глубина 0,8 м.</li>
-                <li>Освещение участка: предусмотрены светодиодные светильники на столбах у ворот и вдоль дорожки (4 шт.), автоматика включения по датчику освещённости.</li>
-                <li>Розетки на улице: две влагозащищённые розетки (у дома и у бани).</li>
-            </ul>
-            <h3>Газоснабжение</h3>
-            <ul>
-                <li>Газопровод: полиэтиленовая труба Ø32 мм, давление низкое (до 0,003 МПа).</li>
-                <li>Глубина заложения: 1,2 м, с защитным футляром в местах пересечения с другими коммуникациями.</li>
-                <li>Ввод в дом: через стену, с установкой отключающего крана и газового счётчика.</li>
-                <li>Газовый котёл: настенный, мощностью 24 кВт, с закрытой камерой сгорания.</li>
-            </ul>
-            <h2>10. Заключение</h2>
-            <p>Предложенная планировка с учётом всех исправлений и детализации инженерии обеспечивает:</p>
-            <ul>
-                <li><strong>Безопасность</strong> — все санитарные и строительные нормы соблюдены.</li>
-                <li><strong>Урожай</strong> — огород и теплица на самом солнце.</li>
-                <li><strong>Удобство</strong> — хозблок у ворот, единая зона отдыха «баня-костровище-терраса».</li>
-                <li><strong>Комфорт</strong> — дом максимально освещён, детская площадка под контролем, инженерные системы спроектированы с запасом.</li>
-            </ul>
-            <p>Рекомендуется при строительстве использовать негорючие материалы для стен дома и бани, а также строго соблюдать проектную глубину заложения коммуникаций.</p>
+            <div id="report-body"></div>
             <div class="modal-footer">
                 <button id="close-report-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ПРОВЕРКА НОРМ ===== -->
+    <div id="norms-modal" class="modal">
+        <div class="modal-content" style="max-width: 880px; height: auto; max-height: 80vh; overflow-y: auto; display: block; padding: 20px 30px;">
+            <span class="modal-close" id="close-norms-modal">&times;</span>
+            <h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">✅ Автоматическая проверка норм</h2>
+            <div id="norms-summary"></div>
+            <table id="norms-table">
+                <thead>
+                    <tr>
+                        <th>Правило</th>
+                        <th style="text-align:center;">Норма</th>
+                        <th style="text-align:center;">Факт</th>
+                        <th style="text-align:center;">Статус</th>
+                        <th>Детали</th>
+                    </tr>
+                </thead>
+                <tbody id="norms-tbody"></tbody>
+            </table>
+            <p style="font-size:11px; color:#777; margin-top:14px;">
+                * Расстояния измеряются между ближайшими краями объектов (стен, колец), а не между центрами — так, как этого требуют нормативы.<br>
+                * Отступы — от стен объекта до границы участка.<br>
+                * Красные кольца и линии в 3D показывают проблемные зоны (видны, пока открыто это окно).
+            </p>
+            <div class="modal-footer">
+                <button id="close-norms-btn">Закрыть</button>
             </div>
         </div>
     </div>
@@ -530,7 +318,32 @@
         </div>
     </div>
 
-    <!-- ===== КОНТЕЙНЕРЫ ДЛЯ PDF ===== -->
+    <div id="gps-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="modal-close" id="close-gps-modal">&times;</span>
+            <h2 style="margin-top:0;">🌍 GPS-координаты объектов</h2>
+            <div style="overflow-x: auto; margin-top: 10px;">
+                <table id="gps-table" style="width:100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background: #f0f0f0; border-bottom: 2px solid #ffaa00;">
+                            <th style="padding: 8px; text-align: left;">Объект</th>
+                            <th style="padding: 8px; text-align: center;">Локальные X, Z (м)</th>
+                            <th style="padding: 8px; text-align: center;">Широта (°)</th>
+                            <th style="padding: 8px; text-align: center;">Долгота (°)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gps-tbody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">
+                * Координаты рассчитаны на основе привязки к центру участка (56.042291, 38.417342) и его реальной ориентации (азимут 33°).
+            </div>
+            <div class="modal-footer">
+                <button id="close-gps-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
     <div id="pdf-cover-container"></div>
     <div id="pdf-report-container"></div>
     <div id="pdf-loader">
@@ -544,201 +357,119 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-        // ============================================================
-        // 1. КОНФИГУРАЦИЯ ОБЪЕКТОВ
-        // ============================================================
-        const BUILDINGS = [
-            { type: 'house', x: 12.5, z: 30, w: 16, d: 10, h: 4.5, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f } },
-            { type: 'bath', x: 19, z: 11, w: 6, d: 6, h: 4, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 } },
-            { type: 'shed', x: 21, z: 5, w: 6, d: 4, h: 3, color: 0x5d4037, roofColor: 0x333333 },
-            { type: 'garden', x: 2.5, z: 3.5, w: 5, d: 7, color: 0x6b8e23 },
-            { type: 'greenhouse', x: 1.5, z: 7, w: 3, d: 6, h: 2.5, color: 0x88ccff },
-            { type: 'playground', x: 8, z: 16, w: 2, d: 2, color: 0xf1c40f },
-            { type: 'firepit', x: 16, z: 6, radius: 1.25, color: 0x4a3a2a },
-            { type: 'car', x: 22.5, z: 1.0, w: 5, d: 2, color: 0xc0392b },
-            { type: 'septic', x: 3, z: 30, w: 1.5, d: 1.2, color: 0x5d6d7e },
-            { type: 'well', x: 16, z: 22, radius: 0.15, color: 0x7f8c8d }
-        ];
+    // ═══════════════════════════════════════════════════════════════
+    // КОНФИГУРАЦИЯ
+    // ═══════════════════════════════════════════════════════════════
+    const CONFIG = {
+        plot: { w: 25, d: 40 },
+        center: { x: 12.5, z: 20 },
+        gps: { lat: 56.042291, lng: 38.417342, angle: 33, latPerM: 0.000009, lngPerM: 0.000012 },
+        latitude: 56,
+        camera: {
+            default: [35, 30, 60],
+            top: [12.5, 60, 20],
+            night: [35, 30, 60],
+            gate: [12.5, 2, -2]
+        },
+        objects: [
+            { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
+            { id: 'bath', type: 'bath', label: '🧖 Баня', x: 19, z: 11, y: 5.5, w: 6, d: 6, h: 4, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
+            { id: 'shed', type: 'shed', label: '🛠 Хозблок', x: 21, z: 5, y: 4.0, w: 6, d: 4, h: 3, color: 0x5d4037, roofColor: 0x333333, labelColor: '#cccccc', labelSize: 1.0, group: 'site' },
+            { id: 'garden', type: 'garden', label: '🌱 Огород', x: 2.5, z: 3.5, y: 2.0, w: 5, d: 7, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
+            { id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 1.5, z: 7, y: 3.5, w: 3, d: 6, h: 2.5, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
+            { id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 8, z: 16, y: 2.5, w: 2, d: 2, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site' },
+            { id: 'firepit', type: 'firepit', label: '🔥 Костровище', x: 16, z: 6, y: 1.5, radius: 1.25, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site' },
+            { id: 'car', type: 'car', label: '🚗 Машина', x: 22.5, z: 1.0, y: 1.5, w: 5, d: 2, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site' },
+            { id: 'septic', type: 'septic', label: '🚽 Септик', x: 3, z: 30, y: 2.0, w: 1.5, d: 1.2, color: 0x5d6d7e, labelColor: '#aa66cc', labelSize: 0.8, group: 'site' },
+            { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
+        ],
+        utilities: [
+            { points: [[20, 29], [24, 29], [24, 11]], color: 0xff6600, label: '⚡ Гофра к бане', labelPos: [24, 20] },
+            { points: [[20, 29], [24, 29], [24, 5]], color: 0xff9933, label: '⚡ Гофра к хозблоку', labelPos: [24, 16] },
+            { points: [[16, 22], [12.5, 22], [12.5, 29]], color: 0x3366ff, label: '💧 Вода от скважины', labelPos: [15, 27] },
+            { points: [[12.5, 29], [20, 29], [24, 29], [24, 11]], color: 0x3366ff, label: '💧 Вода к бане', labelPos: [22, 20] },
+            { points: [[12.5, 29], [2.5, 29], [2.5, 3.5]], color: 0x3366ff, label: '💧 Вода на полив', labelPos: [2.5, 16] },
+            { points: [[12.5, 29], [3, 29], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (дом)', labelPos: [7, 33] },
+            { points: [[19, 11], [3, 11], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (баня)', labelPos: [21, 22] },
+            { points: [[24.5, 0], [24.5, 29]], color: 0xffcc00, label: '🔥 Магистральный газ', labelPos: [24.5, 15] },
+            { points: [[24.5, 29], [20, 29]], color: 0xffcc00 }
+        ],
+        months: [
+            { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
+            { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
+            { declination: -2.5,  sunrise: 6.70, sunset: 18.50 },
+            { declination: 10.5,  sunrise: 5.30, sunset: 19.80 },
+            { declination: 20.0,  sunrise: 4.20, sunset: 20.50 },
+            { declination: 23.5,  sunrise: 3.75, sunset: 21.20 },
+            { declination: 21.5,  sunrise: 3.90, sunset: 21.00 },
+            { declination: 15.0,  sunrise: 4.70, sunset: 20.20 },
+            { declination: 5.0,   sunrise: 6.00, sunset: 19.00 },
+            { declination: -7.0,  sunrise: 7.00, sunset: 17.70 },
+            { declination: -17.0, sunrise: 8.00, sunset: 16.40 },
+            { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
+        ],
+        monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+    };
 
-        const LABELS = [
-            { text: '🏠 Дом "Берн"', x: 12.5, y: 6.0, z: 30, color: '#ffaa00', size: 1.2 },
-            { text: '🛠 Хозблок', x: 21, y: 4.0, z: 5, color: '#cccccc', size: 1.0 },
-            { text: '🧖 Баня', x: 19, y: 5.5, z: 11, color: '#ff8844', size: 1.0 },
-            { text: '🌱 Огород', x: 2.5, y: 2.0, z: 3.5, color: '#66bb66', size: 0.9 },
-            { text: '🌿 Теплица', x: 1.5, y: 3.5, z: 7, color: '#88dd88', size: 0.9 },
-            { text: '🧸 Детская площадка', x: 8, y: 2.5, z: 16, color: '#ff66aa', size: 0.9 },
-            { text: '🔥 Костровище', x: 16, y: 1.5, z: 6, color: '#ff5500', size: 0.9 },
-            { text: '💧 Скважина', x: 16, y: 2.0, z: 22, color: '#33aaff', size: 0.8 },
-            { text: '🚽 Септик', x: 3, y: 2.0, z: 30, color: '#aa66cc', size: 0.8 },
-            { text: '🚗 Машина', x: 22.5, y: 1.5, z: 1.0, color: '#88aaff', size: 0.8 }
-        ];
-
-        // ============================================================
-        // 2. СЦЕНА
-        // ============================================================
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB);
-        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(35, 30, 60);
-        camera.lookAt(12.5, 0, 20);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.body.appendChild(renderer.domElement);
-
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.target.set(12.5, 0, 20);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.autoRotate = false;
-        controls.maxPolarAngle = Math.PI / 2.2;
-        controls.update();
-
-        // Освещение
-        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
-        sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        sunLight.shadow.camera.left = -30;
-        sunLight.shadow.camera.right = 30;
-        sunLight.shadow.camera.top = 30;
-        sunLight.shadow.camera.bottom = -30;
-        sunLight.shadow.camera.near = 1;
-        sunLight.shadow.camera.far = 90;
-        sunLight.shadow.bias = -0.0004;
-        sunLight.shadow.normalBias = 0.02;
-        scene.add(sunLight);
-
-        const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
-        scene.add(ambientLight);
-        const fillLight = new THREE.DirectionalLight(0xccddff, 0.3);
-        fillLight.position.set(-20, 10, -20);
-        scene.add(fillLight);
-        const hemiLight = new THREE.HemisphereLight(0x9bc4e2, 0x4a7d4a, 0.35);
-        scene.add(hemiLight);
-        const sunDisc = new THREE.Mesh(
-            new THREE.SphereGeometry(2.2, 24, 24),
-            new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false })
-        );
-        scene.add(sunDisc);
-        const sunGlow = new THREE.Mesh(
-            new THREE.SphereGeometry(3.6, 24, 24),
-            new THREE.MeshBasicMaterial({ color: 0xffd86b, transparent: true, opacity: 0.18, fog: false })
-        );
-        scene.add(sunGlow);
-
-        // Группы
-        const siteGroup = new THREE.Group();
-        const houseGroup = new THREE.Group();
-        const commsGroup = new THREE.Group();
-        const labelsGroup = new THREE.Group();
-        const objectLabelsGroup = new THREE.Group();
-        scene.add(siteGroup);
-        scene.add(houseGroup);
-        scene.add(commsGroup);
-        scene.add(labelsGroup);
-        scene.add(objectLabelsGroup);
-
-        // ============================================================
-        // 3. ТЕКСТУРЫ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ============================================================
-        function createGrassTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#4caf50';
-            ctx.fillRect(0, 0, 256, 256);
-            for (let i = 0; i < 2000; i++) {
-                const x = Math.random() * 256, y = Math.random() * 256;
-                const shade = Math.floor(60 + Math.random() * 60);
-                ctx.fillStyle = `rgb(${shade}, ${shade + 100}, ${shade})`;
-                ctx.fillRect(x, y, 2, 4);
-            }
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(20, 20);
-            return texture;
+    // ═══════════════════════════════════════════════════════════════
+    // DOM
+    // ═══════════════════════════════════════════════════════════════
+    const DOM = {
+        viewSelect: document.getElementById('view-select'),
+        monthSlider: document.getElementById('month-slider'),
+        hourSlider: document.getElementById('hour-slider'),
+        monthLabel: document.getElementById('month-label'),
+        timeLabel: document.getElementById('time-label'),
+        timeDisplay: document.getElementById('time-display'),
+        measureHint: document.getElementById('measure-hint'),
+        toggleComm: document.getElementById('toggle-comm'),
+        toggleLabels: document.getElementById('toggle-labels'),
+        exportPng: document.getElementById('export-png'),
+        exportPdf: document.getElementById('export-pdf'),
+        openReport: document.getElementById('open-report'),
+        openPlan: document.getElementById('open-plan-modal'),
+        reportModal: document.getElementById('report-modal'),
+        reportBody: document.getElementById('report-body'),
+        planModal: document.getElementById('plan-modal'),
+        gpsModal: document.getElementById('gps-modal'),
+        gpsTbody: document.getElementById('gps-tbody'),
+        normsModal: document.getElementById('norms-modal'),
+        normsTbody: document.getElementById('norms-tbody'),
+        normsSummary: document.getElementById('norms-summary'),
+        normBadge: document.getElementById('norm-badge'),
+        planContainer: document.getElementById('plan-container'),
+        pdfCover: document.getElementById('pdf-cover-container'),
+        pdfReport: document.getElementById('pdf-report-container'),
+        pdfLoader: document.getElementById('pdf-loader'),
+        hamburger: document.getElementById('hamburger'),
+        mobileMenu: document.getElementById('mobile-menu'),
+        closeMenu: document.getElementById('closeMenu'),
+        mobile: {
+            comms: document.getElementById('toggleCommsMob'),
+            labels: document.getElementById('toggleLabelsMob'),
+            measure: document.getElementById('toggleMeasureMob'),
+            norms: document.getElementById('showNormsBtnMob'),
+            report: document.getElementById('showReportBtnMob'),
+            plan: document.getElementById('showHousePlanBtnMob'),
+            png: document.getElementById('exportPngBtnMob'),
+            pdf: document.getElementById('exportPdfBtnMob'),
+            gps: document.getElementById('showGpsBtnMob'),
+            monthSlider: document.getElementById('sunMonthMob'),
+            hourSlider: document.getElementById('sunHourMob'),
+            monthLabel: document.getElementById('monthLabelMob'),
+            hourLabel: document.getElementById('hourLabelMob')
         }
-        const grassTexture = createGrassTexture();
+    };
 
-        function createRoadTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#444';
-            ctx.fillRect(0, 0, 256, 256);
-            for (let i = 0; i < 1000; i++) {
-                const x = Math.random() * 256, y = Math.random() * 256;
-                ctx.fillStyle = '#555';
-                ctx.fillRect(x, y, 3, 1);
-            }
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(10, 3);
-            return texture;
-        }
-        const roadTexture = createRoadTexture();
+    // ═══════════════════════════════════════════════════════════════
+    // УТИЛИТЫ
+    // ═══════════════════════════════════════════════════════════════
+    const Utils = {
+        dirty: true,
+        markDirty() { this.dirty = true; },
 
-        function createPathTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 128; canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#aaa';
-            ctx.fillRect(0, 0, 128, 128);
-            for (let i = 0; i < 20; i++) {
-                ctx.strokeStyle = '#888';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(10 + i * 6, 10, 40, 40);
-            }
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(4, 4);
-            return texture;
-        }
-        const pathTexture = createPathTexture();
-
-        function createRoofTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 128; canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#8b4513';
-            ctx.fillRect(0, 0, 128, 128);
-            for (let i = 0; i < 20; i++) {
-                ctx.fillStyle = '#a0522d';
-                ctx.fillRect(i * 10, 0, 8, 128);
-                ctx.fillRect(0, i * 10, 128, 8);
-            }
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(4, 3);
-            return texture;
-        }
-        const roofTexture = createRoofTexture();
-
-        function addLabel(text, x, y, z, color = '#ffffff', size = 0.8, group) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 512; canvas.height = 128;
-            ctx.fillStyle = 'rgba(0,0,0,0.6)';
-            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
-            ctx.fill();
-            ctx.font = 'Bold 40px Arial';
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.set(x, y, z);
-            sprite.scale.set(6 * size, 1.5 * size, 1);
-            if (group) group.add(sprite);
-            else scene.add(sprite);
-        }
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
+        ensureRoundRect() {
+            if (CanvasRenderingContext2D.prototype.roundRect) return;
             CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 if (r > w/2) r = w/2;
                 if (r > h/2) r = h/2;
@@ -754,469 +485,16 @@
                 this.closePath();
                 return this;
             };
-        }
+        },
 
-        // ============================================================
-        // 4. СОЗДАНИЕ УЧАСТКА И ОБЪЕКТОВ
-        // ============================================================
-        const groundGeo = new THREE.PlaneGeometry(25, 40);
-        const groundMat = new THREE.MeshStandardMaterial({ map: grassTexture, roughness: 0.9 });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.set(12.5, 0, 20);
-        ground.receiveShadow = true;
-        siteGroup.add(ground);
-
-        const roadGeo = new THREE.PlaneGeometry(30, 8);
-        const roadMat = new THREE.MeshStandardMaterial({ map: roadTexture, roughness: 0.8 });
-        const road = new THREE.Mesh(roadGeo, roadMat);
-        road.rotation.x = -Math.PI / 2;
-        road.position.set(12.5, -0.1, -4);
-        road.receiveShadow = true;
-        siteGroup.add(road);
-        const markMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        for (let i = -10; i <= 10; i+=3) {
-            const mark = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.2), markMat);
-            mark.rotation.x = -Math.PI / 2;
-            mark.position.set(12.5 + i, 0.01, -4);
-            siteGroup.add(mark);
-        }
-        addLabel('🛣️ Улица Рассветная', 12.5, 2.5, -4, '#ffffff', 0.8, labelsGroup);
-
-        const pathGeo = new THREE.PlaneGeometry(2, 23);
-        const pathMat = new THREE.MeshStandardMaterial({ map: pathTexture, roughness: 0.7 });
-        const path = new THREE.Mesh(pathGeo, pathMat);
-        path.rotation.x = -Math.PI / 2;
-        path.position.set(12, 0.03, 11.5);
-        path.receiveShadow = true;
-        siteGroup.add(path);
-
-        function createBox(w, h, d, color, pos, castShadow = true, receiveShadow = true) {
-            const geo = new THREE.BoxGeometry(w, h, d);
-            const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.1 });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(pos[0], pos[1], pos[2]);
-            mesh.castShadow = castShadow;
-            mesh.receiveShadow = receiveShadow;
-            return mesh;
-        }
-
-        function createCylinder(radiusTop, radiusBot, height, color, pos, segments = 16) {
-            const geo = new THREE.CylinderGeometry(radiusTop, radiusBot, height, segments);
-            const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.5 });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(pos[0], pos[1], pos[2]);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            return mesh;
-        }
-
-        function createTree(x, z, scale) {
-            const group = new THREE.Group();
-            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.9 });
-            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25 * scale, 0.35 * scale, 1.8 * scale, 6), trunkMat);
-            trunk.position.y = 0.9 * scale;
-            trunk.castShadow = true;
-            trunk.receiveShadow = true;
-            group.add(trunk);
-            const crownMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.8 });
-            const crown = new THREE.Mesh(new THREE.SphereGeometry(0.9 * scale, 6, 6), crownMat);
-            crown.position.y = 1.8 * scale + 0.6 * scale;
-            crown.castShadow = true;
-            crown.receiveShadow = true;
-            group.add(crown);
-            group.position.set(x, 0, z);
-            return group;
-        }
-
-        function createGreenhouse(b) {
-            const group = new THREE.Group();
-            const w = b.w, d = b.d, h = b.h;
-            const halfW = w / 2;
-            const arcSteps = 24;
-            const numArcs = 13;
-            const frameMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, metalness: 0.7, roughness: 0.3 });
-            const polyMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.32, side: THREE.DoubleSide, roughness: 0.2 });
-
-            const archX = (t) => -halfW * Math.cos(t * Math.PI);
-            const archY = (t) => h * Math.sin(t * Math.PI);
-
-            for (let i = 0; i < numArcs; i++) {
-                const zPos = i * (d / (numArcs - 1));
-                const points = [];
-                for (let j = 0; j <= arcSteps; j++) {
-                    const t = j / arcSteps;
-                    points.push(new THREE.Vector3(archX(t), archY(t), 0));
-                }
-                const curve = new THREE.CatmullRomCurve3(points);
-                const tubeGeo = new THREE.TubeGeometry(curve, 24, 0.04, 5, false);
-                const tube = new THREE.Mesh(tubeGeo, frameMat);
-                tube.position.set(0, 0, zPos);
-                tube.castShadow = true; tube.receiveShadow = true;
-                group.add(tube);
-            }
-            const ridgeCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, h, 0), new THREE.Vector3(0, h, d)]);
-            const ridgeMesh = new THREE.Mesh(new THREE.TubeGeometry(ridgeCurve, 2, 0.035, 5, false), frameMat);
-            ridgeMesh.castShadow = true; ridgeMesh.receiveShadow = true;
-            group.add(ridgeMesh);
-            [-halfW, halfW].forEach(xPos => {
-                const railCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(xPos, 0.05, 0), new THREE.Vector3(xPos, 0.05, d)]);
-                const rail = new THREE.Mesh(new THREE.TubeGeometry(railCurve, 2, 0.03, 5, false), frameMat);
-                rail.castShadow = true;
-                group.add(rail);
-            });
-
-            const zSeg = 20, xSeg = 16;
-            const verts = [], idx = [];
-            for (let i = 0; i <= zSeg; i++) {
-                const z = (i / zSeg) * d;
-                for (let j = 0; j <= xSeg; j++) {
-                    const t = j / xSeg;
-                    verts.push(archX(t), archY(t), z);
-                }
-            }
-            const cols = xSeg + 1;
-            for (let i = 0; i < zSeg; i++) {
-                for (let j = 0; j < xSeg; j++) {
-                    const a = i * cols + j, b = a + 1, c = a + cols, e = c + 1;
-                    idx.push(a, c, b, b, c, e);
-                }
-            }
-            const roofGeo = new THREE.BufferGeometry();
-            roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-            roofGeo.setIndex(idx);
-            roofGeo.computeVertexNormals();
-            const roofMesh = new THREE.Mesh(roofGeo, polyMat);
-            roofMesh.castShadow = true; roofMesh.receiveShadow = true;
-            group.add(roofMesh);
-
-            const endShape = new THREE.Shape();
-            for (let j = 0; j <= xSeg; j++) {
-                const t = j / xSeg, px = archX(t), py = archY(t);
-                if (j === 0) endShape.moveTo(px, py); else endShape.lineTo(px, py);
-            }
-            const endGeo = new THREE.ShapeGeometry(endShape);
-            [0, d].forEach(zEnd => {
-                const wall = new THREE.Mesh(endGeo, polyMat);
-                wall.position.set(0, 0, zEnd);
-                group.add(wall);
-            });
-
-            const doorFrameMat = new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.5 });
-            const doorWidth = 0.8, doorHeight = 1.8;
-            const postL = new THREE.Mesh(new THREE.BoxGeometry(0.05, doorHeight, 0.05), doorFrameMat);
-            postL.position.set(-doorWidth/2, doorHeight/2, 0.02);
-            group.add(postL);
-            const postR = new THREE.Mesh(new THREE.BoxGeometry(0.05, doorHeight, 0.05), doorFrameMat);
-            postR.position.set(doorWidth/2, doorHeight/2, 0.02);
-            group.add(postR);
-            const topBar = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, 0.05, 0.05), doorFrameMat);
-            topBar.position.set(0, doorHeight, 0.02);
-            group.add(topBar);
-            const handleMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
-            const handle = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), handleMat);
-            handle.position.set(doorWidth/2 - 0.1, doorHeight/2, 0.06);
-            group.add(handle);
-
-            const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
-            for (let zPos = 1.5; zPos < d; zPos += 2.5) {
-                [-halfW, halfW].forEach((xPos, k) => {
-                    const win = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.6), windowMat);
-                    win.position.set(xPos + (k === 0 ? 0.02 : -0.02), 1.2, zPos);
-                    win.rotation.y = Math.PI/2;
-                    group.add(win);
-                    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.6, 0.6), doorFrameMat);
-                    frame.position.set(xPos, 1.2, zPos);
-                    frame.rotation.y = Math.PI/2;
-                    group.add(frame);
-                });
-            }
-            group.position.set(b.x, 0, b.z);
-            return group;
-        }
-
-        BUILDINGS.forEach(b => {
-            switch(b.type) {
-                case 'house': {
-                    const group = new THREE.Group();
-                    const wall = createBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]);
-                    group.add(wall);
-                    const roofRise = 2.5;
-                    const gableShape = new THREE.Shape();
-                    gableShape.moveTo(-b.d/2, b.h);
-                    gableShape.lineTo(0, b.h + roofRise);
-                    gableShape.lineTo(b.d/2, b.h);
-                    gableShape.lineTo(-b.d/2, b.h);
-                    const gableGeo = new THREE.ExtrudeGeometry(gableShape, { depth: b.w, bevelEnabled: false });
-                    gableGeo.translate(0, 0, -b.w / 2);
-                    gableGeo.computeVertexNormals();
-                    const roofMat = new THREE.MeshStandardMaterial({ map: roofTexture, roughness: 0.8 });
-                    const roof = new THREE.Mesh(gableGeo, roofMat);
-                    roof.rotation.y = Math.PI / 2;
-                    roof.castShadow = true;
-                    roof.receiveShadow = true;
-                    group.add(roof);
-                    if (b.terrace) {
-                        const terrace = createBox(b.terrace.w, 0.3, b.terrace.d, b.terrace.color, [0, 0.15, -b.d/2 - b.terrace.d/2]);
-                        group.add(terrace);
-                    }
-                    group.position.set(b.x, 0, b.z);
-                    houseGroup.add(group);
-                    break;
-                }
-                case 'bath': {
-                    const group = new THREE.Group();
-                    const wall = createBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]);
-                    group.add(wall);
-                    const roof = createBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0]);
-                    group.add(roof);
-                    if (b.terrace) {
-                        const terrace = createBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2]);
-                        group.add(terrace);
-                    }
-                    group.position.set(b.x, 0, b.z);
-                    siteGroup.add(group);
-                    break;
-                }
-                case 'shed': {
-                    const group = new THREE.Group();
-                    const wall = createBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]);
-                    group.add(wall);
-                    const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.2, 4), 
-                        new THREE.MeshStandardMaterial({ color: b.roofColor, roughness: 0.8 }));
-                    roof.position.set(0, b.h + 0.6, 0);
-                    roof.rotation.y = Math.PI/4;
-                    roof.castShadow = true;
-                    group.add(roof);
-                    group.position.set(b.x, 0, b.z);
-                    siteGroup.add(group);
-                    break;
-                }
-                case 'garden': {
-                    const soil = createBox(b.w, 0.2, b.d, b.color, [b.x, 0.1, b.z]);
-                    siteGroup.add(soil);
-                    const rowMat = new THREE.MeshStandardMaterial({ color: 0x5a7a1a });
-                    for (let i = 0; i < 5; i++) {
-                        const row = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.3, 0.6), rowMat);
-                        row.position.set(b.x, 0.3, b.z - b.d/2 + 0.5 + i * 1.5);
-                        row.castShadow = true;
-                        siteGroup.add(row);
-                    }
-                    break;
-                }
-                case 'greenhouse': {
-                    const gh = createGreenhouse(b);
-                    siteGroup.add(gh);
-                    break;
-                }
-                case 'playground': {
-                    const sand = createBox(b.w, 0.3, b.d, b.color, [b.x, 0.15, b.z]);
-                    siteGroup.add(sand);
-                    const pole = createCylinder(0.08, 0.08, 0.8, 0x888888, [b.x + 0.5, 0.4, b.z + 0.5]);
-                    siteGroup.add(pole);
-                    break;
-                }
-                case 'firepit': {
-                    const pit = createCylinder(b.radius, b.radius, 0.2, b.color, [b.x, 0.1, b.z]);
-                    siteGroup.add(pit);
-                    for (let i = 0; i < 12; i++) {
-                        const ang = (i / 12) * Math.PI * 2;
-                        const stone = createCylinder(0.12, 0.18, 0.15, 0x7a6a5a, 
-                            [b.x + Math.cos(ang) * (b.radius + 0.1), 0.15, b.z + Math.sin(ang) * (b.radius + 0.1)]);
-                        siteGroup.add(stone);
-                    }
-                    break;
-                }
-                case 'car': {
-                    const car = createBox(b.w, 0.5, b.d, b.color, [b.x, 0.25, b.z]);
-                    siteGroup.add(car);
-                    const cab = createBox(1.2, 0.35, 1.6, 0x2c3e50, [b.x + 1.3, 0.55, b.z]);
-                    siteGroup.add(cab);
-                    break;
-                }
-                case 'septic': {
-                    const septic = createBox(b.w, 0.8, b.d, b.color, [b.x, 0.4, b.z]);
-                    siteGroup.add(septic);
-                    break;
-                }
-                case 'well': {
-                    const well = createCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [b.x, 0.4, b.z]);
-                    siteGroup.add(well);
-                    const cap = createCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [b.x, 0.85, b.z]);
-                    siteGroup.add(cap);
-                    break;
-                }
-            }
-        });
-
-        // ============================================================
-        // 5. ЛЕЙБЛЫ
-        // ============================================================
-        LABELS.forEach(l => {
+        createLabel(text, color = '#fff', size = 0.8, scale = [6, 1.5], canvasW = 512, canvasH = 128, fontSize = 40, bgColor = 'rgba(0,0,0,0.6)', borderRadius = 20) {
             const canvas = document.createElement('canvas');
+            canvas.width = canvasW; canvas.height = canvasH;
             const ctx = canvas.getContext('2d');
-            canvas.width = 512; canvas.height = 128;
-            ctx.fillStyle = 'rgba(0,0,0,0.75)';
-            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+            ctx.fillStyle = bgColor;
+            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, borderRadius);
             ctx.fill();
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 8;
-            ctx.font = 'Bold 38px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = 'rgba(0,0,0,0.9)';
-            ctx.lineWidth = 4;
-            ctx.strokeText(l.text, canvas.width/2, canvas.height/2 + 5);
-            ctx.fillStyle = l.color;
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = 'rgba(0,0,0,0.8)';
-            ctx.fillText(l.text, canvas.width/2, canvas.height/2 + 5);
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.set(l.x, l.y, l.z);
-            sprite.scale.set(6 * l.size, 1.5 * l.size, 1);
-            objectLabelsGroup.add(sprite);
-        });
-
-        // ============================================================
-        // 6. ТУИ
-        // ============================================================
-        for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createTree(2, z, 0.7)); }
-        for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createTree(23, z, 0.7)); }
-        for (let x = 6; x <= 19; x += 1.5) { siteGroup.add(createTree(x, 38, 0.7)); }
-
-        // ============================================================
-        // 7. КОММУНИКАЦИИ, ЗАБОР, ВОРОТА
-        // ============================================================
-        function createUndergroundLine(points, color, labelText, labelPos) {
-            const pts = points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
-            const material = new THREE.LineBasicMaterial({ color: color });
-            const geometry = new THREE.BufferGeometry().setFromPoints(pts);
-            const line = new THREE.Line(geometry, material);
-            commsGroup.add(line);
-            const shadowPts = points.map(p => new THREE.Vector3(p[0], -0.01, p[1]));
-            const shadowMat = new THREE.LineDashedMaterial({ color: color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 });
-            const shadowGeo = new THREE.BufferGeometry().setFromPoints(shadowPts);
-            const shadowLine = new THREE.Line(shadowGeo, shadowMat);
-            shadowLine.computeLineDistances();
-            commsGroup.add(shadowLine);
-            if (labelText && labelPos) {
-                addLabel(labelText, labelPos[0], 0.5, labelPos[1], '#ffffff', 0.6, labelsGroup);
-            }
-        }
-
-        createUndergroundLine([[20, 29], [24, 29], [24, 11]], 0xff6600, '⚡ Гофра к бане', [24, 20]);
-        createUndergroundLine([[20, 29], [24, 29], [24, 5]], 0xff9933, '⚡ Гофра к хозблоку', [24, 16]);
-        createUndergroundLine([[16, 22], [12.5, 22], [12.5, 29]], 0x3366ff, '💧 Вода от скважины', [15, 27]);
-        createUndergroundLine([[12.5, 29], [20, 29], [24, 29], [24, 11]], 0x3366ff, '💧 Вода к бане', [22, 20]);
-        createUndergroundLine([[12.5, 29], [2.5, 29], [2.5, 3.5]], 0x3366ff, '💧 Вода на полив', [2.5, 16]);
-        createUndergroundLine([[12.5, 29], [3, 29], [3, 30]], 0x9900cc, '🚽 Канализация (дом)', [7, 33]);
-        createUndergroundLine([[19, 11], [3, 11], [3, 30]], 0x9900cc, '🚽 Канализация (баня)', [21, 22]);
-        createUndergroundLine([[24.5, 0], [24.5, 29]], 0xffcc00, '🔥 Магистральный газ', [24.5, 15]);
-        createUndergroundLine([[24.5, 29], [20, 29]], 0xffcc00, '', null);
-
-        const fenceMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
-        for (let i = 0; i <= 25; i+=2) {
-            const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
-            post1.position.set(i, 0.3, 0);
-            scene.add(post1);
-            const post2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
-            post2.position.set(i, 0.3, 40);
-            scene.add(post2);
-        }
-        for (let i = 0; i <= 40; i+=2) {
-            const post3 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
-            post3.position.set(0, 0.3, i);
-            scene.add(post3);
-            const post4 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
-            post4.position.set(25, 0.3, i);
-            scene.add(post4);
-        }
-
-        function createGateAndPedestrian() {
-            const pillarMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.4, metalness: 0.6 });
-            const barMat = new THREE.MeshStandardMaterial({ color: 0x6a6a6a, roughness: 0.5, metalness: 0.3 });
-            const gateMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.7, metalness: 0.2 });
-            const railMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.4 });
-
-            const pillarPositions = [12.5, 16.5];
-            pillarPositions.forEach(x => {
-                const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 2.5, 0.3), pillarMat);
-                pillar.position.set(x, 1.25, 0);
-                pillar.castShadow = true; pillar.receiveShadow = true;
-                scene.add(pillar);
-                const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8), new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 }));
-                lamp.position.set(x, 2.7, 0);
-                scene.add(lamp);
-            });
-
-            const beam = new THREE.Mesh(new THREE.BoxGeometry(4, 0.15, 0.15), barMat);
-            beam.position.set(14.5, 2.5, 0);
-            beam.castShadow = true;
-            scene.add(beam);
-
-            const rail = new THREE.Mesh(new THREE.BoxGeometry(7, 0.1, 0.1), railMat);
-            rail.position.set(16.5, 0.05, 0);
-            scene.add(rail);
-
-            const rollerMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.3, metalness: 0.8 });
-            for (let x = 13; x <= 19; x+=2) {
-                const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 6), rollerMat);
-                roller.rotation.x = Math.PI/2;
-                roller.position.set(x, 0.08, 0);
-                scene.add(roller);
-            }
-
-            const gateLeaf = new THREE.Mesh(new THREE.BoxGeometry(4, 1.8, 0.05), gateMat);
-            gateLeaf.position.set(18.5, 0.9, 0);
-            gateLeaf.castShadow = true; gateLeaf.receiveShadow = true;
-            scene.add(gateLeaf);
-            const ribMat = new THREE.MeshStandardMaterial({ color: 0x5a5a5a, metalness: 0.3 });
-            for (let x = 17; x <= 20; x+=1.5) {
-                const rib = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.6, 0.05), ribMat);
-                rib.position.set(x, 0.9, 0);
-                scene.add(rib);
-            }
-            const driveMat = new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.5 });
-            const drive = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.2), driveMat);
-            drive.position.set(16, 0.4, 0.25);
-            scene.add(drive);
-
-            const pedPillarPos = [11.5, 12.5];
-            pedPillarPos.forEach(x => {
-                const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.0, 0.2), pillarMat);
-                pillar.position.set(x, 1.0, 0);
-                pillar.castShadow = true; pillar.receiveShadow = true;
-                scene.add(pillar);
-            });
-            const pedBeam = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 0.1), barMat);
-            pedBeam.position.set(12, 2.0, 0);
-            scene.add(pedBeam);
-            const pedLeaf = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.05), gateMat);
-            pedLeaf.position.set(12, 0.85, 0);
-            pedLeaf.rotation.y = -0.3;
-            pedLeaf.castShadow = true;
-            scene.add(pedLeaf);
-            const handleMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
-            const pedHandle = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6), handleMat);
-            pedHandle.position.set(11.8, 0.85, 0.1);
-            scene.add(pedHandle);
-        }
-        createGateAndPedestrian();
-
-        // ============================================================
-        // 8. НАПРАВЛЕНИЯ
-        // ============================================================
-        function addDirectionLabel(text, x, y, z, color = '#ffffff', size = 0.8) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 256; canvas.height = 128;
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
-            ctx.fill();
-            ctx.font = 'Bold 48px Arial';
+            ctx.font = `Bold ${fontSize}px Arial`;
             ctx.fillStyle = color;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1224,1002 +502,1470 @@
             const texture = new THREE.CanvasTexture(canvas);
             const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
             const sprite = new THREE.Sprite(material);
-            sprite.position.set(x, y, z);
-            sprite.scale.set(5 * size, 2.5 * size, 1);
-            scene.add(sprite);
-        }
-        addDirectionLabel('⬆ СЕВЕР', 12.5, 3, 42, '#66ccff', 1.0);
-        addDirectionLabel('⬇ ЮГ', 12.5, 3, -6, '#ff9966', 1.0);
-        addDirectionLabel('⬅ ЗАПАД', -4, 3, 20, '#99cc99', 1.0);
-        addDirectionLabel('➡ ВОСТОК', 29, 3, 20, '#99cc99', 1.0);
-
-        function addAxisLabel(text, x, y, z, color = '#ffffff', size = 0.7) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 160; canvas.height = 80;
-            ctx.fillStyle = 'rgba(0,0,0,0.6)';
-            ctx.roundRect(5, 5, canvas.width - 10, canvas.height - 10, 10);
-            ctx.fill();
-            ctx.font = 'Bold 36px Arial';
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, canvas.width/2, canvas.height/2 + 2);
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.set(x, y, z);
-            sprite.scale.set(4 * size, 2 * size, 1);
-            scene.add(sprite);
-        }
-        addAxisLabel('Ось X (Восток)', 24, 1.5, 20, '#ff6666', 0.9);
-        addAxisLabel('Ось Z (Север)', 12.5, 1.5, 39, '#66aaff', 0.9);
-
-        // ============================================================
-        // 9. ИЗМЕРЕНИЕ (ИСПРАВЛЕННОЕ)
-        // ============================================================
-        let measureMode = false;
-        let measurePoints = [];
-        let measureLineObj = null;
-        let measureLabelObj = null;
-        let measureSprite = null;
-        const measureHint = document.getElementById('measure-hint');
-
-        const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 });
-        const lineGeo = new THREE.BufferGeometry();
-        measureLineObj = new THREE.Line(lineGeo, lineMat);
-        measureLineObj.visible = false;
-        scene.add(measureLineObj);
-
-        const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const sphereGeo = new THREE.SphereGeometry(0.3, 8, 8);
-        measureLabelObj = new THREE.Mesh(sphereGeo, sphereMat);
-        measureLabelObj.visible = false;
-        scene.add(measureLabelObj);
-
-        function toggleMeasure() {
-            measureMode = !measureMode;
-            const btn = document.getElementById('toggle-measure');
-            if (btn) btn.classList.toggle('active');
-            const btnMob = document.getElementById('toggleMeasureMob');
-            if (btnMob) btnMob.classList.toggle('active');
-
-            if (!measureMode) {
-                measurePoints = [];
-                measureLineObj.visible = false;
-                measureLabelObj.visible = false;
-                if (measureSprite) {
-                    scene.remove(measureSprite);
-                    measureSprite = null;
-                }
-                measureHint.classList.remove('show');
-            } else {
-                measureHint.classList.add('show');
-                measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
-                measurePoints = [];
-                measureLineObj.visible = false;
-                measureLabelObj.visible = false;
-                if (measureSprite) {
-                    scene.remove(measureSprite);
-                    measureSprite = null;
-                }
-            }
-        }
-
-        renderer.domElement.addEventListener('pointerdown', function(event) {
-            if (!measureMode) return;
-            event.preventDefault();
-
-            const rect = renderer.domElement.getBoundingClientRect();
-            const clientX = event.clientX || event.pageX;
-            const clientY = event.clientY || event.pageY;
-            const mouse = new THREE.Vector2(
-                ((clientX - rect.left) / rect.width) * 2 - 1,
-                -((clientY - rect.top) / rect.height) * 2 + 1
-            );
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-            const point = new THREE.Vector3();
-            const intersect = raycaster.ray.intersectPlane(plane, point);
-            if (intersect) {
-                if (point.x < 0 || point.x > 25 || point.z < 0 || point.z > 40) {
-                    measureHint.textContent = '❌ Клик за пределами участка! Попробуйте ещё раз.';
-                    setTimeout(() => { measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 1500);
-                    return;
-                }
-                if (measurePoints.length === 0) {
-                    if (measureSprite) {
-                        scene.remove(measureSprite);
-                        measureSprite = null;
-                    }
-                    measureLineObj.visible = false;
-                    measureLabelObj.visible = false;
-                    measureHint.textContent = '👆 Поставьте вторую точку';
-                }
-                measurePoints.push(point.clone());
-                measureLabelObj.position.copy(point);
-                measureLabelObj.position.y = 0.5;
-                measureLabelObj.visible = true;
-
-                if (measurePoints.length === 2) {
-                    const p1 = measurePoints[0];
-                    const p2 = measurePoints[1];
-                    const dist = Math.sqrt((p1.x-p2.x)**2 + (p1.z-p2.z)**2);
-                    const pts = [p1, p2];
-                    measureLineObj.geometry.dispose();
-                    measureLineObj.geometry = new THREE.BufferGeometry().setFromPoints(pts);
-                    measureLineObj.visible = true;
-                    const mid = p1.clone().add(p2).multiplyScalar(0.5);
-                    measureLabelObj.position.copy(mid);
-                    measureLabelObj.position.y = 0.5;
-                    measureLabelObj.visible = true;
-                    if (measureSprite) {
-                        scene.remove(measureSprite);
-                        measureSprite = null;
-                    }
-                    measureSprite = createDistanceLabel(`📏 ${dist.toFixed(2)} м`, mid.x, 0.8, mid.z);
-                    scene.add(measureSprite);
-                    measurePoints = [];
-                    measureHint.textContent = '✅ Расстояние измерено! Нажмите ещё раз для новой точки.';
-                    setTimeout(() => { measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 2000);
-                }
-            }
-        });
-
-        function createDistanceLabel(text, x, y, z) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 512;
-            canvas.height = 128;
-            ctx.shadowColor = 'rgba(0,0,0,0.8)';
-            ctx.shadowBlur = 12;
-            ctx.fillStyle = 'rgba(255,255,255,0.9)';
-            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 3;
-            ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
-            ctx.stroke();
-            ctx.font = 'Bold 48px Arial';
-            ctx.fillStyle = '#ff0000';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-            const sprite = new THREE.Sprite(material);
-            sprite.scale.set(6, 1.5, 1);
+            sprite.scale.set(scale[0] * size, scale[1] * size, 1);
             return sprite;
+        },
+
+        fmt(v) { return v.toFixed(1).replace('.', ','); }
+    };
+    Utils.ensureRoundRect();
+
+    // ═══════════════════════════════════════════════════════════════
+    // СЦЕНА
+    // ═══════════════════════════════════════════════════════════════
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87CEEB);
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(...CONFIG.camera.default);
+    camera.lookAt(CONFIG.center.x, 0, CONFIG.center.z);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(CONFIG.center.x, 0, CONFIG.center.z);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2.2;
+    controls.addEventListener('change', () => Utils.markDirty());
+    controls.update();
+
+    const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.set(2048, 2048);
+    sunLight.shadow.camera.left = -30;
+    sunLight.shadow.camera.right = 30;
+    sunLight.shadow.camera.top = 30;
+    sunLight.shadow.camera.bottom = -30;
+    sunLight.shadow.camera.near = 1;
+    sunLight.shadow.camera.far = 90;
+    sunLight.shadow.bias = -0.0004;
+    sunLight.shadow.normalBias = 0.02;
+    scene.add(sunLight);
+    scene.add(sunLight.target);
+
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+    scene.add(ambientLight);
+    const fillLight = new THREE.DirectionalLight(0xccddff, 0.3);
+    fillLight.position.set(-20, 10, -20);
+    scene.add(fillLight);
+    const hemiLight = new THREE.HemisphereLight(0x9bc4e2, 0x4a7d4a, 0.35);
+    scene.add(hemiLight);
+
+    const sunDisc = new THREE.Mesh(
+        new THREE.SphereGeometry(2.2, 24, 24),
+        new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false })
+    );
+    scene.add(sunDisc);
+    const sunGlow = new THREE.Mesh(
+        new THREE.SphereGeometry(3.6, 24, 24),
+        new THREE.MeshBasicMaterial({ color: 0xffd86b, transparent: true, opacity: 0.18, fog: false })
+    );
+    scene.add(sunGlow);
+
+    const groups = {
+        site: new THREE.Group(),
+        house: new THREE.Group(),
+        comms: new THREE.Group(),
+        labels: new THREE.Group(),
+        objectLabels: new THREE.Group(),
+        norms: new THREE.Group()
+    };
+    Object.values(groups).forEach(g => scene.add(g));
+
+    // ═══════════════════════════════════════════════════════════════
+    // ТЕКСТУРЫ И МАТЕРИАЛЫ
+    // ═══════════════════════════════════════════════════════════════
+    function makeTexture(w, h, drawFn) {
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        drawFn(canvas.getContext('2d'), w, h);
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        return texture;
+    }
+
+    const Textures = {
+        grass: (() => {
+            const t = makeTexture(256, 256, (ctx, w, h) => {
+                ctx.fillStyle = '#4caf50'; ctx.fillRect(0, 0, w, h);
+                for (let i = 0; i < 2000; i++) {
+                    const x = Math.random() * w, y = Math.random() * h;
+                    const s = Math.floor(60 + Math.random() * 60);
+                    ctx.fillStyle = `rgb(${s}, ${s + 100}, ${s})`;
+                    ctx.fillRect(x, y, 2, 4);
+                }
+            });
+            t.repeat.set(20, 20); return t;
+        })(),
+        road: (() => {
+            const t = makeTexture(256, 256, (ctx, w, h) => {
+                ctx.fillStyle = '#444'; ctx.fillRect(0, 0, w, h);
+                for (let i = 0; i < 1000; i++) {
+                    ctx.fillStyle = '#555';
+                    ctx.fillRect(Math.random()*w, Math.random()*h, 3, 1);
+                }
+            });
+            t.repeat.set(10, 3); return t;
+        })(),
+        path: (() => {
+            const t = makeTexture(128, 128, (ctx, w, h) => {
+                ctx.fillStyle = '#aaa'; ctx.fillRect(0, 0, w, h);
+                ctx.strokeStyle = '#888'; ctx.lineWidth = 1;
+                for (let i = 0; i < 20; i++) ctx.strokeRect(10 + i * 6, 10, 40, 40);
+            });
+            t.repeat.set(4, 4); return t;
+        })(),
+        roof: (() => {
+            const t = makeTexture(128, 128, (ctx, w, h) => {
+                ctx.fillStyle = '#8b4513'; ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#a0522d';
+                for (let i = 0; i < 20; i++) {
+                    ctx.fillRect(i * 10, 0, 8, h);
+                    ctx.fillRect(0, i * 10, w, 8);
+                }
+            });
+            t.repeat.set(4, 3); return t;
+        })()
+    };
+
+    const MaterialPool = (() => {
+        const cache = new Map();
+        return {
+            get(color, opts = {}) {
+                const key = `${color}_${opts.roughness||0.6}_${opts.metalness||0.1}_${opts.transparent||false}`;
+                if (!cache.has(key)) {
+                    cache.set(key, new THREE.MeshStandardMaterial({ color, roughness: opts.roughness || 0.6, metalness: opts.metalness || 0.1, transparent: opts.transparent || false, opacity: opts.opacity || 1, side: opts.side || THREE.FrontSide }));
+                }
+                return cache.get(key);
+            },
+            rough: (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.9 }),
+            metal: (color) => new THREE.MeshStandardMaterial({ color, metalness: 0.7, roughness: 0.3 })
+        };
+    })();
+
+    const GeoPool = {
+        box: (w, h, d) => new THREE.BoxGeometry(w, h, d),
+        cylinder: (rT, rB, h, s = 16) => new THREE.CylinderGeometry(rT, rB, h, s),
+        sphere: (r, s = 8) => new THREE.SphereGeometry(r, s, s),
+        plane: (w, h) => new THREE.PlaneGeometry(w, h)
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    // ФАБРИКА ОБЪЕКТОВ
+    // ═══════════════════════════════════════════════════════════════
+    function makeBox(w, h, d, color, pos, opts = {}) {
+        const mesh = new THREE.Mesh(GeoPool.box(w, h, d), MaterialPool.get(color));
+        mesh.position.set(pos[0], pos[1], pos[2]);
+        mesh.castShadow = opts.castShadow !== false;
+        mesh.receiveShadow = opts.receiveShadow !== false;
+        return mesh;
+    }
+
+    function makeCylinder(rT, rB, h, color, pos, segs = 16) {
+        const mesh = new THREE.Mesh(GeoPool.cylinder(rT, rB, h, segs), MaterialPool.get(color, { roughness: 0.5 }));
+        mesh.position.set(pos[0], pos[1], pos[2]);
+        mesh.castShadow = true; mesh.receiveShadow = true;
+        return mesh;
+    }
+
+    function makeTree(scale = 1) {
+        const g = new THREE.Group();
+        const trunk = new THREE.Mesh(GeoPool.cylinder(0.25*scale, 0.35*scale, 1.8*scale, 6), MaterialPool.rough(0x5d4037));
+        trunk.position.y = 0.9 * scale;
+        trunk.castShadow = trunk.receiveShadow = true;
+        g.add(trunk);
+        const crown = new THREE.Mesh(GeoPool.sphere(0.9*scale, 6), MaterialPool.rough(0x2e7d32));
+        crown.position.y = 1.8*scale + 0.6*scale;
+        crown.castShadow = crown.receiveShadow = true;
+        g.add(crown);
+        return g;
+    }
+
+    function makeGreenhouse(b) {
+        const group = new THREE.Group();
+        const halfW = b.w / 2;
+        const frameMat = MaterialPool.metal(0x3a3a3a);
+        const polyMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.32, side: THREE.DoubleSide, roughness: 0.2 });
+
+        const archX = (t) => -halfW * Math.cos(t * Math.PI);
+        const archY = (t) => b.h * Math.sin(t * Math.PI);
+        const numArcs = 13, arcSteps = 24;
+
+        for (let i = 0; i < numArcs; i++) {
+            const zPos = i * (b.d / (numArcs - 1));
+            const pts = [];
+            for (let j = 0; j <= arcSteps; j++) {
+                const t = j / arcSteps;
+                pts.push(new THREE.Vector3(archX(t), archY(t), 0));
+            }
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.04, 5, false), frameMat);
+            tube.position.z = zPos;
+            tube.castShadow = tube.receiveShadow = true;
+            group.add(tube);
         }
 
-        // ============================================================
-        // 10. ВИДЫ
-        // ============================================================
-        const viewSelect = document.getElementById('view-select');
-        viewSelect.addEventListener('change', function() {
-            const view = this.value;
-            if (view !== 'night') {
-                sunLight.intensity = 1.0;
-                ambientLight.intensity = 0.6;
-                fillLight.intensity = 0.3;
-                hemiLight.intensity = 0.35;
-                scene.background = new THREE.Color(0x87CEEB);
-                sunDisc.visible = true;
-                sunGlow.visible = true;
-            }
-            switch(view) {
-                case 'default':
-                    camera.position.set(35, 30, 60);
-                    controls.target.set(12.5, 0, 20);
-                    break;
-                case 'top':
-                    camera.position.set(12.5, 60, 20);
-                    controls.target.set(12.5, 0, 20);
-                    break;
-                case 'night':
-                    scene.background = new THREE.Color(0x0a0a1a);
-                    camera.position.set(35, 30, 60);
-                    controls.target.set(12.5, 0, 20);
-                    sunLight.intensity = 0.05;
-                    ambientLight.intensity = 0.15;
-                    fillLight.intensity = 0.05;
-                    hemiLight.intensity = 0.05;
-                    sunDisc.visible = false;
-                    sunGlow.visible = false;
-                    break;
-                case 'gate':
-                    camera.position.set(12.5, 2, -2);
-                    controls.target.set(12.5, 0, 20);
-                    break;
-            }
-            controls.update();
+        const ridgeCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, b.h, 0), new THREE.Vector3(0, b.h, b.d)]);
+        const ridgeMesh = new THREE.Mesh(new THREE.TubeGeometry(ridgeCurve, 2, 0.035, 5, false), frameMat);
+        ridgeMesh.castShadow = ridgeMesh.receiveShadow = true;
+        group.add(ridgeMesh);
+
+        [-halfW, halfW].forEach(xPos => {
+            const railCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(xPos, 0.05, 0), new THREE.Vector3(xPos, 0.05, b.d)]);
+            const rail = new THREE.Mesh(new THREE.TubeGeometry(railCurve, 2, 0.03, 5, false), frameMat);
+            rail.castShadow = true;
+            group.add(rail);
         });
 
-        // ============================================================
-        // 11. PNG
-        // ============================================================
-        function exportPNG() {
-            renderer.render(scene, camera);
-            const link = document.createElement('a');
-            link.download = 'plan_uchastka.png';
-            link.href = renderer.domElement.toDataURL('image/png');
-            link.click();
-        }
-
-        // ============================================================
-        // 12. СОЛНЦЕ
-        // ============================================================
-        const monthSlider = document.getElementById('month-slider');
-        const hourSlider = document.getElementById('hour-slider');
-        const monthLabel = document.getElementById('month-label');
-        const timeLabel = document.getElementById('time-label');
-        const timeDisplay = document.getElementById('time-display');
-
-        const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-        const monthData = [
-            { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
-            { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
-            { declination: -2.5,  sunrise: 6.70, sunset: 18.50 },
-            { declination: 10.5,  sunrise: 5.30, sunset: 19.80 },
-            { declination: 20.0,  sunrise: 4.20, sunset: 20.50 },
-            { declination: 23.5,  sunrise: 3.75, sunset: 21.20 },
-            { declination: 21.5,  sunrise: 3.90, sunset: 21.00 },
-            { declination: 15.0,  sunrise: 4.70, sunset: 20.20 },
-            { declination: 5.0,   sunrise: 6.00, sunset: 19.00 },
-            { declination: -7.0,  sunrise: 7.00, sunset: 17.70 },
-            { declination: -17.0, sunrise: 8.00, sunset: 16.40 },
-            { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
-        ];
-
-        function updateSun() {
-            const monthIndex = parseInt(monthSlider.value) - 1;
-            const month = monthData[monthIndex];
-            const declination = month.declination;
-            const sunrise = month.sunrise;
-            const sunset = month.sunset;
-            const dayLength = sunset - sunrise;
-
-            let hours = parseFloat(hourSlider.value);
-            const minHour = Math.max(0, sunrise - 0.5);
-            const maxHour = Math.min(24, sunset + 0.5);
-            hours = Math.max(minHour, Math.min(maxHour, hours));
-            hourSlider.value = hours;
-
-            const LATITUDE = 56;
-            const latRad = LATITUDE * Math.PI / 180;
-            const decRad = declination * Math.PI / 180;
-            const hourAngle = (hours - 12) * 15 * Math.PI / 180;
-            const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
-            let altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
-
-            const isNight = altitude < -2;
-
-            const sunEast  = -Math.cos(decRad) * Math.sin(hourAngle);
-            const sunNorth =  Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
-            const sunUp    =  sinAlt;
-
-            const distance = 50;
-            let x, y, z;
-            if (isNight) {
-                x = 0; y = -10; z = 0;
-                sunLight.intensity = 0.05;
-                scene.background = new THREE.Color(0x0a0a1a);
-                ambientLight.intensity = 0.15;
-                fillLight.intensity = 0.05;
-                hemiLight.intensity = 0.05;
-                sunDisc.visible = false;
-                sunGlow.visible = false;
-            } else {
-                x = distance * sunEast;
-                y = distance * Math.max(sunUp, 0.02);
-                z = distance * sunNorth;
-
-                let intensity = 1.0;
-                if (altitude < 20) {
-                    intensity = 0.3 + (altitude / 20) * 0.7;
-                }
-                sunLight.intensity = Math.min(intensity, 1.2);
-
-                const blue = new THREE.Color(0x87CEEB);
-                const golden = new THREE.Color(0xffaa66);
-                const orange = new THREE.Color(0xff7733);
-                let skyColor;
-                if (altitude > 25) {
-                    skyColor = blue;
-                } else if (altitude > 10) {
-                    const t = (altitude - 10) / 15;
-                    skyColor = golden.clone().lerp(blue, t);
-                } else {
-                    const t = (altitude + 2) / 12;
-                    skyColor = orange.clone().lerp(golden, t);
-                }
-                scene.background = skyColor;
-
-                ambientLight.intensity = 0.4 + (altitude / 60) * 0.3;
-                fillLight.intensity = 0.2 + (altitude / 60) * 0.2;
-                hemiLight.color.copy(skyColor);
-                hemiLight.intensity = 0.25 + (altitude / 60) * 0.2;
-                sunDisc.visible = true;
-                sunGlow.visible = true;
-                sunDisc.position.set(x, y, z);
-                sunGlow.position.set(x, y, z);
+        const zSeg = 20, xSeg = 16;
+        const verts = [], idx = [];
+        for (let i = 0; i <= zSeg; i++) {
+            const z = (i / zSeg) * b.d;
+            for (let j = 0; j <= xSeg; j++) {
+                const t = j / xSeg;
+                verts.push(archX(t), archY(t), z);
             }
-
-            sunLight.position.set(x, y, z);
-            sunLight.target.position.set(12.5, 0, 20);
-            scene.add(sunLight.target);
-
-            monthLabel.textContent = monthNames[monthIndex];
-            const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
-            timeLabel.textContent = hoursStr;
-
-            const dayHours = Math.floor(dayLength);
-            const dayMinutes = Math.round((dayLength - dayHours) * 60);
-            const dayStr = dayHours + 'ч ' + String(dayMinutes).padStart(2, '0') + 'м';
-            const status = isNight ? '🌙 Ночь' : '☀️ Высота: ' + Math.round(Math.max(altitude, 0)) + '°';
-            timeDisplay.textContent = status + ' | День: ' + dayStr;
         }
-
-        monthSlider.addEventListener('input', updateSun);
-        hourSlider.addEventListener('input', updateSun);
-        updateSun();
-
-        // ============================================================
-        // 13. АНИМАЦИЯ
-        // ============================================================
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', onWindowResize, false);
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // ============================================================
-        // 14. МОДАЛКИ (доклад, план дома)
-        // ============================================================
-        const reportModal = document.getElementById('report-modal');
-        const openReportBtn = document.getElementById('open-report');
-        const closeReportBtn = document.getElementById('close-report');
-        const closeReportBtn2 = document.getElementById('close-report-btn');
-
-        function openReportModal() {
-            reportModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        function closeReportModal() {
-            reportModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        openReportBtn.addEventListener('click', openReportModal);
-        closeReportBtn.addEventListener('click', closeReportModal);
-        closeReportBtn2.addEventListener('click', closeReportModal);
-        window.addEventListener('click', function(event) {
-            if (event.target === reportModal) {
-                closeReportModal();
+        const cols = xSeg + 1;
+        for (let i = 0; i < zSeg; i++) {
+            for (let j = 0; j < xSeg; j++) {
+                const a = i * cols + j;
+                idx.push(a, a + cols, a + 1, a + 1, a + cols, a + cols + 1);
             }
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && reportModal.style.display === 'block') {
-                closeReportModal();
-            }
+        }
+        const roofGeo = new THREE.BufferGeometry();
+        roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+        roofGeo.setIndex(idx);
+        roofGeo.computeVertexNormals();
+        const roofMesh = new THREE.Mesh(roofGeo, polyMat);
+        roofMesh.castShadow = roofMesh.receiveShadow = true;
+        group.add(roofMesh);
+
+        const endShape = new THREE.Shape();
+        for (let j = 0; j <= xSeg; j++) {
+            const t = j / xSeg, px = archX(t), py = archY(t);
+            if (j === 0) endShape.moveTo(px, py); else endShape.lineTo(px, py);
+        }
+        const endGeo = new THREE.ShapeGeometry(endShape);
+        [0, b.d].forEach(zEnd => {
+            const wall = new THREE.Mesh(endGeo, polyMat);
+            wall.position.z = zEnd;
+            group.add(wall);
         });
 
-        // ===== ПЛАНЫ ДОМА =====
-        let planModalScene = null;
-        let planModalCamera = null;
-        let planModalRenderer = null;
-        let planModalControls = null;
-        let planModalGroup = null;
-        let planModalCurrentPlan = 'main';
-        let planModalIsTopView = false;
+        const dW = 0.8, dH = 1.8;
+        group.add(makeBox(0.05, dH, 0.05, 0x666666, [-dW/2, dH/2, 0.02], {castShadow:false}));
+        group.add(makeBox(0.05, dH, 0.05, 0x666666, [dW/2, dH/2, 0.02], {castShadow:false}));
+        group.add(makeBox(dW, 0.05, 0.05, 0x666666, [0, dH, 0.02], {castShadow:false}));
+        const handle = new THREE.Mesh(GeoPool.sphere(0.04, 6), MaterialPool.get(0xffaa00));
+        handle.position.set(dW/2 - 0.1, dH/2, 0.06);
+        group.add(handle);
 
-        const planModal = document.getElementById('plan-modal');
-        const planContainer = document.getElementById('plan-container');
-        const closePlanModalBtn = document.getElementById('close-plan-modal');
-        const closePlanModalBtn2 = document.getElementById('close-plan-modal-btn');
+        const windowMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+        for (let zPos = 1.5; zPos < b.d; zPos += 2.5) {
+            [-halfW, halfW].forEach((xPos, k) => {
+                const win = new THREE.Mesh(GeoPool.plane(0.6, 0.6), windowMat);
+                win.position.set(xPos + (k === 0 ? 0.02 : -0.02), 1.2, zPos);
+                win.rotation.y = Math.PI/2;
+                group.add(win);
+                const frame = makeBox(0.02, 0.6, 0.6, 0x666666, [xPos, 1.2, zPos], {castShadow:false});
+                frame.rotation.y = Math.PI/2;
+                group.add(frame);
+            });
+        }
+        group.position.set(b.x, 0, b.z);
+        return group;
+    }
 
-        function openPlanModal() {
-            planModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            initPlanScene();
+    const Builders = {
+        house(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
+            const roofRise = 2.5;
+            const shape = new THREE.Shape();
+            shape.moveTo(-b.d/2, b.h); shape.lineTo(0, b.h + roofRise); shape.lineTo(b.d/2, b.h); shape.lineTo(-b.d/2, b.h);
+            const gableGeo = new THREE.ExtrudeGeometry(shape, { depth: b.w, bevelEnabled: false });
+            gableGeo.translate(0, 0, -b.w/2);
+            gableGeo.computeVertexNormals();
+            const roof = new THREE.Mesh(gableGeo, new THREE.MeshStandardMaterial({ map: Textures.roof, roughness: 0.8 }));
+            roof.rotation.y = Math.PI/2;
+            roof.castShadow = roof.receiveShadow = true;
+            g.add(roof);
+            if (b.terrace) {
+                g.add(makeBox(b.terrace.w, 0.3, b.terrace.d, b.terrace.color, [0, 0.15, -b.d/2 - b.terrace.d/2]));
+            }
+            g.position.set(b.x, 0, b.z);
+            return g;
+        },
+        bath(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
+            g.add(makeBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0]));
+            if (b.terrace) g.add(makeBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2]));
+            g.position.set(b.x, 0, b.z);
+            return g;
+        },
+        shed(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 1.2, 4), MaterialPool.get(b.roofColor, { roughness: 0.8 }));
+            roof.position.y = b.h + 0.6;
+            roof.rotation.y = Math.PI/4;
+            roof.castShadow = true;
+            g.add(roof);
+            g.position.set(b.x, 0, b.z);
+            return g;
+        },
+        garden(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, 0.2, b.d, b.color, [b.x, 0.1, b.z]));
+            for (let i = 0; i < 5; i++) {
+                g.add(makeBox(3.5, 0.3, 0.6, 0x5a7a1a, [b.x, 0.3, b.z - b.d/2 + 0.5 + i * 1.5]));
+            }
+            return g;
+        },
+        greenhouse: makeGreenhouse,
+        playground(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, 0.3, b.d, b.color, [b.x, 0.15, b.z]));
+            g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [b.x + 0.5, 0.4, b.z + 0.5]));
+            return g;
+        },
+        firepit(b) {
+            const g = new THREE.Group();
+            g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [b.x, 0.1, b.z]));
+            for (let i = 0; i < 12; i++) {
+                const a = (i / 12) * Math.PI * 2;
+                g.add(makeCylinder(0.12, 0.18, 0.15, 0x7a6a5a,
+                    [b.x + Math.cos(a) * (b.radius + 0.1), 0.15, b.z + Math.sin(a) * (b.radius + 0.1)]));
+            }
+            return g;
+        },
+        car(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, 0.5, b.d, b.color, [b.x, 0.25, b.z]));
+            g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [b.x + 1.3, 0.55, b.z]));
+            return g;
+        },
+        septic(b) {
+            const g = new THREE.Group();
+            g.add(makeBox(b.w, 0.8, b.d, b.color, [b.x, 0.4, b.z]));
+            return g;
+        },
+        well(b) {
+            const g = new THREE.Group();
+            g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [b.x, 0.4, b.z]));
+            g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [b.x, 0.85, b.z]));
+            return g;
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    // ПОСТРОЕНИЕ УЧАСТКА
+    // ═══════════════════════════════════════════════════════════════
+    const ground = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w, CONFIG.plot.d), new THREE.MeshStandardMaterial({ map: Textures.grass, roughness: 0.9 }));
+    ground.rotation.x = -Math.PI/2;
+    ground.position.set(CONFIG.center.x, 0, CONFIG.center.z);
+    ground.receiveShadow = true;
+    groups.site.add(ground);
+
+    const road = new THREE.Mesh(GeoPool.plane(30, 8), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
+    road.rotation.x = -Math.PI/2;
+    road.position.set(CONFIG.center.x, -0.1, -4);
+    road.receiveShadow = true;
+    groups.site.add(road);
+
+    const markMat = MaterialPool.get(0xffffff);
+    for (let i = -10; i <= 10; i += 3) {
+        const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat);
+        mark.rotation.x = -Math.PI/2;
+        mark.position.set(CONFIG.center.x + i, 0.01, -4);
+        groups.site.add(mark);
+    }
+
+    const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
+    roadLabel.position.set(CONFIG.center.x, 2.5, -4);
+    groups.labels.add(roadLabel);
+
+    const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
+    path.rotation.x = -Math.PI/2;
+    path.position.set(12, 0.03, 11.5);
+    path.receiveShadow = true;
+    groups.site.add(path);
+
+    CONFIG.objects.forEach(obj => {
+        const builder = Builders[obj.type];
+        if (builder) {
+            groups[obj.group || 'site'].add(builder(obj));
+        }
+        const label = Utils.createLabel(obj.label, obj.labelColor || '#fff', obj.labelSize || 0.8);
+        label.position.set(obj.x, obj.y, obj.z);
+        groups.objectLabels.add(label);
+    });
+
+    for (let z = 24; z <= 32; z += 1.5) {
+        const t1 = makeTree(0.7); t1.position.set(2, 0, z); groups.site.add(t1);
+        const t2 = makeTree(0.7); t2.position.set(23, 0, z); groups.site.add(t2);
+    }
+    for (let x = 6; x <= 19; x += 1.5) {
+        const t = makeTree(0.7); t.position.set(x, 0, 38); groups.site.add(t);
+    }
+
+    // Забор (InstancedMesh)
+    (() => {
+        const postGeo = GeoPool.cylinder(0.08, 0.08, 0.6, 8);
+        const postMat = MaterialPool.get(0xaaaaaa);
+        const count = Math.ceil(CONFIG.plot.w / 2) * 2 + Math.ceil(CONFIG.plot.d / 2) * 2 + 4;
+        const posts = new THREE.InstancedMesh(postGeo, postMat, count);
+        const dummy = new THREE.Object3D();
+        let idx = 0;
+        for (let i = 0; i <= CONFIG.plot.w; i += 2) {
+            dummy.position.set(i, 0.3, 0); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
+            dummy.position.set(i, 0.3, CONFIG.plot.d); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
+        }
+        for (let i = 0; i <= CONFIG.plot.d; i += 2) {
+            dummy.position.set(0, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
+            dummy.position.set(CONFIG.plot.w, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix);
+        }
+        posts.count = idx;
+        posts.instanceMatrix.needsUpdate = true;
+        scene.add(posts);
+    })();
+
+    // Коммуникации
+    function createUndergroundLine(u) {
+        const pts = u.points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
+        groups.comms.add(new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(pts),
+            new THREE.LineBasicMaterial({ color: u.color })
+        ));
+        const shadowPts = u.points.map(p => new THREE.Vector3(p[0], -0.01, p[1]));
+        const shadowLine = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(shadowPts),
+            new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 })
+        );
+        shadowLine.computeLineDistances();
+        groups.comms.add(shadowLine);
+        if (u.label && u.labelPos) {
+            const lbl = Utils.createLabel(u.label, '#ffffff', 0.6);
+            lbl.position.set(u.labelPos[0], 0.5, u.labelPos[1]);
+            groups.labels.add(lbl);
+        }
+    }
+    CONFIG.utilities.forEach(createUndergroundLine);
+
+    // Ворота
+    (() => {
+        const pillarMat = MaterialPool.get(0x4a4a4a, { roughness: 0.4, metalness: 0.6 });
+        const barMat = MaterialPool.get(0x6a6a6a, { roughness: 0.5, metalness: 0.3 });
+        const gateMat = MaterialPool.get(0x3a3a3a, { roughness: 0.7, metalness: 0.2 });
+        const railMat = MaterialPool.get(0x888888, { roughness: 0.5, metalness: 0.4 });
+        const lampMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 });
+
+        [12.5, 16.5].forEach(x => {
+            const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat);
+            p.position.set(x, 1.25, 0); p.castShadow = p.receiveShadow = true; scene.add(p);
+            const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat);
+            lamp.position.set(x, 2.7, 0); scene.add(lamp);
+        });
+
+        const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat);
+        beam.position.set(14.5, 2.5, 0); beam.castShadow = true; scene.add(beam);
+
+        const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat);
+        rail.position.set(16.5, 0.05, 0); scene.add(rail);
+
+        const rollerMat = MaterialPool.get(0x222222, { roughness: 0.3, metalness: 0.8 });
+        for (let x = 13; x <= 19; x += 2) {
+            const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat);
+            r.rotation.x = Math.PI/2; r.position.set(x, 0.08, 0); scene.add(r);
         }
 
-        function closePlanModalFunc() {
-            planModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            if (planModalRenderer) {
-                planModalRenderer.dispose();
-                planModalRenderer.domElement.remove();
-                planModalRenderer = null;
-            }
-            if (planModalControls) {
-                planModalControls = null;
-            }
-            if (planModalScene) {
-                planModalScene = null;
-            }
+        const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat);
+        gateLeaf.position.set(18.5, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; scene.add(gateLeaf);
+        const ribMat = MaterialPool.get(0x5a5a5a, { metalness: 0.3 });
+        for (let x = 17; x <= 20; x += 1.5) {
+            const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat);
+            rib.position.set(x, 0.9, 0); scene.add(rib);
         }
+        const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 }));
+        drive.position.set(16, 0.4, 0.25); scene.add(drive);
 
-        function initPlanScene() {
-            if (planModalRenderer) {
-                planModalRenderer.setSize(planContainer.clientWidth, planContainer.clientHeight);
-                return;
+        [11.5, 12.5].forEach(x => {
+            const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat);
+            p.position.set(x, 1.0, 0); p.castShadow = p.receiveShadow = true; scene.add(p);
+        });
+        const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat);
+        pedBeam.position.set(12, 2.0, 0); scene.add(pedBeam);
+        const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat);
+        pedLeaf.position.set(12, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; scene.add(pedLeaf);
+        const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00));
+        pedHandle.position.set(11.8, 0.85, 0.1); scene.add(pedHandle);
+    })();
+
+    // Направления и оси
+    [
+        { text: '⬆ СЕВЕР', pos: [12.5, 3, 42], color: '#66ccff' },
+        { text: '⬇ ЮГ', pos: [12.5, 3, -6], color: '#ff9966' },
+        { text: '⬅ ЗАПАД', pos: [-4, 3, 20], color: '#99cc99' },
+        { text: '➡ ВОСТОК', pos: [29, 3, 20], color: '#99cc99' }
+    ].forEach(d => {
+        const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48);
+        lbl.position.set(...d.pos);
+        scene.add(lbl);
+    });
+
+    [
+        { text: 'Ось X (Восток)', pos: [24, 1.5, 20], color: '#ff6666' },
+        { text: 'Ось Z (Север)', pos: [12.5, 1.5, 39], color: '#66aaff' }
+    ].forEach(a => {
+        const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10);
+        lbl.position.set(...a.pos);
+        scene.add(lbl);
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // АВТОПРОВЕРКА НОРМ
+    // ═══════════════════════════════════════════════════════════════
+    const Norms = {
+        rules: [
+            { kind: 'dist', a: 'house', b: 'bath', min: 15, doc: 'СП 4.13130 — противопожарный разрыв (дерево)' },
+            { kind: 'dist', a: 'septic', b: 'well', min: 15, doc: 'СанПиН 2.1.3684-21' },
+            { kind: 'dist', a: 'septic', b: 'house', min: 5, doc: 'СП 42.13330.2016' },
+            { kind: 'dist', a: 'firepit', b: 'bath', min: 5, doc: 'Правила противопожарного режима, п. 73' },
+            { kind: 'dist', a: 'firepit', b: 'shed', min: 5, doc: 'Правила противопожарного режима, п. 73' },
+            { kind: 'dist', a: 'firepit', b: 'house', min: 5, doc: 'Правила противопожарного режима, п. 73' },
+            { kind: 'dist', a: 'well', b: 'house', min: 3, doc: 'Рекомендация (защита фундамента)', soft: true },
+            { kind: 'setback', obj: 'house', min: 3, doc: 'СП 42.13330 — жилой дом' },
+            { kind: 'setback', obj: 'bath', min: 1, doc: 'СП 53.13330 — баня' },
+            { kind: 'setback', obj: 'shed', min: 1, doc: 'СП 53.13330 — хозпостройка' }
+        ],
+
+        obj(id) { return CONFIG.objects.find(o => o.id === id); },
+
+        bounds(o) {
+            if (o.radius !== undefined) {
+                return { minX: o.x - o.radius, maxX: o.x + o.radius, minZ: o.z - o.radius, maxZ: o.z + o.radius, circle: true };
             }
+            return { minX: o.x - o.w/2, maxX: o.x + o.w/2, minZ: o.z - o.d/2, maxZ: o.z + o.d/2, circle: false };
+        },
 
-            const scenePlan = new THREE.Scene();
-            scenePlan.background = new THREE.Color(0x2c3e50);
-
-            const cameraPlan = new THREE.PerspectiveCamera(40, planContainer.clientWidth / planContainer.clientHeight, 0.1, 100);
-            cameraPlan.position.set(0, 12, 18);
-            cameraPlan.lookAt(0, 0, 0);
-
-            const rendererPlan = new THREE.WebGLRenderer({ antialias: true });
-            rendererPlan.setSize(planContainer.clientWidth, planContainer.clientHeight);
-            rendererPlan.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            planContainer.appendChild(rendererPlan.domElement);
-
-            const controlsPlan = new THREE.OrbitControls(cameraPlan, rendererPlan.domElement);
-            controlsPlan.target.set(0, 0, 0);
-            controlsPlan.enableDamping = true;
-            controlsPlan.dampingFactor = 0.05;
-            controlsPlan.autoRotate = false;
-            controlsPlan.maxPolarAngle = Math.PI / 2.2;
-            controlsPlan.update();
-
-            const ambientPlan = new THREE.AmbientLight(0xffffff, 0.8);
-            scenePlan.add(ambientPlan);
-            const dirLightPlan = new THREE.DirectionalLight(0xffffff, 0.5);
-            dirLightPlan.position.set(5, 15, 10);
-            scenePlan.add(dirLightPlan);
-
-            planModalScene = scenePlan;
-            planModalCamera = cameraPlan;
-            planModalRenderer = rendererPlan;
-            planModalControls = controlsPlan;
-
-            planModalGroup = new THREE.Group();
-            scenePlan.add(planModalGroup);
-
-            rebuildPlanModal();
-
-            function animatePlan() {
-                if (!planModalRenderer) return;
-                requestAnimationFrame(animatePlan);
-                planModalControls.update();
-                planModalRenderer.render(planModalScene, planModalCamera);
+        dist(a, b) {
+            const A = this.bounds(a), B = this.bounds(b);
+            if (A.circle && B.circle) return Math.hypot(a.x - b.x, a.z - b.z) - a.radius - b.radius;
+            if (A.circle) {
+                const px = Math.max(B.minX, Math.min(a.x, B.maxX));
+                const pz = Math.max(B.minZ, Math.min(a.z, B.maxZ));
+                return Math.hypot(a.x - px, a.z - pz) - a.radius;
             }
-            animatePlan();
+            if (B.circle) {
+                const px = Math.max(A.minX, Math.min(b.x, A.maxX));
+                const pz = Math.max(A.minZ, Math.min(b.z, A.maxZ));
+                return Math.hypot(b.x - px, b.z - pz) - b.radius;
+            }
+            const dx = Math.max(0, B.minX - A.maxX, A.minX - B.maxX);
+            const dz = Math.max(0, B.minZ - A.maxZ, A.minZ - B.maxZ);
+            return Math.hypot(dx, dz);
+        },
 
-            const footer = planModal.querySelector('.modal-footer');
-            footer.innerHTML = '';
-            const btnMain = document.createElement('button');
-            btnMain.textContent = 'Основной план';
-            btnMain.style.marginRight = '10px';
-            btnMain.onclick = function() {
-                planModalCurrentPlan = 'main';
-                rebuildPlanModal();
+        setbacks(o) {
+            const b = this.bounds(o);
+            return {
+                south: b.minZ,
+                north: CONFIG.plot.d - b.maxZ,
+                west: b.minX,
+                east: CONFIG.plot.w - b.maxX
             };
-            footer.appendChild(btnMain);
+        },
 
-            const btnMirror = document.createElement('button');
-            btnMirror.textContent = 'Зеркальный план';
-            btnMirror.style.marginRight = '10px';
-            btnMirror.onclick = function() {
-                planModalCurrentPlan = 'mirror';
-                rebuildPlanModal();
-            };
-            footer.appendChild(btnMirror);
+        name(id) {
+            const o = this.obj(id);
+            return o ? o.label.replace(/^[^\s]+\s/, '') : id;
+        },
 
-            const btnTopView = document.createElement('button');
-            btnTopView.textContent = '📷 Вид сверху';
-            btnTopView.style.marginRight = '10px';
-            btnTopView.onclick = function() {
-                planModalIsTopView = !planModalIsTopView;
-                if (planModalIsTopView) {
-                    planModalCamera.position.set(0, 30, 0);
-                    btnTopView.textContent = '📷 Перспектива';
-                } else {
-                    planModalCamera.position.set(0, 12, 18);
-                    btnTopView.textContent = '📷 Вид сверху';
+        checkAll() {
+            return this.rules.map(r => {
+                if (r.kind === 'dist') {
+                    const A = this.obj(r.a), B = this.obj(r.b);
+                    const d = this.dist(A, B);
+                    return {
+                        kind: 'dist', ids: [r.a, r.b],
+                        title: `${this.name(r.a)} → ${this.name(r.b)}`,
+                        actual: d, min: r.min, ok: d >= r.min, soft: !!r.soft, doc: r.doc,
+                        detail: `между ближайшими краями`
+                    };
                 }
-                planModalControls.target.set(0, 0, 0);
-                planModalControls.update();
-            };
-            footer.appendChild(btnTopView);
-
-            const closeBtnNew = document.createElement('button');
-            closeBtnNew.textContent = 'Закрыть';
-            closeBtnNew.onclick = closePlanModalFunc;
-            footer.appendChild(closeBtnNew);
-        }
-
-        function rebuildPlanModal() {
-            if (!planModalGroup) return;
-            while (planModalGroup.children.length > 0) {
-                planModalGroup.remove(planModalGroup.children[0]);
-            }
-
-            const mainPlanData = {
-                rooms: [
-                    { name: 'Крыльцо_верх', x: -7.25, z: 4.25, w: 1.5, d: 1.5, color: 0xbc8f8f },
-                    { name: 'Тех.пом.', x: -5.5, z: 3.25, w: 2.0, d: 3.5, color: 0xcccccc },
-                    { name: 'СУ', x: -3.75, z: 3.25, w: 1.5, d: 3.5, color: 0xb3d9ff },
-                    { name: 'Кухня', x: -1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffe0b2 },
-                    { name: 'Спальня1', x: 1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffc8c8 },
-                    { name: 'Спальня2', x: 5.5, z: 3.25, w: 5.0, d: 3.5, color: 0xc8e6ff },
-                    { name: 'Крыльцо_низ', x: -7.25, z: 0.5, w: 1.5, d: 2.0, color: 0xbc8f8f },
-                    { name: 'Тамбур', x: -5.5, z: 0.0, w: 2.0, d: 3.0, color: 0x8d8d8d },
-                    { name: 'Гостиная', x: -0.75, z: -0.75, w: 7.5, d: 4.5, color: 0xffd1b3 },
-                    { name: 'Холл', x: 4.0, z: 0.75, w: 2.0, d: 1.5, color: 0xd4d4d4 },
-                    { name: 'Кабинет', x: 4.0, z: -1.0, w: 2.0, d: 2.0, color: 0xe6d4b3 },
-                    { name: 'Спальня3', x: 6.5, z: -0.25, w: 3.0, d: 3.5, color: 0xd4f0d4 },
-                    { name: 'Терраса', x: 5.5, z: -3.5, w: 5.0, d: 3.0, color: 0xbc8f8f }
-                ],
-                labelColors: {
-                    'Крыльцо_верх': '#aa7755',
-                    'Тех.пом.': '#666666',
-                    'СУ': '#3366cc',
-                    'Кухня': '#cc8800',
-                    'Спальня1': '#cc3366',
-                    'Спальня2': '#3366cc',
-                    'Крыльцо_низ': '#aa7755',
-                    'Тамбур': '#888888',
-                    'Гостиная': '#cc6600',
-                    'Холл': '#999999',
-                    'Кабинет': '#aa8844',
-                    'Спальня3': '#33aa66',
-                    'Терраса': '#aa7755'
-                }
-            };
-
-            function mirrorPlanData(planData) {
-                const mirroredRooms = planData.rooms.map(room => ({
-                    ...room,
-                    x: -room.x
-                }));
+                const O = this.obj(r.obj);
+                const s = this.setbacks(O);
+                const minVal = Math.min(s.south, s.north, s.west, s.east);
                 return {
-                    rooms: mirroredRooms,
-                    labelColors: planData.labelColors
+                    kind: 'setback', ids: [r.obj],
+                    title: `${this.name(r.obj)} — отступ до границы`,
+                    actual: minVal, min: r.min, ok: minVal >= r.min, soft: !!r.soft, doc: r.doc,
+                    detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м`
                 };
+            });
+        }
+    };
+
+    function clearHighlights() {
+        while (groups.norms.children.length) {
+            const c = groups.norms.children[0];
+            groups.norms.remove(c);
+            if (c.geometry) c.geometry.dispose();
+            if (c.material) {
+                if (c.material.map) c.material.map.dispose();
+                c.material.dispose();
             }
+        }
+    }
 
-            const mirrorPlan = mirrorPlanData(mainPlanData);
+    function showHighlights() {
+        clearHighlights();
+        const failed = Norms.checkAll().filter(c => !c.ok);
+        const ids = new Set();
+        failed.forEach(c => c.ids.forEach(id => ids.add(id)));
 
-            const data = (planModalCurrentPlan === 'main') ? mainPlanData : mirrorPlan;
-            const rooms = data.rooms;
-            const labelColors = data.labelColors;
+        ids.forEach(id => {
+            const o = Norms.obj(id);
+            const b = Norms.bounds(o);
+            const r = Math.max(b.maxX - b.minX, b.maxZ - b.minZ) / 2 + 0.7;
+            const ring = new THREE.Mesh(
+                new THREE.RingGeometry(r, r + 0.35, 40),
+                new THREE.MeshBasicMaterial({ color: 0xff2222, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })
+            );
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.set(o.x, 0.06, o.z);
+            groups.norms.add(ring);
+        });
 
-            function addLabelModal(text, x, y, z, color = '#ffffff', size = 0.9, bgColor = null) {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = 1024; canvas.height = 256;
-                if (bgColor) {
-                    ctx.fillStyle = bgColor;
-                    ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
-                    ctx.fill();
-                }
-                ctx.shadowColor = 'rgba(0,0,0,0.9)';
-                ctx.shadowBlur = 12;
-                ctx.font = `Bold ${60}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-                ctx.lineWidth = 6;
-                ctx.strokeText(text, canvas.width/2, canvas.height/2 + 2);
-                ctx.fillStyle = color;
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.fillText(text, canvas.width/2, canvas.height/2 + 2);
-                const texture = new THREE.CanvasTexture(canvas);
-                const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-                const sprite = new THREE.Sprite(material);
-                sprite.position.set(x, y, z);
-                sprite.scale.set(5 * size, 1.25 * size, 1);
-                return sprite;
-            }
+        failed.filter(c => c.kind === 'dist').forEach(c => {
+            const A = Norms.obj(c.ids[0]), B = Norms.obj(c.ids[1]);
+            const line = new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(A.x, 0.15, A.z),
+                    new THREE.Vector3(B.x, 0.15, B.z)
+                ]),
+                new THREE.LineDashedMaterial({ color: 0xff2222, dashSize: 0.5, gapSize: 0.25 })
+            );
+            line.computeLineDistances();
+            groups.norms.add(line);
 
-            const houseWidth = 16;
-            const houseDepth = 10;
-            const halfW = houseWidth / 2;
-            const halfD = houseDepth / 2;
+            const lbl = Utils.createLabel(`⚠ ${Utils.fmt(c.actual)} м`, '#ffdddd', 0.7, [6, 1.5], 512, 128, 44, 'rgba(70,0,0,0.85)');
+            lbl.position.set((A.x + B.x) / 2, 1.4, (A.z + B.z) / 2);
+            groups.norms.add(lbl);
+        });
+        Utils.markDirty();
+    }
 
-            const wallMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-            const pts = [
-                new THREE.Vector3(-halfW, 0.05, -halfD),
-                new THREE.Vector3(halfW, 0.05, -halfD),
-                new THREE.Vector3(halfW, 0.05, halfD),
-                new THREE.Vector3(-halfW, 0.05, halfD),
-                new THREE.Vector3(-halfW, 0.05, -halfD)
-            ];
-            const geo = new THREE.BufferGeometry().setFromPoints(pts);
-            const line = new THREE.Line(geo, wallMat);
-            planModalGroup.add(line);
+    function openNorms() {
+        const checks = Norms.checkAll();
+        const hard = checks.filter(c => !c.ok && !c.soft);
+        const soft = checks.filter(c => !c.ok && c.soft);
 
-            rooms.forEach(room => {
-                const geo = new THREE.PlaneGeometry(room.w, room.d);
-                const mat = new THREE.MeshStandardMaterial({ color: room.color, side: THREE.DoubleSide });
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.rotation.x = -Math.PI / 2;
-                mesh.position.set(room.x, 0.02, room.z);
-                mesh.receiveShadow = true;
-                planModalGroup.add(mesh);
-            });
-
-            const intWallMat = new THREE.LineBasicMaterial({ color: 0x888888 });
-            rooms.forEach(room => {
-                const pts = [
-                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z - room.d/2),
-                    new THREE.Vector3(room.x + room.w/2, 0.04, room.z - room.d/2),
-                    new THREE.Vector3(room.x + room.w/2, 0.04, room.z + room.d/2),
-                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z + room.d/2),
-                    new THREE.Vector3(room.x - room.w/2, 0.04, room.z - room.d/2)
-                ];
-                const geo = new THREE.BufferGeometry().setFromPoints(pts);
-                const line = new THREE.Line(geo, intWallMat);
-                planModalGroup.add(line);
-            });
-
-            rooms.forEach(room => {
-                const color = labelColors[room.name] || '#ffffff';
-                const label = room.name.replace(/_/g, ' ');
-                const nameLabel = addLabelModal(label, room.x, 0.3, room.z + 0.25, color, 0.8);
-                planModalGroup.add(nameLabel);
-                const sizeText = `${room.w.toFixed(1)}×${room.d.toFixed(1)} м`;
-                const sizeLabel = addLabelModal(sizeText, room.x, 0.1, room.z - 0.35, '#cccccc', 0.5);
-                planModalGroup.add(sizeLabel);
-            });
-
-            const entry = addLabelModal('🚪 Вход', 0, 0.1, -halfD - 0.6, '#ffaa00', 0.9);
-            planModalGroup.add(entry);
-
-            const dimLabel = addLabelModal(`Дом: ${houseWidth}×${houseDepth} м`, 0, 0.1, halfD + 1.2, '#ffaa00', 0.8);
-            planModalGroup.add(dimLabel);
-
-            const northDim = addLabelModal('16 м', 0, 0.3, halfD + 1.7, '#ffaa00', 0.6);
-            planModalGroup.add(northDim);
-            const southDim = addLabelModal('16 м', 0, 0.3, -halfD - 1.7, '#ffaa00', 0.6);
-            planModalGroup.add(southDim);
-            const westDim = addLabelModal('10 м', -halfW - 1.7, 0.3, 0, '#ffaa00', 0.6);
-            planModalGroup.add(westDim);
-            const eastDim = addLabelModal('10 м', halfW + 1.7, 0.3, 0, '#ffaa00', 0.6);
-            planModalGroup.add(eastDim);
-
-            const dirColor = '#66ccff';
-            const dirSize = 0.9;
-            const north = addLabelModal('⬆ СЕВЕР', 0, 0.3, halfD + 2.5, dirColor, dirSize, 'rgba(0,0,0,0.5)');
-            planModalGroup.add(north);
-            const south = addLabelModal('⬇ ЮГ', 0, 0.3, -halfD - 2.5, dirColor, dirSize, 'rgba(0,0,0,0.5)');
-            planModalGroup.add(south);
-            const west = addLabelModal('⬅ ЗАПАД', -halfW - 2.5, 0.3, 0, dirColor, dirSize, 'rgba(0,0,0,0.5)');
-            planModalGroup.add(west);
-            const east = addLabelModal('➡ ВОСТОК', halfW + 2.5, 0.3, 0, dirColor, dirSize, 'rgba(0,0,0,0.5)');
-            planModalGroup.add(east);
+        if (!hard.length && !soft.length) {
+            DOM.normsSummary.innerHTML = '<span class="norm-ok">✅ Все нормы соблюдены. Планировка безопасна.</span>';
+        } else {
+            DOM.normsSummary.innerHTML =
+                (hard.length ? `<span class="norm-bad">⚠ Нарушений: ${hard.length}</span>` : '') +
+                (hard.length && soft.length ? ' &nbsp;|&nbsp; ' : '') +
+                (soft.length ? `<span class="norm-warn">Рекомендаций: ${soft.length}</span>` : '') +
+                '<div style="font-size:12px; color:#666; margin-top:6px;">Красные кольца и линии на 3D-сцене показывают проблемные объекты и расстояния.</div>';
         }
 
-        closePlanModalBtn.addEventListener('click', closePlanModalFunc);
-        closePlanModalBtn2.addEventListener('click', closePlanModalFunc);
-        window.addEventListener('click', function(event) {
-            if (event.target === planModal) {
-                closePlanModalFunc();
+        DOM.normsTbody.innerHTML = '';
+        checks.forEach(c => {
+            const tr = document.createElement('tr');
+            const st = c.ok
+                ? '<span class="norm-ok">✓ ОК</span>'
+                : (c.soft ? '<span class="norm-warn">⚠ Рекомендация</span>' : '<span class="norm-bad">✗ Нарушение</span>');
+            tr.innerHTML = `
+                <td>${c.title}<div class="norm-doc">${c.doc}</div></td>
+                <td style="text-align:center; white-space:nowrap;">≥ ${c.min} м</td>
+                <td style="text-align:center; font-weight:700; white-space:nowrap;">${Utils.fmt(c.actual)} м</td>
+                <td style="text-align:center;">${st}</td>
+                <td class="norm-detail">${c.detail}</td>`;
+            DOM.normsTbody.appendChild(tr);
+        });
+
+        DOM.normsModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        showHighlights();
+    }
+
+    function updateNormBadge() {
+        const checks = Norms.checkAll();
+        const hard = checks.filter(c => !c.ok && !c.soft).length;
+        if (hard) {
+            DOM.normBadge.textContent = `⚠ Нормы: нарушений ${hard} — нажмите для проверки`;
+            DOM.normBadge.classList.add('bad');
+        } else {
+            DOM.normBadge.textContent = '✅ Нормы: всё в порядке';
+            DOM.normBadge.classList.remove('bad');
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // АВТОДОКЛАД (генерируется из CONFIG)
+    // ═══════════════════════════════════════════════════════════════
+    const ENGINEERING_HTML = `
+        <h3>💧 Водоснабжение</h3>
+        <ul>
+            <li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li>
+            <li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области — 1,4 м).</li>
+            <li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li>
+            <li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li>
+            <li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м, с возможностью консервации на зиму.</li>
+            <li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li>
+        </ul>
+        <h3>🚽 Канализация</h3>
+        <ul>
+            <li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li>
+            <li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li>
+            <li>Дом → септик ~10 м; баня → септик ~14 м. Ревизионные колодцы на поворотах.</li>
+            <li>Фановые трубы выведены выше крыш дома и бани.</li>
+        </ul>
+        <h3>⚡ Электроснабжение</h3>
+        <ul>
+            <li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li>
+            <li>Щиток: 12 модулей, автоматы, УЗО, дифавтоматы.</li>
+            <li>К бане: ВВГнг 3×4 мм²; к хозблоку: ВВГнг 3×2,5 мм² — в гофре, глубина 0,8 м.</li>
+            <li>Освещение участка: 4 светодиодных светильника с датчиком освещённости. Влагозащищённые розетки у дома и бани.</li>
+        </ul>
+        <h3>🔥 Газоснабжение</h3>
+        <ul>
+            <li>Магистральный газ низкого давления. Полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li>
+            <li>Ввод через стену: отключающий кран, счётчик. Котёл настенный 24 кВт, закрытая камера сгорания.</li>
+        </ul>`;
+
+    function buildReportHTML() {
+        const now = new Date().toLocaleDateString('ru-RU');
+        const o = id => Norms.obj(id);
+        const dims = obj => obj.radius !== undefined ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)}×${Utils.fmt(obj.d)} м`;
+        const sb = obj => {
+            const s = Norms.setbacks(obj);
+            return `север ${Utils.fmt(s.north)} м, юг ${Utils.fmt(s.south)} м, запад ${Utils.fmt(s.west)} м, восток ${Utils.fmt(s.east)} м`;
+        };
+        const dist = (a, b) => Utils.fmt(Norms.dist(o(a), o(b)));
+
+        const checks = Norms.checkAll();
+        const hard = checks.filter(c => !c.ok && !c.soft);
+        const soft = checks.filter(c => !c.ok && c.soft);
+
+        let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
+        html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br>`;
+        html += `<strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), азимут длинной стороны ~${CONFIG.gps.angle}°<br>`;
+        html += `<strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
+
+        html += `<h2>1. Автопроверка норм</h2>`;
+        if (!hard.length && !soft.length) {
+            html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
+        } else {
+            if (hard.length) {
+                html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`;
+                hard.forEach(c => {
+                    html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`;
+                });
+                html += `</ul>`;
+            }
+            if (soft.length) {
+                html += `<p><strong>Рекомендации:</strong></p><ul>`;
+                soft.forEach(c => {
+                    html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`;
+                });
+                html += `</ul>`;
+            }
+            html += `<p>Подробная таблица — в разделе «✅ Проверка норм».</p>`;
+        }
+
+        html += `<h2>2. Объекты и отступы</h2><ul>`;
+        const house = o('house'), bath = o('bath'), shed = o('shed');
+        html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы до границ: ${sb(house)}. Терраса ${Utils.fmt(house.terrace.w)}×${Utils.fmt(house.terrace.d)} м — с южной стороны, во двор.</li>`;
+        html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.fmt(bath.x)}, Z=${Utils.fmt(bath.z)}). Отступы: ${sb(bath)}. Терраса ${Utils.fmt(bath.terrace.w)}×${Utils.fmt(bath.terrace.d)} м — с северной стороны.</li>`;
+        html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
+        html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго-западный угол — самая солнечная часть участка.</li>`;
+        html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, сразу за огородом.</li>`;
+        html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}, на газоне перед окнами дома.</li>`;
+        html += `<li><strong>Костровище</strong> — ${dims(o('firepit'))}, центр (X=${Utils.fmt(o('firepit').x)}, Z=${Utils.fmt(o('firepit').z)}).</li>`;
+        html += `<li><strong>Машина</strong> — ${dims(o('car'))}, стоянка у ворот.</li>`;
+        html += `<li><strong>Септик</strong> — ${dims(o('septic'))}, центр (X=${Utils.fmt(o('septic').x)}, Z=${Utils.fmt(o('septic').z)}).</li>`;
+        html += `<li><strong>Скважина</strong> — ${dims(o('well'))}, центр (X=${Utils.fmt(o('well').x)}, Z=${Utils.fmt(o('well').z)}).</li>`;
+        html += `</ul>`;
+
+        html += `<h2>3. Ключевые расстояния (между краями)</h2><ul>`;
+        html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма для деревянных ≥15 м)</li>`;
+        html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (норма ≥5 м)</li>`;
+        html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (норма ≥15 м)</li>`;
+        html += `<li>Скважина → дом: <strong>${dist('well','house')} м</strong> (рекомендация ≥3 м)</li>`;
+        html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong>, → дом: <strong>${dist('firepit','house')} м</strong> (пожарная норма ≥5 м)</li>`;
+        html += `</ul>`;
+
+        html += `<h2>4. Инженерные системы</h2>` + ENGINEERING_HTML;
+
+        html += `<h2>5. Заключение</h2>`;
+        if (hard.length) {
+            html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 1). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
+        } else {
+            html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха и запас по инженерным системам.</p>`;
+        }
+        return html;
+    }
+
+    function openReportModal() {
+        DOM.reportBody.innerHTML = buildReportHTML();
+        DOM.reportModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ИЗМЕРЕНИЕ
+    // ═══════════════════════════════════════════════════════════════
+    const measure = {
+        mode: false,
+        points: [],
+        line: (() => {
+            const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 }));
+            l.visible = false; scene.add(l); return l;
+        })(),
+        marker: (() => {
+            const m = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            m.visible = false; scene.add(m); return m;
+        })(),
+        sprite: null
+    };
+
+    function toggleMeasure() {
+        measure.mode = !measure.mode;
+        const btn = document.getElementById('toggle-measure');
+        if (btn) btn.classList.toggle('active');
+        if (DOM.mobile.measure) DOM.mobile.measure.classList.toggle('active');
+
+        measure.points = [];
+        measure.line.visible = false;
+        measure.marker.visible = false;
+        if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
+
+        if (measure.mode) {
+            DOM.measureHint.classList.add('show');
+            DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
+        } else {
+            DOM.measureHint.classList.remove('show');
+        }
+    }
+
+    function createDistanceLabel(text, x, y, z) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 512; canvas.height = 128;
+        ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 12;
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 3;
+        ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 20);
+        ctx.stroke();
+        ctx.font = 'Bold 48px Arial'; ctx.fillStyle = '#ff0000';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
+        const texture = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+        const sprite = new THREE.Sprite(mat);
+        sprite.scale.set(6, 1.5, 1);
+        sprite.position.set(x, y, z);
+        return sprite;
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (!measure.mode) return;
+        e.preventDefault();
+        const rect = renderer.domElement.getBoundingClientRect();
+        const clientX = e.clientX || e.pageX;
+        const clientY = e.clientY || e.pageY;
+        const mouse = new THREE.Vector2(
+            ((clientX - rect.left) / rect.width) * 2 - 1,
+            -((clientY - rect.top) / rect.height) * 2 + 1
+        );
+        const ray = new THREE.Raycaster();
+        ray.setFromCamera(mouse, camera);
+        const pt = new THREE.Vector3();
+        if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), pt)) return;
+
+        if (pt.x < 0 || pt.x > CONFIG.plot.w || pt.z < 0 || pt.z > CONFIG.plot.d) {
+            DOM.measureHint.textContent = '❌ Клик за пределами участка!';
+            setTimeout(() => { DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 1500);
+            return;
+        }
+
+        if (measure.points.length === 0) {
+            if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
+            measure.line.visible = false;
+            measure.marker.visible = false;
+            DOM.measureHint.textContent = '👆 Поставьте вторую точку';
+        }
+
+        measure.points.push(pt.clone());
+        measure.marker.position.copy(pt); measure.marker.position.y = 0.5;
+        measure.marker.visible = true;
+        Utils.markDirty();
+
+        if (measure.points.length === 2) {
+            const [p1, p2] = measure.points;
+            const dist = Math.sqrt((p1.x-p2.x)**2 + (p1.z-p2.z)**2);
+            measure.line.geometry.dispose();
+            measure.line.geometry = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+            measure.line.visible = true;
+            const mid = p1.clone().add(p2).multiplyScalar(0.5);
+            measure.marker.position.copy(mid); measure.marker.position.y = 0.5;
+            if (measure.sprite) scene.remove(measure.sprite);
+            measure.sprite = createDistanceLabel(`📏 ${dist.toFixed(2)} м`, mid.x, 0.8, mid.z);
+            scene.add(measure.sprite);
+            measure.points = [];
+            DOM.measureHint.textContent = '✅ Измерено! Клик для новой точки.';
+            setTimeout(() => { DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 2000);
+            Utils.markDirty();
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // ВИДЫ КАМЕРЫ
+    // ═══════════════════════════════════════════════════════════════
+    DOM.viewSelect.addEventListener('change', function() {
+        const v = this.value;
+        if (v !== 'night') {
+            sunLight.intensity = 1.0;
+            ambientLight.intensity = 0.6;
+            fillLight.intensity = 0.3;
+            hemiLight.intensity = 0.35;
+            scene.background = new THREE.Color(0x87CEEB);
+            sunDisc.visible = true;
+            sunGlow.visible = true;
+        }
+        camera.position.set(...(CONFIG.camera[v] || CONFIG.camera.default));
+        controls.target.set(CONFIG.center.x, 0, CONFIG.center.z);
+        if (v === 'night') {
+            scene.background = new THREE.Color(0x0a0a1a);
+            sunLight.intensity = 0.05;
+            ambientLight.intensity = 0.15;
+            fillLight.intensity = 0.05;
+            hemiLight.intensity = 0.05;
+            sunDisc.visible = false;
+            sunGlow.visible = false;
+        }
+        controls.update();
+        Utils.markDirty();
+    });
+
+    function exportPNG() {
+        renderer.render(scene, camera);
+        const link = document.createElement('a');
+        link.download = 'plan_uchastka.png';
+        link.href = renderer.domElement.toDataURL('image/png');
+        link.click();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // СОЛНЦЕ
+    // ═══════════════════════════════════════════════════════════════
+    function updateSun() {
+        const mi = parseInt(DOM.monthSlider.value) - 1;
+        const month = CONFIG.months[mi];
+        const dayLength = month.sunset - month.sunrise;
+
+        let hours = parseFloat(DOM.hourSlider.value);
+        const minH = Math.max(0, month.sunrise - 0.5);
+        const maxH = Math.min(24, month.sunset + 0.5);
+        hours = Math.max(minH, Math.min(maxH, hours));
+        DOM.hourSlider.value = hours;
+
+        const latRad = CONFIG.latitude * Math.PI / 180;
+        const decRad = month.declination * Math.PI / 180;
+        const hourAngle = (hours - 12) * 15 * Math.PI / 180;
+        const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+        const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
+        const isNight = altitude < -2;
+
+        const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
+        const sunNorth = Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+
+        let x, y, z;
+        const distance = 50;
+        if (isNight) {
+            x = 0; y = -10; z = 0;
+            sunLight.intensity = 0.05;
+            scene.background = new THREE.Color(0x0a0a1a);
+            ambientLight.intensity = 0.15;
+            fillLight.intensity = 0.05;
+            hemiLight.intensity = 0.05;
+            sunDisc.visible = false;
+            sunGlow.visible = false;
+        } else {
+            x = distance * sunEast;
+            y = distance * Math.max(sinAlt, 0.02);
+            z = distance * sunNorth;
+            sunLight.intensity = Math.min(altitude < 20 ? 0.3 + (altitude / 20) * 0.7 : 1.0, 1.2);
+
+            const blue = new THREE.Color(0x87CEEB);
+            const golden = new THREE.Color(0xffaa66);
+            const orange = new THREE.Color(0xff7733);
+            let skyColor;
+            if (altitude > 25) skyColor = blue;
+            else if (altitude > 10) skyColor = golden.clone().lerp(blue, (altitude - 10) / 15);
+            else skyColor = orange.clone().lerp(golden, (altitude + 2) / 12);
+
+            scene.background = skyColor;
+            ambientLight.intensity = 0.4 + (altitude / 60) * 0.3;
+            fillLight.intensity = 0.2 + (altitude / 60) * 0.2;
+            hemiLight.color.copy(skyColor);
+            hemiLight.intensity = 0.25 + (altitude / 60) * 0.2;
+            sunDisc.visible = sunGlow.visible = true;
+            sunDisc.position.set(x, y, z);
+            sunGlow.position.set(x, y, z);
+        }
+
+        sunLight.position.set(x, y, z);
+        sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
+
+        const monthName = CONFIG.monthNames[mi];
+        const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
+        DOM.monthLabel.textContent = monthName;
+        DOM.timeLabel.textContent = hoursStr;
+        if (DOM.mobile.monthLabel) DOM.mobile.monthLabel.textContent = monthName;
+        if (DOM.mobile.hourLabel) DOM.mobile.hourLabel.textContent = hoursStr;
+
+        const dayH = Math.floor(dayLength);
+        const dayM = Math.round((dayLength - dayH) * 60);
+        const status = isNight ? '🌙 Ночь' : '☀️ Высота: ' + Math.round(Math.max(altitude, 0)) + '°';
+        DOM.timeDisplay.textContent = `${status} | День: ${dayH}ч ${String(dayM).padStart(2, '0')}м`;
+
+        renderer.shadowMap.needsUpdate = true;
+        Utils.markDirty();
+    }
+
+    DOM.monthSlider.addEventListener('input', updateSun);
+    DOM.hourSlider.addEventListener('input', updateSun);
+    if (DOM.mobile.monthSlider) {
+        DOM.mobile.monthSlider.addEventListener('input', () => {
+            DOM.monthSlider.value = DOM.mobile.monthSlider.value;
+            updateSun();
+        });
+    }
+    if (DOM.mobile.hourSlider) {
+        DOM.mobile.hourSlider.addEventListener('input', () => {
+            DOM.hourSlider.value = DOM.mobile.hourSlider.value;
+            updateSun();
+        });
+    }
+    updateSun();
+
+    // ═══════════════════════════════════════════════════════════════
+    // АНИМАЦИЯ
+    // ═══════════════════════════════════════════════════════════════
+    function animate() {
+        requestAnimationFrame(animate);
+        if (controls.update()) Utils.markDirty();
+        if (Utils.dirty) {
+            renderer.render(scene, camera);
+            Utils.dirty = false;
+        }
+    }
+    Utils.markDirty();
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        Utils.markDirty();
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // МОДАЛКИ
+    // ═══════════════════════════════════════════════════════════════
+    function setupModal(modal, closeIds, onClose) {
+        closeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', () => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                if (onClose) onClose();
+            });
+        });
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                if (onClose) onClose();
             }
         });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && planModal.style.display === 'block') {
-                closePlanModalFunc();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                if (onClose) onClose();
             }
         });
+    }
 
-        window.addEventListener('resize', function() {
-            if (planModal.style.display === 'block' && planModalRenderer) {
-                planModalRenderer.setSize(planContainer.clientWidth, planContainer.clientHeight);
-                planModalCamera.aspect = planContainer.clientWidth / planContainer.clientHeight;
-                planModalCamera.updateProjectionMatrix();
-            }
+    setupModal(DOM.reportModal, ['close-report', 'close-report-btn']);
+    setupModal(DOM.normsModal, ['close-norms-modal', 'close-norms-btn'], () => { clearHighlights(); Utils.markDirty(); });
+    DOM.openReport.addEventListener('click', openReportModal);
+    DOM.normBadge.addEventListener('click', openNorms);
+
+    // ═══════════════════════════════════════════════════════════════
+    // ПЛАН ДОМА
+    // ═══════════════════════════════════════════════════════════════
+    const planState = { scene: null, camera: null, renderer: null, controls: null, group: null, currentPlan: 'main', isTopView: false };
+
+    const MAIN_PLAN = {
+        rooms: [
+            { name: 'Крыльцо_верх', x: -7.25, z: 4.25, w: 1.5, d: 1.5, color: 0xbc8f8f, labelColor: '#aa7755' },
+            { name: 'Тех.пом.', x: -5.5, z: 3.25, w: 2.0, d: 3.5, color: 0xcccccc, labelColor: '#666666' },
+            { name: 'СУ', x: -3.75, z: 3.25, w: 1.5, d: 3.5, color: 0xb3d9ff, labelColor: '#3366cc' },
+            { name: 'Кухня', x: -1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffe0b2, labelColor: '#cc8800' },
+            { name: 'Спальня1', x: 1.5, z: 3.25, w: 3.0, d: 3.5, color: 0xffc8c8, labelColor: '#cc3366' },
+            { name: 'Спальня2', x: 5.5, z: 3.25, w: 5.0, d: 3.5, color: 0xc8e6ff, labelColor: '#3366cc' },
+            { name: 'Крыльцо_низ', x: -7.25, z: 0.5, w: 1.5, d: 2.0, color: 0xbc8f8f, labelColor: '#aa7755' },
+            { name: 'Тамбур', x: -5.5, z: 0.0, w: 2.0, d: 3.0, color: 0x8d8d8d, labelColor: '#888888' },
+            { name: 'Гостиная', x: -0.75, z: -0.75, w: 7.5, d: 4.5, color: 0xffd1b3, labelColor: '#cc6600' },
+            { name: 'Холл', x: 4.0, z: 0.75, w: 2.0, d: 1.5, color: 0xd4d4d4, labelColor: '#999999' },
+            { name: 'Кабинет', x: 4.0, z: -1.0, w: 2.0, d: 2.0, color: 0xe6d4b3, labelColor: '#aa8844' },
+            { name: 'Спальня3', x: 6.5, z: -0.25, w: 3.0, d: 3.5, color: 0xd4f0d4, labelColor: '#33aa66' },
+            { name: 'Терраса', x: 5.5, z: -3.5, w: 5.0, d: 3.0, color: 0xbc8f8f, labelColor: '#aa7755' }
+        ],
+        width: 16, depth: 10
+    };
+
+    function initPlanScene() {
+        if (!planState.renderer) {
+            planState.scene = new THREE.Scene();
+            planState.scene.background = new THREE.Color(0x2c3e50);
+            planState.camera = new THREE.PerspectiveCamera(40, DOM.planContainer.clientWidth / DOM.planContainer.clientHeight, 0.1, 100);
+            planState.camera.position.set(0, 12, 18);
+            planState.camera.lookAt(0, 0, 0);
+
+            planState.renderer = new THREE.WebGLRenderer({ antialias: true });
+            planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight);
+            planState.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            DOM.planContainer.appendChild(planState.renderer.domElement);
+
+            planState.controls = new THREE.OrbitControls(planState.camera, planState.renderer.domElement);
+            planState.controls.target.set(0, 0, 0);
+            planState.controls.enableDamping = true;
+            planState.controls.dampingFactor = 0.05;
+            planState.controls.maxPolarAngle = Math.PI / 2.2;
+
+            planState.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const dirL = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirL.position.set(5, 15, 10);
+            planState.scene.add(dirL);
+
+            planState.group = new THREE.Group();
+            planState.scene.add(planState.group);
+
+            (function animatePlan() {
+                if (!planState.renderer) return;
+                requestAnimationFrame(animatePlan);
+                planState.controls.update();
+                if (DOM.planModal.style.display === 'block') {
+                    planState.renderer.render(planState.scene, planState.camera);
+                }
+            })();
+
+            const footer = DOM.planModal.querySelector('.modal-footer');
+            footer.innerHTML = '';
+            [
+                { text: 'Основной план', fn: () => { planState.currentPlan = 'main'; rebuildPlanModal(); } },
+                { text: 'Зеркальный план', fn: () => { planState.currentPlan = 'mirror'; rebuildPlanModal(); } },
+                { text: '📷 Вид сверху', fn: (btn) => {
+                    planState.isTopView = !planState.isTopView;
+                    planState.camera.position.set(...(planState.isTopView ? [0, 30, 0] : [0, 12, 18]));
+                    btn.textContent = planState.isTopView ? '📷 Перспектива' : '📷 Вид сверху';
+                    planState.controls.target.set(0, 0, 0);
+                    planState.controls.update();
+                }},
+                { text: 'Закрыть', fn: () => { DOM.planModal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
+            ].forEach(b => {
+                const btn = document.createElement('button');
+                btn.textContent = b.text;
+                btn.style.marginRight = '10px';
+                btn.onclick = () => b.fn(btn);
+                footer.appendChild(btn);
+            });
+        }
+        rebuildPlanModal();
+    }
+
+    function rebuildPlanModal() {
+        if (!planState.group) return;
+        while (planState.group.children.length) {
+            const c = planState.group.children[0];
+            planState.group.remove(c);
+            if (c.geometry) c.geometry.dispose();
+            if (c.material && c.material.map) c.material.map.dispose();
+        }
+
+        const data = planState.currentPlan === 'mirror'
+            ? { ...MAIN_PLAN, rooms: MAIN_PLAN.rooms.map(r => ({ ...r, x: -r.x })) }
+            : MAIN_PLAN;
+        const halfW = data.width / 2, halfD = data.depth / 2;
+
+        const wallMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+        planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-halfW, 0.05, -halfD), new THREE.Vector3(halfW, 0.05, -halfD),
+            new THREE.Vector3(halfW, 0.05, halfD), new THREE.Vector3(-halfW, 0.05, halfD),
+            new THREE.Vector3(-halfW, 0.05, -halfD)
+        ]), wallMat));
+
+        const intWallMat = new THREE.LineBasicMaterial({ color: 0x888888 });
+        data.rooms.forEach(r => {
+            const mesh = new THREE.Mesh(GeoPool.plane(r.w, r.d), new THREE.MeshStandardMaterial({ color: r.color, side: THREE.DoubleSide }));
+            mesh.rotation.x = -Math.PI/2;
+            mesh.position.set(r.x, 0.02, r.z);
+            mesh.receiveShadow = true;
+            planState.group.add(mesh);
+
+            planState.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2), new THREE.Vector3(r.x + r.w/2, 0.04, r.z - r.d/2),
+                new THREE.Vector3(r.x + r.w/2, 0.04, r.z + r.d/2), new THREE.Vector3(r.x - r.w/2, 0.04, r.z + r.d/2),
+                new THREE.Vector3(r.x - r.w/2, 0.04, r.z - r.d/2)
+            ]), intWallMat));
+
+            const nameLbl = Utils.createLabel(r.name.replace(/_/g, ' '), r.labelColor || '#fff', 0.8, [5, 1.25], 1024, 256, 60);
+            nameLbl.position.set(r.x, 0.3, r.z + 0.25);
+            planState.group.add(nameLbl);
+
+            const sizeLbl = Utils.createLabel(`${r.w.toFixed(1)}×${r.d.toFixed(1)} м`, '#cccccc', 0.5, [5, 1.25], 1024, 256, 60);
+            sizeLbl.position.set(r.x, 0.1, r.z - 0.35);
+            planState.group.add(sizeLbl);
         });
 
-        // ============================================================
-        // 15. КНОПКИ (коммуникации, названия, PNG, PDF)
-        // ============================================================
-        let showCommsOnly = false;
-        document.getElementById('toggle-comm').addEventListener('click', function() {
-            showCommsOnly = !showCommsOnly;
-            siteGroup.visible = !showCommsOnly;
-            houseGroup.visible = !showCommsOnly;
-            this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации';
+        [
+            { text: '🚪 Вход', pos: [0, 0.1, -halfD - 0.6], size: 0.9 },
+            { text: `Дом: ${data.width}×${data.depth} м`, pos: [0, 0.1, halfD + 1.2], size: 0.8 },
+            { text: '16 м', pos: [0, 0.3, halfD + 1.7], size: 0.6 },
+            { text: '16 м', pos: [0, 0.3, -halfD - 1.7], size: 0.6 },
+            { text: '10 м', pos: [-halfW - 1.7, 0.3, 0], size: 0.6 },
+            { text: '10 м', pos: [halfW + 1.7, 0.3, 0], size: 0.6 }
+        ].forEach(d => {
+            const lbl = Utils.createLabel(d.text, '#ffaa00', d.size, [5, 1.25], 1024, 256, 60);
+            lbl.position.set(...d.pos);
+            planState.group.add(lbl);
         });
 
-        document.getElementById('toggle-labels').addEventListener('click', function() {
-            objectLabelsGroup.visible = !objectLabelsGroup.visible;
-            this.textContent = objectLabelsGroup.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия';
+        [
+            { text: '⬆ СЕВЕР', pos: [0, 0.3, halfD + 2.5] },
+            { text: '⬇ ЮГ', pos: [0, 0.3, -halfD - 2.5] },
+            { text: '⬅ ЗАПАД', pos: [-halfW - 2.5, 0.3, 0] },
+            { text: '➡ ВОСТОК', pos: [halfW + 2.5, 0.3, 0] }
+        ].forEach(d => {
+            const lbl = Utils.createLabel(d.text, '#66ccff', 0.9, [5, 1.25], 1024, 256, 60, 'rgba(0,0,0,0.5)');
+            lbl.position.set(...d.pos);
+            planState.group.add(lbl);
         });
+    }
 
-        document.getElementById('export-png').addEventListener('click', exportPNG);
+    DOM.openPlan.addEventListener('click', () => {
+        DOM.planModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        initPlanScene();
+    });
+    setupModal(DOM.planModal, ['close-plan-modal', 'close-plan-modal-btn']);
 
-        // ===== PDF =====
-        async function exportPDF() {
-            const loader = document.getElementById('pdf-loader');
-            loader.classList.add('active');
+    window.addEventListener('resize', () => {
+        if (DOM.planModal.style.display === 'block' && planState.renderer) {
+            planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight);
+            planState.camera.aspect = DOM.planContainer.clientWidth / DOM.planContainer.clientHeight;
+            planState.camera.updateProjectionMatrix();
+        }
+    });
 
-            try {
-                renderer.render(scene, camera);
-                const sceneImage = renderer.domElement.toDataURL('image/png');
+    // ═══════════════════════════════════════════════════════════════
+    // КНОПКИ
+    // ═══════════════════════════════════════════════════════════════
+    let showCommsOnly = false;
+    DOM.toggleComm.addEventListener('click', function() {
+        showCommsOnly = !showCommsOnly;
+        groups.site.visible = !showCommsOnly;
+        groups.house.visible = !showCommsOnly;
+        this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации';
+    });
 
-                const coverContainer = document.getElementById('pdf-cover-container');
-                coverContainer.innerHTML = `
-                    <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 0; background: white;">
-                        <div class="cover-title">📐 Проект Берн — 3D план участка</div>
-                        <div class="cover-info">
-                            <div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div>
-                            <div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div>
-                            <div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div>
-                            <div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div>
-                            <div><strong>🌐 GPS центра:</strong> 56.042291, 38.417342</div>
-                            <div><strong>📅 Дата отчёта:</strong> ${new Date().toLocaleDateString('ru-RU')}</div>
-                        </div>
-                        <img src="${sceneImage}" style="width:100%; border-radius:12px; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
-                        <div class="cover-footer">© 3D-планировщик «Проект Берн» • ${new Date().toLocaleDateString('ru-RU')}</div>
-                    </div>
-                `;
+    DOM.toggleLabels.addEventListener('click', function() {
+        groups.objectLabels.visible = !groups.objectLabels.visible;
+        this.textContent = groups.objectLabels.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия';
+    });
 
-                const reportContainer = document.getElementById('pdf-report-container');
-                reportContainer.innerHTML = `
-                    <h1>📐 План участка «Проект Берн» (подробный отчёт)</h1>
-                    <div class="info-grid">
+    DOM.exportPng.addEventListener('click', exportPNG);
+
+    // ═══════════════════════════════════════════════════════════════
+    // PDF
+    // ═══════════════════════════════════════════════════════════════
+    async function exportPDF() {
+        DOM.pdfLoader.classList.add('active');
+        try {
+            renderer.render(scene, camera);
+            const sceneImage = renderer.domElement.toDataURL('image/png');
+            const date = new Date().toLocaleDateString('ru-RU');
+
+            DOM.pdfCover.innerHTML = `
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 0; background: white;">
+                    <div class="cover-title">📐 Проект Берн — 3D план участка</div>
+                    <div class="cover-info">
                         <div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div>
                         <div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div>
                         <div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div>
                         <div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div>
-                        <div><strong>🌐 GPS центра:</strong> 56.042291, 38.417342</div>
-                        <div><strong>📅 Дата отчёта:</strong> ${new Date().toLocaleDateString('ru-RU')}</div>
+                        <div><strong>🌐 GPS центра:</strong> ${CONFIG.gps.lat}, ${CONFIG.gps.lng}</div>
+                        <div><strong>📅 Дата отчёта:</strong> ${date}</div>
                     </div>
+                    <img src="${sceneImage}" style="width:100%; border-radius:12px; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
+                    <div class="cover-footer">© 3D-планировщик «Проект Берн» • ${date}</div>
+                </div>`;
 
-                    <h2>🏗 Объекты на участке</h2>
-                    <ul>
-                        <li><strong>Жилой дом «Берн»</strong> — 16×10 м, терраса 9×3 м</li>
-                        <li><strong>Баня</strong> — 6×6 м, терраса 6×4 м (северная стена)</li>
-                        <li><strong>Хозблок</strong> — 6×4 м</li>
-                        <li><strong>Огород</strong> — 5×7 м (юго-западный угол)</li>
-                        <li><strong>Теплица</strong> — 3×6 м (арочная)</li>
-                        <li><strong>Детская площадка</strong> — 2×2 м</li>
-                        <li><strong>Костровище</strong> — Ø2,5 м (коорд. X=16, Z=6)</li>
-                        <li><strong>Машина</strong> — 5×2 м (у ворот)</li>
-                        <li><strong>Септик</strong> — 1,5×1,2 м (X=3, Z=30)</li>
-                        <li><strong>Скважина</strong> — Ø0,3 м (X=16, Z=22)</li>
-                    </ul>
+            DOM.pdfReport.innerHTML = buildReportHTML();
 
-                    <h2>🔧 Инженерная инфраструктура</h2>
-                    <h3>💧 Водоснабжение</h3>
-                    <p>Скважина глубиной 25 м, насосная станция с гидроаккумулятором 50 л. Трубы ПНД 32 мм (питьевая) и 25 мм (техническая). Давление 3 атм. Отдельная линия на полив огорода и теплицы.</p>
+            await new Promise(r => setTimeout(r, 300));
 
-                    <h3>🚽 Канализация</h3>
-                    <p>Септик трёхкамерный объёмом 3 м³. Трубы ПВХ 110 мм, уклон 2 см/м, глубина заложения 1,2 м. Ревизионные колодцы (2 шт) на поворотах.</p>
+            const coverCanvas = await html2canvas(DOM.pdfCover, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false, width: 780, height: DOM.pdfCover.scrollHeight });
+            const reportCanvas = await html2canvas(DOM.pdfReport, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false, width: 780, height: DOM.pdfReport.scrollHeight });
 
-                    <h3>⚡ Электроснабжение</h3>
-                    <p>Ввод ВВГнг 5×10 мм² (глубина 0,8 м). Щиток на 12 модулей. Линии до бани и хозблока в гофре (0,8 м). Наружное освещение: 4 светильника, розетки на террасе.</p>
+            const coverImage = coverCanvas.toDataURL('image/png');
+            const reportImage = reportCanvas.toDataURL('image/png');
 
-                    <h3>🔥 Газоснабжение</h3>
-                    <p>Магистральный газ (низкое давление) вдоль восточной границы. Ввод полиэтиленовой трубой 32 мм (глубина 1,2 м). Котёл 24 кВт, счётчик, система контроля.</p>
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageW = 210, pageH = 297, margin = 14;
+            const imgW = pageW - margin * 2;
+            const coverH = (coverCanvas.height / coverCanvas.width) * imgW;
+            doc.addImage(coverImage, 'PNG', margin, margin, imgW, Math.min(coverH, pageH - margin * 2));
 
-                    <h2>📏 Контроль отступов</h2>
-                    <ul>
-                        <li>Дом: север 5 м, восток 4,5 м, запад 4,5 м, юг 25 м</li>
-                        <li>Баня: восток 3 м, юг 8 м</li>
-                        <li>Хозблок: восток 1 м, юг 3 м</li>
-                        <li>Скважина → дом: 3 м (Z) и 4,5 м (X)</li>
-                        <li>Септик → дом: 5,2 м (≥5 м), септик → скважина: 15,3 м (≥15 м)</li>
-                        <li>Костровище → баня: 5,8 м, → хозблок: 5,1 м, → терраса бани: 10,4 м</li>
-                    </ul>
-                    <div class="footer">Сгенерировано в 3D-планировщике «Проект Берн» • ${new Date().toLocaleDateString('ru-RU')}</div>
-                `;
+            const reportH = (reportCanvas.height / reportCanvas.width) * imgW;
+            const maxH = pageH - margin * 2;
 
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                const coverCanvas = await html2canvas(coverContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    width: 780,
-                    height: coverContainer.scrollHeight,
-                });
-                const reportCanvas = await html2canvas(reportContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    width: 780,
-                    height: reportContainer.scrollHeight,
-                });
-
-                const coverImage = coverCanvas.toDataURL('image/png');
-                const reportImage = reportCanvas.toDataURL('image/png');
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const pageWidth = 210;
-                const pageHeight = 297;
-                const margin = 14;
-
-                const coverImgWidth = pageWidth - margin * 2;
-                const coverImgHeight = (coverCanvas.height / coverCanvas.width) * coverImgWidth;
-                doc.addImage(coverImage, 'PNG', margin, margin, coverImgWidth, coverImgHeight);
-
-                const reportImgWidth = pageWidth - margin * 2;
-                const reportImgHeight = (reportCanvas.height / reportCanvas.width) * reportImgWidth;
-                const maxHeight = pageHeight - margin * 2;
-
-                if (reportImgHeight <= maxHeight) {
-                    doc.addPage();
-                    doc.addImage(reportImage, 'PNG', margin, margin, reportImgWidth, reportImgHeight);
-                } else {
-                    const totalPixels = reportCanvas.height;
-                    const pixelPerMM = totalPixels / reportImgHeight;
-                    const maxPixels = maxHeight * pixelPerMM;
-                    let offset = 0;
-                    let first = true;
-                    while (offset < totalPixels) {
-                        const heightPixels = Math.min(maxPixels, totalPixels - offset);
-                        const canvas = document.createElement('canvas');
-                        canvas.width = reportCanvas.width;
-                        canvas.height = heightPixels;
-                        const ctx = canvas.getContext('2d');
-                        const img = new Image();
-                        img.src = reportImage;
-                        await new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
-                        ctx.drawImage(img, 0, offset, reportCanvas.width, heightPixels, 0, 0, reportCanvas.width, heightPixels);
-                        const chunkData = canvas.toDataURL('image/png');
-                        const chunkHeightMM = (heightPixels / totalPixels) * reportImgHeight;
-                        if (!first) doc.addPage();
-                        doc.addImage(chunkData, 'PNG', margin, margin, reportImgWidth, chunkHeightMM);
-                        offset += heightPixels;
-                        first = false;
-                    }
+            if (reportH <= maxH) {
+                doc.addPage();
+                doc.addImage(reportImage, 'PNG', margin, margin, imgW, reportH);
+            } else {
+                const totalPx = reportCanvas.height;
+                const maxPx = maxH * (totalPx / reportH);
+                let offset = 0, first = true;
+                while (offset < totalPx) {
+                    const hPx = Math.min(maxPx, totalPx - offset);
+                    const c = document.createElement('canvas');
+                    c.width = reportCanvas.width; c.height = hPx;
+                    const ctx = c.getContext('2d');
+                    const img = new Image(); img.src = reportImage;
+                    await new Promise(r => { img.onload = r; img.onerror = r; });
+                    ctx.drawImage(img, 0, offset, reportCanvas.width, hPx, 0, 0, reportCanvas.width, hPx);
+                    if (!first) doc.addPage();
+                    doc.addImage(c.toDataURL('image/png'), 'PNG', margin, margin, imgW, (hPx / totalPx) * reportH);
+                    offset += hPx;
+                    first = false;
                 }
-
-                doc.save('Проект_Берн_Отчет.pdf');
-
-            } catch (error) {
-                console.error('Ошибка при создании PDF:', error);
-                alert('Не удалось создать PDF. Проверьте консоль.');
-            } finally {
-                loader.classList.remove('active');
             }
+
+            doc.save('Проект_Берн_Отчет.pdf');
+        } catch (error) {
+            console.error('Ошибка PDF:', error);
+            alert('Не удалось создать PDF. Проверьте консоль.');
+        } finally {
+            DOM.pdfLoader.classList.remove('active');
         }
+    }
 
-        document.getElementById('export-pdf').addEventListener('click', exportPDF);
+    DOM.exportPdf.addEventListener('click', exportPDF);
 
-        document.getElementById('toggle-panel').addEventListener('click', function() {
-            // панель уже скрыта
+    // ═══════════════════════════════════════════════════════════════
+    // GPS
+    // ═══════════════════════════════════════════════════════════════
+    function localToGPS(x, z) {
+        const dx = x - CONFIG.center.x;
+        const dz = z - CONFIG.center.z;
+        const a = CONFIG.gps.angle * Math.PI / 180;
+        const rx = dx * Math.cos(a) - dz * Math.sin(a);
+        const rz = dx * Math.sin(a) + dz * Math.cos(a);
+        return {
+            lat: CONFIG.gps.lat + rz * CONFIG.gps.latPerM,
+            lng: CONFIG.gps.lng + rx * CONFIG.gps.lngPerM
+        };
+    }
+
+    function showGPS() {
+        DOM.gpsTbody.innerHTML = '';
+        CONFIG.objects.forEach(obj => {
+            const gps = localToGPS(obj.x, obj.z);
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #eee';
+            tr.innerHTML = `
+                <td style="padding: 6px 8px;">${obj.label.replace(/[^\w\sА-Яа-я"]/g, '').trim()}</td>
+                <td style="padding: 6px 8px; text-align: center;">${obj.x.toFixed(1)}, ${obj.z.toFixed(1)}</td>
+                <td style="padding: 6px 8px; text-align: center;">${gps.lat.toFixed(6)}</td>
+                <td style="padding: 6px 8px; text-align: center;">${gps.lng.toFixed(6)}</td>`;
+            DOM.gpsTbody.appendChild(tr);
         });
+        DOM.gpsModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
 
-        // ============================================================
-        // 16. ОБРАБОТЧИКИ ГАМБУРГЕР-МЕНЮ
-        // ============================================================
-        document.querySelectorAll('#mobile-menu .ctrl-btn[data-view]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const view = this.dataset.view;
-                document.getElementById('view-select').value = view;
-                document.getElementById('view-select').dispatchEvent(new Event('change'));
-                closeMenu();
-            });
-        });
+    setupModal(DOM.gpsModal, ['close-gps-modal', 'close-gps-btn']);
 
-        document.getElementById('toggleCommsMob').addEventListener('click', function() {
-            document.getElementById('toggle-comm').click();
-            const oldBtn = document.getElementById('toggle-comm');
-            this.textContent = oldBtn.textContent;
+    // ═══════════════════════════════════════════════════════════════
+    // МЕНЮ
+    // ═══════════════════════════════════════════════════════════════
+    function toggleMenu() { DOM.mobileMenu.classList.toggle('open'); }
+    function closeMenu() { DOM.mobileMenu.classList.remove('open'); }
+
+    DOM.hamburger.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+    DOM.closeMenu.addEventListener('click', closeMenu);
+    document.addEventListener('click', (e) => {
+        if (DOM.mobileMenu.classList.contains('open') && !DOM.mobileMenu.contains(e.target) && e.target !== DOM.hamburger) {
             closeMenu();
-        });
-
-        document.getElementById('toggleLabelsMob').addEventListener('click', function() {
-            document.getElementById('toggle-labels').click();
-            const oldBtn = document.getElementById('toggle-labels');
-            this.textContent = oldBtn.textContent;
-            closeMenu();
-        });
-
-        document.getElementById('toggleMeasureMob').addEventListener('click', function() {
-            toggleMeasure(); // вызываем напрямую
-            closeMenu();
-        });
-
-        document.getElementById('showReportBtnMob').addEventListener('click', function() {
-            openReportModal();
-            closeMenu();
-        });
-
-        document.getElementById('showHousePlanBtnMob').addEventListener('click', function() {
-            openPlanModal();
-            closeMenu();
-        });
-
-        document.getElementById('exportPngBtnMob').addEventListener('click', function() {
-            document.getElementById('export-png').click();
-            closeMenu();
-        });
-
-        document.getElementById('exportPdfBtnMob').addEventListener('click', function() {
-            document.getElementById('export-pdf').click();
-            closeMenu();
-        });
-
-        // ============================================================
-        // 17. СИНХРОНИЗАЦИЯ СЛАЙДЕРОВ
-        // ============================================================
-        const mobMonth = document.getElementById('sunMonthMob');
-        const mobHour = document.getElementById('sunHourMob');
-        const mobMonthLabel = document.getElementById('monthLabelMob');
-        const mobHourLabel = document.getElementById('hourLabelMob');
-
-        mobMonth.addEventListener('input', function() {
-            monthSlider.value = parseInt(this.value) + 1;
-            monthSlider.dispatchEvent(new Event('input'));
-        });
-        mobHour.addEventListener('input', function() {
-            hourSlider.value = this.value;
-            hourSlider.dispatchEvent(new Event('input'));
-        });
-
-        monthSlider.addEventListener('input', function() {
-            mobMonth.value = this.value - 1;
-            const idx = this.value - 1;
-            mobMonthLabel.textContent = monthNames[idx];
-        });
-        hourSlider.addEventListener('input', function() {
-            mobHour.value = this.value;
-            const hours = parseFloat(this.value);
-            const hStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
-            mobHourLabel.textContent = hStr;
-        });
-
-        mobMonth.value = monthSlider.value - 1;
-        mobHour.value = hourSlider.value;
-        mobMonthLabel.textContent = monthNames[monthSlider.value - 1];
-        const initHours = parseFloat(hourSlider.value);
-        mobHourLabel.textContent = String(Math.floor(initHours)).padStart(2, '0') + ':' + String(Math.floor((initHours % 1) * 60)).padStart(2, '0');
-
-        // ============================================================
-        // 18. УПРАВЛЕНИЕ МЕНЮ
-        // ============================================================
-        const hamburger = document.getElementById('hamburger');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const closeMenuBtn = document.getElementById('closeMenu');
-
-        function toggleMenu() {
-            mobileMenu.classList.toggle('open');
         }
+    });
 
-        function closeMenu() {
-            mobileMenu.classList.remove('open');
-        }
-
-        hamburger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            toggleMenu();
+    document.querySelectorAll('#mobile-menu .ctrl-btn[data-view]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            DOM.viewSelect.value = this.dataset.view;
+            DOM.viewSelect.dispatchEvent(new Event('change'));
+            closeMenu();
         });
+    });
 
-        closeMenuBtn.addEventListener('click', closeMenu);
+    DOM.mobile.comms.addEventListener('click', function() {
+        DOM.toggleComm.click();
+        this.textContent = DOM.toggleComm.textContent;
+        closeMenu();
+    });
 
-        document.addEventListener('click', function(e) {
-            if (mobileMenu.classList.contains('open') && 
-                !mobileMenu.contains(e.target) && 
-                e.target !== hamburger) {
-                closeMenu();
-            }
-        });
+    DOM.mobile.labels.addEventListener('click', function() {
+        DOM.toggleLabels.click();
+        this.textContent = DOM.toggleLabels.textContent;
+        closeMenu();
+    });
 
-        console.log('✅ Приложение запущено. Измерение работает корректно на ПК и мобильных.');
+    DOM.mobile.measure.addEventListener('click', () => { toggleMeasure(); closeMenu(); });
+    DOM.mobile.norms.addEventListener('click', () => { openNorms(); closeMenu(); });
+    DOM.mobile.report.addEventListener('click', () => { openReportModal(); closeMenu(); });
+    DOM.mobile.plan.addEventListener('click', () => {
+        DOM.planModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        initPlanScene();
+        closeMenu();
+    });
+    DOM.mobile.png.addEventListener('click', () => { exportPNG(); closeMenu(); });
+    DOM.mobile.pdf.addEventListener('click', () => { exportPDF(); closeMenu(); });
+    DOM.mobile.gps.addEventListener('click', () => { showGPS(); closeMenu(); });
+
+    // Инициализация
+    updateNormBadge();
+    console.log('✅ Проект Берн запущен: автопроверка норм + автодоклад активны.');
     </script>
 </body>
 </html>
