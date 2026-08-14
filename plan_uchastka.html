@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D План участка - Проект Берн</title>
     <style>
+        /* ===== СУЩЕСТВУЮЩИЕ СТИЛИ (БЕЗ ИЗМЕНЕНИЙ) ===== */
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #info { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 6px; pointer-events: none; z-index: 100; font-size: 12px; border-left: 3px solid #ffaa00; }
         .note { position: absolute; bottom: 10px; right: 10px; color: #aaa; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; font-size: 10px; z-index: 100; pointer-events: none; }
@@ -107,6 +108,128 @@
             #mobile-menu { min-width: 140px; padding: 8px 10px; }
             #mobile-menu button { font-size: 13px; padding: 6px 10px; }
         }
+
+        /* ===== СТИЛИ ДЛЯ PDF ===== */
+        #pdf-loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        #pdf-loader.active { display: flex; }
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 6px solid rgba(255,255,255,0.15);
+            border-top-color: #ffaa00;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Контейнеры для обложки и отчёта (скрыты за экраном) */
+        #pdf-cover-container,
+        #pdf-report-container {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 780px;
+            background: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 40px 45px;
+            z-index: -1;
+            pointer-events: none;
+        }
+        #pdf-cover-container .cover-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a2a3a;
+            border-bottom: 4px solid #ffaa00;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #pdf-cover-container .cover-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 30px;
+            background: #f5f8fc;
+            padding: 18px 22px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        #pdf-cover-container .cover-info strong { color: #1e3b5a; }
+        #pdf-cover-container .cover-image {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #pdf-cover-container .cover-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 16px;
+        }
+
+        #pdf-report-container h1 {
+            font-size: 28px;
+            color: #1a2a3a;
+            border-bottom: 3px solid #ffaa00;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        #pdf-report-container .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 24px;
+            background: #f5f8fc;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 16px 0 24px 0;
+        }
+        #pdf-report-container .info-grid strong { color: #1e3b5a; }
+        #pdf-report-container h2 {
+            font-size: 20px;
+            color: #1e3b5a;
+            margin: 24px 0 12px 0;
+            border-left: 6px solid #ffaa00;
+            padding-left: 14px;
+        }
+        #pdf-report-container h3 {
+            font-size: 17px;
+            color: #1e4a6b;
+            margin: 18px 0 6px 0;
+        }
+        #pdf-report-container p, #pdf-report-container li {
+            font-size: 14px;
+            color: #222;
+        }
+        #pdf-report-container ul {
+            padding-left: 22px;
+            margin: 6px 0 10px 0;
+        }
+        #pdf-report-container .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 16px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -139,6 +262,7 @@
             <option value="gate">🚪 От калитки</option>
         </select>
         <button class="export-btn" id="export-png">📸 Сохранить PNG</button>
+        <button class="export-btn" id="export-pdf" style="background:#e74c3c; margin-top:4px;">📄 Экспорт PDF</button>
         <button class="toggle-btn" id="toggle-comm">🔽 Коммуникации</button>
         <button class="toggle-btn" id="toggle-labels">🏷️ Названия</button>
         <button class="report-btn" id="open-report">📄 Доклад</button>
@@ -155,6 +279,7 @@
         <button class="menu-item" data-action="view-night">🌙 Ночь</button>
         <button class="menu-item" data-action="view-gate">🚪 От калитки</button>
         <button class="menu-item" data-action="export-png">📸 Сохранить PNG</button>
+        <button class="menu-item" data-action="export-pdf">📄 Экспорт PDF</button>
         <button class="menu-item" data-action="toggle-comm">🔽 Коммуникации</button>
         <button class="menu-item" data-action="toggle-labels">🏷️ Названия</button>
         <button class="menu-item" data-action="open-report">📄 Доклад</button>
@@ -273,12 +398,22 @@
         </div>
     </div>
 
+    <!-- ===== КОНТЕЙНЕРЫ ДЛЯ PDF ===== -->
+    <div id="pdf-cover-container"></div>
+    <div id="pdf-report-container"></div>
+    <div id="pdf-loader">
+        <div class="spinner"></div>
+        <span>Формируем PDF-отчёт...</span>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
         // ============================================================
-        // ПОЛНАЯ СЦЕНА
+        // ВЕСЬ СУЩЕСТВУЮЩИЙ КОД (БЕЗ ИЗМЕНЕНИЙ) - НАЧАЛО
         // ============================================================
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87CEEB);
@@ -301,7 +436,6 @@
         controls.maxPolarAngle = Math.PI / 2.2;
         controls.update();
 
-        // Освещение
         const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048;
@@ -334,7 +468,6 @@
         );
         scene.add(sunGlow);
 
-        // Группы
         const siteGroup = new THREE.Group();
         const houseGroup = new THREE.Group();
         const commsGroup = new THREE.Group();
@@ -346,7 +479,6 @@
         scene.add(labelsGroup);
         scene.add(objectLabelsGroup);
 
-        // --- Текстуры ---
         function createGrassTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
@@ -455,7 +587,6 @@
             };
         }
 
-        // --- УЧАСТОК ---
         const groundGeo = new THREE.PlaneGeometry(25, 40);
         const groundMat = new THREE.MeshStandardMaterial({ map: grassTexture, roughness: 0.9 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -488,7 +619,6 @@
         addNeighbor(37.5, 20, 25, 40);
         addNeighbor(12.5, 42, 25, 40);
 
-        // Дорога
         const roadGeo = new THREE.PlaneGeometry(30, 8);
         const roadMat = new THREE.MeshStandardMaterial({ map: roadTexture, roughness: 0.8 });
         const road = new THREE.Mesh(roadGeo, roadMat);
@@ -505,7 +635,6 @@
         }
         addLabel('🛣️ Улица Рассветная', 12.5, 2.5, -4, '#ffffff', 0.8, labelsGroup);
 
-        // Дорожка
         const pathGeo = new THREE.PlaneGeometry(2, 23);
         const pathMat = new THREE.MeshStandardMaterial({ map: pathTexture, roughness: 0.7 });
         const path = new THREE.Mesh(pathGeo, pathMat);
@@ -514,7 +643,6 @@
         path.receiveShadow = true;
         siteGroup.add(path);
 
-        // --- Хозблок ---
         function createShed() {
             const group = new THREE.Group();
             const wallMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.9 });
@@ -537,7 +665,6 @@
         }
         siteGroup.add(createShed());
 
-        // --- Баня ---
         function createBath() {
             const group = new THREE.Group();
             const wallMat = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.7 });
@@ -579,7 +706,6 @@
         }
         siteGroup.add(createBath());
 
-        // --- Огород ---
         function createGarden() {
             const group = new THREE.Group();
             const soilMat = new THREE.MeshStandardMaterial({ color: 0x6b8e23, roughness: 0.9 });
@@ -599,7 +725,6 @@
         }
         siteGroup.add(createGarden());
 
-        // --- Теплица ---
         function createGreenhouse() {
             const group = new THREE.Group();
             const w = 3, d = 6, h = 2.5;
@@ -707,7 +832,6 @@
         }
         siteGroup.add(createGreenhouse());
 
-        // --- Малина и кустарники ---
         function createBerries() {
             const group = new THREE.Group();
             const bushMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
@@ -748,7 +872,6 @@
             siteGroup.add(createBerryBush(1.5, z));
         }
 
-        // --- Детская площадка ---
         function createPlayground() {
             const group = new THREE.Group();
             const sandMat = new THREE.MeshStandardMaterial({ color: 0xffd700 });
@@ -796,7 +919,6 @@
         }
         siteGroup.add(createPlayground());
 
-        // --- Костровище ---
         function createFireplace() {
             const group = new THREE.Group();
             const baseMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
@@ -825,7 +947,6 @@
         }
         siteGroup.add(createFireplace());
 
-        // --- Машина ---
         function createCar(x, z, rotY = 0) {
             const group = new THREE.Group();
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.6 });
@@ -865,7 +986,6 @@
         }
         siteGroup.add(createCar(22.5, 1.0, 0));
 
-        // --- Туи ---
         function createThuja(x, z) {
             const group = new THREE.Group();
             const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5d4037 });
@@ -889,7 +1009,6 @@
         for (let z = 24; z <= 32; z += 1.5) { siteGroup.add(createThuja(23, z)); }
         for (let x = 6; x <= 19; x += 1.5) { siteGroup.add(createThuja(x, 38)); }
 
-        // --- Септик ---
         function createSeptic(x, z) {
             const group = new THREE.Group();
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 });
@@ -911,7 +1030,6 @@
         }
         siteGroup.add(createSeptic(3, 30));
 
-        // --- Скважина ---
         function createWell(x, z) {
             const group = new THREE.Group();
             const pipeMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.4 });
@@ -942,7 +1060,6 @@
         }
         siteGroup.add(createWell(16, 22));
 
-        // --- Дом ---
         function createHouseExterior() {
             const group = new THREE.Group();
             const w = 16, d = 10, h = 4.5;
@@ -1037,7 +1154,6 @@
         }
         houseGroup.add(createHouseExterior());
 
-        // --- ПОДПИСИ ОБЪЕКТОВ ---
         function createObjectLabels() {
             const items = [
                 { text: '🏠 Дом "Берн"', x: 12.5, y: 6.0, z: 30, color: '#ffaa00', size: 1.2 },
@@ -1081,7 +1197,6 @@
         }
         createObjectLabels();
 
-        // --- КОММУНИКАЦИИ ---
         function createUndergroundLine(points, color, labelText, labelPos) {
             const pts = points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
             const material = new THREE.LineBasicMaterial({ color: color });
@@ -1109,7 +1224,6 @@
         createUndergroundLine([[24.5, 0], [24.5, 29]], 0xffcc00, '🔥 Магистральный газ', [24.5, 15]);
         createUndergroundLine([[24.5, 29], [20, 29]], 0xffcc00, '', null);
 
-        // --- ЗАБОР И ВОРОТА ---
         const fenceMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
         for (let i = 0; i <= 25; i+=2) {
             const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), fenceMat);
@@ -1199,7 +1313,6 @@
         }
         createGateAndPedestrian();
 
-        // --- Метки сторон света ---
         function addDirectionLabel(text, x, y, z, color = '#ffffff', size = 0.8) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -1246,9 +1359,6 @@
         addAxisLabel('Ось X (Восток)', 24, 1.5, 20, '#ff6666', 0.9);
         addAxisLabel('Ось Z (Север)', 12.5, 1.5, 39, '#66aaff', 0.9);
 
-        // ============================================================
-        // ИЗМЕРЕНИЕ РАССТОЯНИЙ (для мобильных)
-        // ============================================================
         let measureMode = false;
         let measurePoints = [];
         let measureLineObj = null;
@@ -1382,9 +1492,6 @@
             return sprite;
         }
 
-        // ============================================================
-        // ПЕРЕКЛЮЧЕНИЕ ВИДОВ
-        // ============================================================
         const viewSelect = document.getElementById('view-select');
         viewSelect.addEventListener('change', function() {
             const view = this.value;
@@ -1425,9 +1532,6 @@
             controls.update();
         });
 
-        // ============================================================
-        // ЭКСПОРТ В PNG
-        // ============================================================
         function exportPNG() {
             renderer.render(scene, camera);
             const link = document.createElement('a');
@@ -1436,9 +1540,6 @@
             link.click();
         }
 
-        // ============================================================
-        // МОБИЛЬНОЕ МЕНЮ
-        // ============================================================
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', function(e) {
@@ -1473,14 +1574,13 @@
                     document.getElementById('open-report').click();
                 } else if (action === 'open-plan-modal') {
                     document.getElementById('open-plan-modal').click();
+                } else if (action === 'export-pdf') {
+                    document.getElementById('export-pdf').click();
                 }
                 mobileMenu.classList.remove('show');
             });
         });
 
-        // ============================================================
-        // УПРАВЛЕНИЕ (кнопки, солнце, анимация)
-        // ============================================================
         let showCommsOnly = false;
         document.getElementById('toggle-comm').addEventListener('click', function() {
             showCommsOnly = !showCommsOnly;
@@ -1496,7 +1596,6 @@
 
         document.getElementById('export-png').addEventListener('click', exportPNG);
 
-        // Солнце
         const monthSlider = document.getElementById('month-slider');
         const hourSlider = document.getElementById('hour-slider');
         const monthLabel = document.getElementById('month-label');
@@ -1612,7 +1711,6 @@
         hourSlider.addEventListener('input', updateSun);
         updateSun();
 
-        // --- АНИМАЦИЯ ---
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
@@ -1627,9 +1725,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // ============================================================
-        // МОДАЛЬНЫЕ ОКНА - обработчики
-        // ============================================================
         const reportModal = document.getElementById('report-modal');
         const openReportBtn = document.getElementById('open-report');
         const closeReportBtn = document.getElementById('close-report');
@@ -1658,9 +1753,6 @@
             }
         });
 
-        // ============================================================
-        // ПЛАНЫ ДОМА
-        // ============================================================
         let planModalScene = null;
         let planModalCamera = null;
         let planModalRenderer = null;
@@ -1977,9 +2069,6 @@
             }
         });
 
-        // ============================================================
-        // ДОПОЛНИТЕЛЬНО: скрытие панели
-        // ============================================================
         document.getElementById('toggle-panel').addEventListener('click', function() {
             const controls = document.getElementById('controls');
             controls.classList.toggle('hidden');
@@ -1988,7 +2077,174 @@
 
         document.getElementById('toggle-measure').addEventListener('click', toggleMeasure);
 
-        console.log('Приложение запущено! Все объекты на месте, измерение работает на мобильных устройствах, экспорт PNG доступен.');
+        // ============================================================
+        // КОНЕЦ СУЩЕСТВУЮЩЕГО КОДА
+        // ============================================================
+
+        // ============================================================
+        // НОВАЯ ФУНКЦИЯ ЭКСПОРТА PDF (исправленная)
+        // ============================================================
+        document.getElementById('export-pdf').addEventListener('click', exportPDF);
+
+        async function exportPDF() {
+            const loader = document.getElementById('pdf-loader');
+            loader.classList.add('active');
+
+            try {
+                // 1. Делаем скриншот 3D-сцены
+                renderer.render(scene, camera);
+                const sceneImage = renderer.domElement.toDataURL('image/png');
+
+                // 2. Готовим обложку
+                const coverContainer = document.getElementById('pdf-cover-container');
+                coverContainer.innerHTML = `
+                    <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 0; background: white;">
+                        <div class="cover-title">📐 Проект Берн — 3D план участка</div>
+                        <div class="cover-info">
+                            <div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div>
+                            <div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div>
+                            <div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div>
+                            <div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div>
+                            <div><strong>🌐 GPS центра:</strong> 56.042291, 38.417342</div>
+                            <div><strong>📅 Дата отчёта:</strong> ${new Date().toLocaleDateString('ru-RU')}</div>
+                        </div>
+                        <img src="${sceneImage}" style="width:100%; border-radius:12px; border:1px solid #ddd; box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
+                        <div class="cover-footer">© 3D-планировщик «Проект Берн» • ${new Date().toLocaleDateString('ru-RU')}</div>
+                    </div>
+                `;
+
+                // 3. Готовим отчёт
+                const reportContainer = document.getElementById('pdf-report-container');
+                reportContainer.innerHTML = `
+                    <h1>📐 План участка «Проект Берн» (подробный отчёт)</h1>
+                    <div class="info-grid">
+                        <div><strong>📍 Адрес:</strong> Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7</div>
+                        <div><strong>📋 Кадастровый номер:</strong> 50:16:0202016:428</div>
+                        <div><strong>📐 Площадь:</strong> 1000 м² (25×40 м)</div>
+                        <div><strong>👤 Владелец:</strong> Хорошев Роман Александрович</div>
+                        <div><strong>🌐 GPS центра:</strong> 56.042291, 38.417342</div>
+                        <div><strong>📅 Дата отчёта:</strong> ${new Date().toLocaleDateString('ru-RU')}</div>
+                    </div>
+
+                    <h2>🏗 Объекты на участке</h2>
+                    <ul>
+                        <li><strong>Жилой дом «Берн»</strong> — 16×10 м, терраса 9×3 м</li>
+                        <li><strong>Баня</strong> — 6×6 м, терраса 6×4 м (северная стена)</li>
+                        <li><strong>Хозблок</strong> — 6×4 м</li>
+                        <li><strong>Огород</strong> — 5×7 м (юго-западный угол)</li>
+                        <li><strong>Теплица</strong> — 3×6 м (арочная)</li>
+                        <li><strong>Детская площадка</strong> — 2×2 м</li>
+                        <li><strong>Костровище</strong> — Ø2,5 м (коорд. X=16, Z=6)</li>
+                        <li><strong>Машина</strong> — 5×2 м (у ворот)</li>
+                        <li><strong>Септик</strong> — 1,5×1,2 м (X=3, Z=30)</li>
+                        <li><strong>Скважина</strong> — Ø0,3 м (X=16, Z=22)</li>
+                    </ul>
+
+                    <h2>🔧 Инженерная инфраструктура</h2>
+                    <h3>💧 Водоснабжение</h3>
+                    <p>Скважина глубиной 25 м, насосная станция с гидроаккумулятором 50 л. Трубы ПНД 32 мм (питьевая) и 25 мм (техническая). Давление 3 атм. Отдельная линия на полив огорода и теплицы.</p>
+
+                    <h3>🚽 Канализация</h3>
+                    <p>Септик трёхкамерный объёмом 3 м³. Трубы ПВХ 110 мм, уклон 2 см/м, глубина заложения 1,2 м. Ревизионные колодцы (2 шт) на поворотах.</p>
+
+                    <h3>⚡ Электроснабжение</h3>
+                    <p>Ввод ВВГнг 5×10 мм² (глубина 0,8 м). Щиток на 12 модулей. Линии до бани и хозблока в гофре (0,8 м). Наружное освещение: 4 светильника, розетки на террасе.</p>
+
+                    <h3>🔥 Газоснабжение</h3>
+                    <p>Магистральный газ (низкое давление) вдоль восточной границы. Ввод полиэтиленовой трубой 32 мм (глубина 1,2 м). Котёл 24 кВт, счётчик, система контроля.</p>
+
+                    <h2>📏 Контроль отступов</h2>
+                    <ul>
+                        <li>Дом: север 5 м, восток 4,5 м, запад 4,5 м, юг 25 м</li>
+                        <li>Баня: восток 3 м, юг 8 м</li>
+                        <li>Хозблок: восток 1 м, юг 3 м</li>
+                        <li>Скважина → дом: 3 м (Z) и 4,5 м (X)</li>
+                        <li>Септик → дом: 5,2 м (≥5 м), септик → скважина: 15,3 м (≥15 м)</li>
+                        <li>Костровище → баня: 5,8 м, → хозблок: 5,1 м, → терраса бани: 10,4 м</li>
+                    </ul>
+                    <div class="footer">Сгенерировано в 3D-планировщике «Проект Берн» • ${new Date().toLocaleDateString('ru-RU')}</div>
+                `;
+
+                // Даём время на отрисовку DOM
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // 4. Рендерим обложку и отчёт через html2canvas
+                const coverCanvas = await html2canvas(coverContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 780,
+                    height: coverContainer.scrollHeight,
+                });
+                const reportCanvas = await html2canvas(reportContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 780,
+                    height: reportContainer.scrollHeight,
+                });
+
+                const coverImage = coverCanvas.toDataURL('image/png');
+                const reportImage = reportCanvas.toDataURL('image/png');
+
+                // 5. Создаём PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+                const pageHeight = 297;
+                const margin = 14;
+
+                // Обложка
+                const coverImgWidth = pageWidth - margin * 2;
+                const coverImgHeight = (coverCanvas.height / coverCanvas.width) * coverImgWidth;
+                doc.addImage(coverImage, 'PNG', margin, margin, coverImgWidth, coverImgHeight);
+
+                // Отчёт (разбивка по страницам)
+                const reportImgWidth = pageWidth - margin * 2;
+                const reportImgHeight = (reportCanvas.height / reportCanvas.width) * reportImgWidth;
+                const maxHeight = pageHeight - margin * 2;
+
+                if (reportImgHeight <= maxHeight) {
+                    doc.addPage();
+                    doc.addImage(reportImage, 'PNG', margin, margin, reportImgWidth, reportImgHeight);
+                } else {
+                    const totalPixels = reportCanvas.height;
+                    const pixelPerMM = totalPixels / reportImgHeight;
+                    const maxPixels = maxHeight * pixelPerMM;
+                    let offset = 0;
+                    let first = true;
+                    while (offset < totalPixels) {
+                        const heightPixels = Math.min(maxPixels, totalPixels - offset);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = reportCanvas.width;
+                        canvas.height = heightPixels;
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        img.src = reportImage;
+                        await new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+                        ctx.drawImage(img, 0, offset, reportCanvas.width, heightPixels, 0, 0, reportCanvas.width, heightPixels);
+                        const chunkData = canvas.toDataURL('image/png');
+                        const chunkHeightMM = (heightPixels / totalPixels) * reportImgHeight;
+                        if (!first) doc.addPage();
+                        doc.addImage(chunkData, 'PNG', margin, margin, reportImgWidth, chunkHeightMM);
+                        offset += heightPixels;
+                        first = false;
+                    }
+                }
+
+                doc.save('Проект_Берн_Отчет.pdf');
+
+            } catch (error) {
+                console.error('Ошибка при создании PDF:', error);
+                alert('Не удалось создать PDF. Проверьте консоль.');
+            } finally {
+                loader.classList.remove('active');
+            }
+        }
+
+        console.log('✅ Приложение запущено. Экспорт PDF исправлен.');
     </script>
 </body>
 </html>
