@@ -14,7 +14,6 @@
 
         #controls { display: none; }
 
-        /* ===== БЕЙДЖ НОРМ ===== */
         #norm-badge {
             position: absolute; top: 44px; left: 10px;
             background: rgba(0,0,0,0.65); color: #eaffea;
@@ -24,6 +23,55 @@
             backdrop-filter: blur(2px);
         }
         #norm-badge.bad { border-left-color: #e74c3c; color: #ffd9d9; }
+
+        /* ===== ПАНЕЛЬ СОЛНЦА ===== */
+        #sun-panel {
+            position: absolute; top: 80px; left: 10px; z-index: 120;
+            background: rgba(16, 20, 30, 0.9); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+            padding: 10px 14px; width: 230px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        .sun-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .sun-panel-title { color: #ffaa00; font-weight: 700; font-size: 13px; }
+        #sun-panel-toggle {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            color: #eee; border-radius: 6px; width: 24px; height: 24px; cursor: pointer;
+            font-size: 14px; line-height: 1; padding: 0;
+        }
+        #sun-panel-toggle:hover { background: rgba(255,255,255,0.18); }
+        .sun-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #bbb; font-size: 12px; }
+        .sun-row input[type="range"] {
+            flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+            background: #555; border-radius: 4px; outline: none; margin: 0;
+        }
+        .sun-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+            background: #3498db; cursor: pointer;
+        }
+        .sun-row input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%; background: #3498db;
+            cursor: pointer; border: none;
+        }
+        .sun-row span:last-child { min-width: 42px; text-align: right; color: #fff; font-size: 12px; }
+        #sun-status { color: #ccc; font-size: 11px; margin: 4px 0 8px; text-align: center; }
+        #sun-play-btn {
+            width: 100%; background: rgba(255,170,0,0.15); border: 1px solid #ffaa00;
+            color: #ffcc44; border-radius: 20px; padding: 6px 10px; font-size: 12px;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        #sun-play-btn:hover { background: rgba(255,170,0,0.3); }
+        #sun-play-btn.playing { background: rgba(231,76,60,0.25); border-color: #e74c3c; color: #ff9d8f; }
+
+        #sun-fab {
+            position: absolute; top: 80px; left: 10px; z-index: 120;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(16,20,30,0.92); border: 1px solid rgba(255,255,255,0.12);
+            font-size: 20px; cursor: pointer; color: #fff;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+        }
+        #sun-fab:hover { background: rgba(30,36,50,0.95); }
 
         #hamburger {
             position: fixed; bottom: 20px; right: 20px; z-index: 300;
@@ -62,24 +110,6 @@
         }
         #mobile-menu .ctrl-btn.pdf-btn { background: rgba(231, 76, 60, 0.35); border-color: #e74c3c; }
         #mobile-menu .ctrl-btn.pdf-btn:hover { background: rgba(231, 76, 60, 0.55); }
-        #mobile-menu .ctrl-slider {
-            display: flex; align-items: center; gap: 8px; color: #bbb; font-size: 12px;
-            background: rgba(0, 0, 0, 0.25); padding: 6px 12px; border-radius: 30px;
-            min-height: 34px; width: 100%; justify-content: space-between;
-        }
-        #mobile-menu .ctrl-slider input[type="range"] {
-            flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
-            background: #555; border-radius: 4px; outline: none; margin: 0 8px;
-        }
-        #mobile-menu .ctrl-slider input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
-            background: #3498db; cursor: pointer;
-        }
-        #mobile-menu .ctrl-slider input[type="range"]::-moz-range-thumb {
-            width: 14px; height: 14px; border-radius: 50%; background: #3498db;
-            cursor: pointer; border: none;
-        }
-        #mobile-menu .ctrl-slider span { min-width: 28px; text-align: center; color: #fff; }
         #mobile-menu .close-menu {
             color: #ffaa00; margin-top: 6px; text-align: center; font-weight: bold;
             background: transparent; border: none; border-top: 1px solid #444;
@@ -90,8 +120,6 @@
         @media (min-width: 769px) {
             #mobile-menu { min-width: 280px; max-width: 400px; right: 20px; bottom: 90px; padding: 18px 22px; }
             #mobile-menu .ctrl-btn { font-size: 14px; padding: 10px 16px; }
-            #mobile-menu .ctrl-slider { font-size: 13px; padding: 8px 14px; }
-            #mobile-menu .ctrl-slider input[type="range"] { height: 5px; }
         }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
@@ -115,7 +143,6 @@
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
 
-        /* ===== ТАБЛИЦА НОРМ ===== */
         #norms-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
         #norms-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
         #norms-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
@@ -131,8 +158,21 @@
             background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 8px;
             font-size: 14px; z-index: 250; pointer-events: none; display: none;
             text-align: center; backdrop-filter: blur(4px); border: 1px solid #ffaa00;
+            max-width: 85vw;
         }
         #measure-hint.show { display: block; }
+
+        #comm-info {
+            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+            background: rgba(10, 15, 25, 0.93); color: #fff; padding: 10px 16px;
+            border-radius: 12px; font-size: 13px; z-index: 250; display: none;
+            border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+            max-width: 85vw; text-align: center; line-height: 1.6;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        #comm-info.show { display: block; }
+        #comm-info .title { font-weight: 700; color: #ffaa00; font-size: 14px; }
+        #comm-info .close { margin-left: 12px; color: #ffaa00; cursor: pointer; font-weight: 700; }
 
         #pdf-loader {
             display: none; position: fixed; inset: 0; z-index: 9999;
@@ -174,13 +214,12 @@
         #pdf-report-container p, #pdf-report-container li { font-size: 13px; color: #222; }
         #pdf-report-container ul { padding-left: 22px; margin: 6px 0 10px 0; }
         #pdf-report-container .norm { color: #c0392b; font-weight: 600; }
-        #pdf-report-container table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
-        #pdf-report-container th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 6px; text-align: left; }
-        #pdf-report-container td { padding: 5px 6px; border-bottom: 1px solid #eee; }
 
         @media (max-width: 768px) {
             #info { font-size: 10px; padding: 4px 8px; top: 8px; left: 8px; }
             #norm-badge { top: 36px; left: 8px; font-size: 10px; padding: 4px 8px; }
+            #sun-panel { top: 66px; left: 8px; width: 200px; padding: 8px 10px; }
+            #sun-fab { top: 66px; left: 8px; width: 40px; height: 40px; font-size: 18px; }
             .note { display: none; }
             .legend { top: 8px; right: 8px; font-size: 7px; padding: 4px 6px; }
             .legend-color { width: 12px; height: 2px; }
@@ -196,6 +235,7 @@
             #norms-table { font-size: 11px; }
             #norms-table th, #norms-table td { padding: 5px 4px; }
             #measure-hint { font-size: 12px; bottom: 70px; padding: 6px 12px; }
+            #comm-info { font-size: 11px; bottom: 75px; padding: 8px 12px; }
             #mobile-menu { min-width: 180px; max-width: 85vw; bottom: 80px; right: 10px; padding: 14px 14px; }
             #mobile-menu .ctrl-btn { font-size: 12px; padding: 6px 10px; }
         }
@@ -216,7 +256,30 @@
         <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
     </div>
 
-    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта, нужна для слайдеров) ===== -->
+    <!-- ===== ПАНЕЛЬ СОЛНЦА ===== -->
+    <div id="sun-panel">
+        <div class="sun-panel-header">
+            <span class="sun-panel-title">☀️ Солнце</span>
+            <button id="sun-panel-toggle" title="Свернуть">–</button>
+        </div>
+        <div class="sun-panel-body">
+            <div class="sun-row">
+                <span>🌞</span>
+                <input type="range" id="sun-month-side" min="1" max="12" value="6" step="1">
+                <span id="month-label-side">Июнь</span>
+            </div>
+            <div class="sun-row">
+                <span>🕒</span>
+                <input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05">
+                <span id="hour-label-side">12:00</span>
+            </div>
+            <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
+            <button id="sun-play-btn">▶ Проиграть день</button>
+        </div>
+    </div>
+    <button id="sun-fab" title="Открыть панель солнца">☀️</button>
+
+    <!-- ===== СТАРАЯ ПАНЕЛЬ (скрыта, нужна для слайдеров и кнопок) ===== -->
     <div id="controls">
         <label>Месяц <span id="month-label">Июнь</span></label>
         <input type="range" id="month-slider" min="1" max="12" value="6" step="1">
@@ -224,6 +287,7 @@
         <input type="range" id="hour-slider" min="0" max="24" value="12" step="0.05">
         <div id="time-display">☀️ Высота: 56° | День: 17ч 30м</div>
         <button id="toggle-measure">📏 Измерить расстояние</button>
+        <button id="toggle-area">📐 Измерить площадь</button>
         <select id="view-select">
             <option value="default">🎥 Стандартный</option>
             <option value="top">⬇ Вид сверху</option>
@@ -239,6 +303,7 @@
     </div>
 
     <div id="measure-hint">👆 Коснитесь участка, чтобы поставить точку</div>
+    <div id="comm-info"></div>
 
     <button id="hamburger" aria-label="Меню">☰</button>
 
@@ -249,23 +314,18 @@
         <button class="ctrl-btn" data-view="gate">🚪 От калитки</button>
         <button class="ctrl-btn" id="toggleCommsMob">🔌 Коммуникации</button>
         <button class="ctrl-btn" id="toggleLabelsMob">🏷️ Названия</button>
-        <button class="ctrl-btn" id="toggleMeasureMob">📏 Измерить</button>
+        <button class="ctrl-btn" id="toggleMeasureMob">📏 Расстояние</button>
+        <button class="ctrl-btn" id="toggleAreaMob">📐 Площадь</button>
         <button class="ctrl-btn" id="showNormsBtnMob">✅ Проверка норм</button>
         <button class="ctrl-btn" id="showReportBtnMob">📋 Доклад</button>
         <button class="ctrl-btn" id="showHousePlanBtnMob">🏠 План дома</button>
         <button class="ctrl-btn" id="exportPngBtnMob">🖼 PNG</button>
         <button class="ctrl-btn pdf-btn" id="exportPdfBtnMob">📄 PDF</button>
         <button class="ctrl-btn" id="showGpsBtnMob">🌍 GPS координаты</button>
-        <div class="ctrl-slider">
-            🌞 <input type="range" id="sunMonthMob" min="1" max="12" value="6" step="1" /> <span id="monthLabelMob">Июнь</span>
-        </div>
-        <div class="ctrl-slider">
-            🕒 <input type="range" id="sunHourMob" min="0" max="24" value="12" step="0.05" /> <span id="hourLabelMob">12:00</span>
-        </div>
         <button class="close-menu" id="closeMenu">✕ Закрыть меню</button>
     </div>
 
-    <!-- ===== ДОКЛАД (наполняется автоматически) ===== -->
+    <!-- ===== ДОКЛАД ===== -->
     <div id="report-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="close-report">&times;</span>
@@ -295,8 +355,7 @@
                 <tbody id="norms-tbody"></tbody>
             </table>
             <p style="font-size:11px; color:#777; margin-top:14px;">
-                * Расстояния измеряются между ближайшими краями объектов (стен, колец), а не между центрами — так, как этого требуют нормативы.<br>
-                * Отступы — от стен объекта до границы участка.<br>
+                * Расстояния измеряются между ближайшими краями объектов, а не между центрами — так, как этого требуют нормативы.<br>
                 * Красные кольца и линии в 3D показывают проблемные зоны (видны, пока открыто это окно).
             </p>
             <div class="modal-footer">
@@ -384,15 +443,15 @@
             { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
         ],
         utilities: [
-            { points: [[20, 29], [24, 29], [24, 11]], color: 0xff6600, label: '⚡ Гофра к бане', labelPos: [24, 20] },
-            { points: [[20, 29], [24, 29], [24, 5]], color: 0xff9933, label: '⚡ Гофра к хозблоку', labelPos: [24, 16] },
-            { points: [[16, 22], [12.5, 22], [12.5, 29]], color: 0x3366ff, label: '💧 Вода от скважины', labelPos: [15, 27] },
-            { points: [[12.5, 29], [20, 29], [24, 29], [24, 11]], color: 0x3366ff, label: '💧 Вода к бане', labelPos: [22, 20] },
-            { points: [[12.5, 29], [2.5, 29], [2.5, 3.5]], color: 0x3366ff, label: '💧 Вода на полив', labelPos: [2.5, 16] },
-            { points: [[12.5, 29], [3, 29], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (дом)', labelPos: [7, 33] },
-            { points: [[19, 11], [3, 11], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (баня)', labelPos: [21, 22] },
-            { points: [[24.5, 0], [24.5, 29]], color: 0xffcc00, label: '🔥 Магистральный газ', labelPos: [24.5, 15] },
-            { points: [[24.5, 29], [20, 29]], color: 0xffcc00 }
+            { name: 'Гофра к бане', icon: '⚡', points: [[20, 29], [24, 29], [24, 11]], color: 0xff6600, label: '⚡ Гофра к бане', labelPos: [24, 20], pipe: 'гофра Ø20 мм', depth: 0.8 },
+            { name: 'Гофра к хозблоку', icon: '⚡', points: [[20, 29], [24, 29], [24, 5]], color: 0xff9933, label: '⚡ Гофра к хозблоку', labelPos: [24, 16], pipe: 'гофра Ø20 мм', depth: 0.8 },
+            { name: 'Вода от скважины', icon: '💧', points: [[16, 22], [12.5, 22], [12.5, 29]], color: 0x3366ff, label: '💧 Вода от скважины', labelPos: [15, 27], pipe: 'ПНД Ø32 мм', depth: 1.5 },
+            { name: 'Вода к бане', icon: '💧', points: [[12.5, 29], [20, 29], [24, 29], [24, 11]], color: 0x3366ff, label: '💧 Вода к бане', labelPos: [22, 20], pipe: 'ПНД Ø25 мм', depth: 1.5 },
+            { name: 'Вода на полив', icon: '💧', points: [[12.5, 29], [2.5, 29], [2.5, 3.5]], color: 0x3366ff, label: '💧 Вода на полив', labelPos: [2.5, 16], pipe: 'ПНД Ø20 мм', depth: 0.8 },
+            { name: 'Канализация (дом)', icon: '🚽', points: [[12.5, 29], [3, 29], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (дом)', labelPos: [7, 33], pipe: 'ПВХ Ø110 мм', depth: 1.2 },
+            { name: 'Канализация (баня)', icon: '🚽', points: [[19, 11], [3, 11], [3, 30]], color: 0x9900cc, label: '🚽 Канализация (баня)', labelPos: [21, 22], pipe: 'ПВХ Ø110 мм', depth: 1.0 },
+            { name: 'Магистральный газ', icon: '🔥', points: [[24.5, 0], [24.5, 29]], color: 0xffcc00, label: '🔥 Магистральный газ', labelPos: [24.5, 15], pipe: 'ПЭ Ø32 мм', depth: 1.2 },
+            { name: 'Газ к дому', icon: '🔥', points: [[24.5, 29], [20, 29]], color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2 }
         ],
         months: [
             { declination: -20.5, sunrise: 8.85, sunset: 16.10 },
@@ -411,6 +470,14 @@
         monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
     };
 
+    function utilityLength(u) {
+        let len = 0;
+        for (let i = 1; i < u.points.length; i++) {
+            len += Math.hypot(u.points[i][0] - u.points[i-1][0], u.points[i][1] - u.points[i-1][1]);
+        }
+        return len;
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // DOM
     // ═══════════════════════════════════════════════════════════════
@@ -422,6 +489,7 @@
         timeLabel: document.getElementById('time-label'),
         timeDisplay: document.getElementById('time-display'),
         measureHint: document.getElementById('measure-hint'),
+        commInfo: document.getElementById('comm-info'),
         toggleComm: document.getElementById('toggle-comm'),
         toggleLabels: document.getElementById('toggle-labels'),
         exportPng: document.getElementById('export-png'),
@@ -444,20 +512,28 @@
         hamburger: document.getElementById('hamburger'),
         mobileMenu: document.getElementById('mobile-menu'),
         closeMenu: document.getElementById('closeMenu'),
+        sun: {
+            panel: document.getElementById('sun-panel'),
+            fab: document.getElementById('sun-fab'),
+            toggle: document.getElementById('sun-panel-toggle'),
+            monthSlider: document.getElementById('sun-month-side'),
+            hourSlider: document.getElementById('sun-hour-side'),
+            monthLabel: document.getElementById('month-label-side'),
+            hourLabel: document.getElementById('hour-label-side'),
+            status: document.getElementById('sun-status'),
+            playBtn: document.getElementById('sun-play-btn')
+        },
         mobile: {
             comms: document.getElementById('toggleCommsMob'),
             labels: document.getElementById('toggleLabelsMob'),
             measure: document.getElementById('toggleMeasureMob'),
+            area: document.getElementById('toggleAreaMob'),
             norms: document.getElementById('showNormsBtnMob'),
             report: document.getElementById('showReportBtnMob'),
             plan: document.getElementById('showHousePlanBtnMob'),
             png: document.getElementById('exportPngBtnMob'),
             pdf: document.getElementById('exportPdfBtnMob'),
-            gps: document.getElementById('showGpsBtnMob'),
-            monthSlider: document.getElementById('sunMonthMob'),
-            hourSlider: document.getElementById('sunHourMob'),
-            monthLabel: document.getElementById('monthLabelMob'),
-            hourLabel: document.getElementById('hourLabelMob')
+            gps: document.getElementById('showGpsBtnMob')
         }
     };
 
@@ -538,10 +614,10 @@
     const sunLight = new THREE.DirectionalLight(0xffeedd, 1.0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.set(2048, 2048);
-    sunLight.shadow.camera.left = -30;
-    sunLight.shadow.camera.right = 30;
-    sunLight.shadow.camera.top = 30;
-    sunLight.shadow.camera.bottom = -30;
+    sunLight.shadow.camera.left = -28;
+    sunLight.shadow.camera.right = 28;
+    sunLight.shadow.camera.top = 28;
+    sunLight.shadow.camera.bottom = -28;
     sunLight.shadow.camera.near = 1;
     sunLight.shadow.camera.far = 90;
     sunLight.shadow.bias = -0.0004;
@@ -577,6 +653,42 @@
         norms: new THREE.Group()
     };
     Object.values(groups).forEach(g => scene.add(g));
+
+    // ═══════════════════════════════════════════════════════════════
+    // ПЛАВНЫЙ ПЕРЕЛЁТ КАМЕРЫ
+    // ═══════════════════════════════════════════════════════════════
+    const cameraTween = {
+        active: false,
+        startTime: 0,
+        duration: 1400,
+        fromPos: new THREE.Vector3(),
+        toPos: new THREE.Vector3(),
+        fromTarget: new THREE.Vector3(),
+        toTarget: new THREE.Vector3(),
+        start(toPos, toTarget) {
+            this.fromPos.copy(camera.position);
+            this.fromTarget.copy(controls.target);
+            this.toPos.copy(toPos);
+            this.toTarget.copy(toTarget);
+            this.startTime = performance.now();
+            this.active = true;
+            controls.enabled = false;
+        },
+        update() {
+            if (!this.active) return false;
+            let t = (performance.now() - this.startTime) / this.duration;
+            if (t >= 1) {
+                t = 1;
+                this.active = false;
+                controls.enabled = true;
+            }
+            const e = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+            camera.position.lerpVectors(this.fromPos, this.toPos, e);
+            controls.target.lerpVectors(this.fromTarget, this.toTarget, e);
+            camera.lookAt(controls.target);
+            return true;
+        }
+    };
 
     // ═══════════════════════════════════════════════════════════════
     // ТЕКСТУРЫ И МАТЕРИАЛЫ
@@ -633,6 +745,9 @@
             t.repeat.set(4, 3); return t;
         })()
     };
+
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    Object.values(Textures).forEach(t => t.anisotropy = maxAniso);
 
     const MaterialPool = (() => {
         const cache = new Map();
@@ -938,13 +1053,21 @@
         scene.add(posts);
     })();
 
-    // Коммуникации
-    function createUndergroundLine(u) {
+    // ═══════════════════════════════════════════════════════════════
+    // КОММУНИКАЦИИ (с поддержкой клика)
+    // ═══════════════════════════════════════════════════════════════
+    const commLines = [];
+
+    function createUndergroundLine(u, index) {
         const pts = u.points.map(p => new THREE.Vector3(p[0], 0.05, p[1]));
-        groups.comms.add(new THREE.Line(
+        const line = new THREE.Line(
             new THREE.BufferGeometry().setFromPoints(pts),
             new THREE.LineBasicMaterial({ color: u.color })
-        ));
+        );
+        line.userData.utilIndex = index;
+        groups.comms.add(line);
+        commLines.push(line);
+
         const shadowPts = u.points.map(p => new THREE.Vector3(p[0], -0.01, p[1]));
         const shadowLine = new THREE.Line(
             new THREE.BufferGeometry().setFromPoints(shadowPts),
@@ -952,13 +1075,69 @@
         );
         shadowLine.computeLineDistances();
         groups.comms.add(shadowLine);
+
         if (u.label && u.labelPos) {
             const lbl = Utils.createLabel(u.label, '#ffffff', 0.6);
             lbl.position.set(u.labelPos[0], 0.5, u.labelPos[1]);
             groups.labels.add(lbl);
         }
     }
-    CONFIG.utilities.forEach(createUndergroundLine);
+    CONFIG.utilities.forEach((u, i) => createUndergroundLine(u, i));
+
+    const commHighlight = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
+    );
+    commHighlight.visible = false;
+    scene.add(commHighlight);
+
+    const pickRay = new THREE.Raycaster();
+    pickRay.params.Line.threshold = 0.45;
+
+    let commInfoTimer = null;
+
+    function showCommInfo(u) {
+        const len = utilityLength(u);
+        DOM.commInfo.innerHTML =
+            `<span class="title">${u.icon} ${u.name}</span><br>` +
+            `Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м ` +
+            `<span class="close" id="comm-info-close">✕</span>`;
+        DOM.commInfo.classList.add('show');
+
+        const pts = u.points.map(p => new THREE.Vector3(p[0], 0.12, p[1]));
+        commHighlight.geometry.dispose();
+        commHighlight.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+        commHighlight.visible = true;
+        Utils.markDirty();
+
+        clearTimeout(commInfoTimer);
+        commInfoTimer = setTimeout(hideCommInfo, 6000);
+        const closeBtn = document.getElementById('comm-info-close');
+        if (closeBtn) closeBtn.addEventListener('click', hideCommInfo);
+    }
+
+    function hideCommInfo() {
+        DOM.commInfo.classList.remove('show');
+        if (commHighlight.visible) {
+            commHighlight.visible = false;
+            Utils.markDirty();
+        }
+    }
+
+    function pickUtility(e) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        pickRay.setFromCamera(mouse, camera);
+        const hits = pickRay.intersectObjects(commLines, false);
+        if (hits.length) {
+            showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex]);
+        } else {
+            hideCommInfo();
+        }
+    }
 
     // Ворота
     (() => {
@@ -1098,7 +1277,7 @@
                         kind: 'dist', ids: [r.a, r.b],
                         title: `${this.name(r.a)} → ${this.name(r.b)}`,
                         actual: d, min: r.min, ok: d >= r.min, soft: !!r.soft, doc: r.doc,
-                        detail: `между ближайшими краями`
+                        detail: 'между ближайшими краями'
                     };
                 }
                 const O = this.obj(r.obj);
@@ -1212,7 +1391,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // АВТОДОКЛАД (генерируется из CONFIG)
+    // АВТОДОКЛАД
     // ═══════════════════════════════════════════════════════════════
     const ENGINEERING_HTML = `
         <h3>💧 Водоснабжение</h3>
@@ -1228,8 +1407,7 @@
         <ul>
             <li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li>
             <li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li>
-            <li>Дом → септик ~10 м; баня → септик ~14 м. Ревизионные колодцы на поворотах.</li>
-            <li>Фановые трубы выведены выше крыш дома и бани.</li>
+            <li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li>
         </ul>
         <h3>⚡ Электроснабжение</h3>
         <ul>
@@ -1306,9 +1484,15 @@
         html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong>, → дом: <strong>${dist('firepit','house')} м</strong> (пожарная норма ≥5 м)</li>`;
         html += `</ul>`;
 
-        html += `<h2>4. Инженерные системы</h2>` + ENGINEERING_HTML;
+        html += `<h2>4. Длины коммуникаций (авторасчёт)</h2><ul>`;
+        CONFIG.utilities.forEach(u => {
+            html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`;
+        });
+        html += `</ul>`;
 
-        html += `<h2>5. Заключение</h2>`;
+        html += `<h2>5. Инженерные системы</h2>` + ENGINEERING_HTML;
+
+        html += `<h2>6. Заключение</h2>`;
         if (hard.length) {
             html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 1). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
         } else {
@@ -1324,10 +1508,10 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // ИЗМЕРЕНИЕ
+    // ИЗМЕРЕНИЯ: РАССТОЯНИЕ + ПЛОЩАДЬ
     // ═══════════════════════════════════════════════════════════════
     const measure = {
-        mode: false,
+        mode: null,
         points: [],
         line: (() => {
             const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 }));
@@ -1337,26 +1521,223 @@
             const m = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
             m.visible = false; scene.add(m); return m;
         })(),
-        sprite: null
+        sprite: null,
+        areaPoints: [],
+        areaMarkers: [],
+        areaLine: null,
+        areaFill: null,
+        areaSprite: null,
+        areaClosed: false
     };
 
-    function toggleMeasure() {
-        measure.mode = !measure.mode;
-        const btn = document.getElementById('toggle-measure');
-        if (btn) btn.classList.toggle('active');
-        if (DOM.mobile.measure) DOM.mobile.measure.classList.toggle('active');
+    const areaMarkerGeo = new THREE.SphereGeometry(0.22, 8, 8);
+    const areaMarkerMat = new THREE.MeshBasicMaterial({ color: 0x3498db });
 
+    function polyArea(pts) {
+        let s = 0;
+        for (let i = 0; i < pts.length; i++) {
+            const a = pts[i], b = pts[(i + 1) % pts.length];
+            s += a.x * b.z - b.x * a.z;
+        }
+        return Math.abs(s) / 2;
+    }
+
+    function polyPerimeter(pts) {
+        let p = 0;
+        for (let i = 0; i < pts.length; i++) {
+            const a = pts[i], b = pts[(i + 1) % pts.length];
+            p += Math.hypot(b.x - a.x, b.z - a.z);
+        }
+        return p;
+    }
+
+    function polyCentroid(pts) {
+        let x = 0, z = 0;
+        pts.forEach(p => { x += p.x; z += p.z; });
+        return { x: x / pts.length, z: z / pts.length };
+    }
+
+    function updateMeasureButtons() {
+        const d = measure.mode === 'dist', a = measure.mode === 'area';
+        ['toggle-measure', 'toggleMeasureMob'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('active', d);
+        });
+        ['toggle-area', 'toggleAreaMob'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('active', a);
+        });
+    }
+
+    function setMeasureMode(mode) {
+        if (measure.mode === mode) {
+            clearMeasure();
+            return;
+        }
+        clearMeasure(true);
+        measure.mode = mode;
+        DOM.measureHint.classList.add('show');
+        DOM.measureHint.textContent = mode === 'dist'
+            ? '👆 Коснитесь участка, чтобы поставить точку'
+            : '👆 Кликайте углы контура (мин. 3). Двойной клик или тап по первой точке — завершить';
+        updateMeasureButtons();
+        Utils.markDirty();
+    }
+
+    function clearMeasure(silent) {
+        measure.mode = null;
         measure.points = [];
         measure.line.visible = false;
         measure.marker.visible = false;
         if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
-
-        if (measure.mode) {
-            DOM.measureHint.classList.add('show');
-            DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
-        } else {
-            DOM.measureHint.classList.remove('show');
+        measure.areaPoints = [];
+        measure.areaMarkers.forEach(m => scene.remove(m));
+        measure.areaMarkers = [];
+        if (measure.areaLine) {
+            measure.areaLine.geometry.dispose();
+            measure.areaLine.geometry = new THREE.BufferGeometry();
+            measure.areaLine.visible = false;
         }
+        if (measure.areaFill) {
+            measure.areaFill.geometry.dispose();
+            measure.areaFill.geometry = new THREE.BufferGeometry();
+            measure.areaFill.visible = false;
+        }
+        if (measure.areaSprite) { scene.remove(measure.areaSprite); measure.areaSprite = null; }
+        measure.areaClosed = false;
+        if (!silent) DOM.measureHint.classList.remove('show');
+        updateMeasureButtons();
+        Utils.markDirty();
+    }
+
+    function updateAreaVisual() {
+        const pts = measure.areaPoints;
+        if (!measure.areaLine) {
+            measure.areaLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x3498db }));
+            scene.add(measure.areaLine);
+            measure.areaFill = new THREE.Mesh(
+                new THREE.BufferGeometry(),
+                new THREE.MeshBasicMaterial({ color: 0x3498db, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })
+            );
+            scene.add(measure.areaFill);
+        }
+        const linePts = pts.map(p => new THREE.Vector3(p.x, 0.1, p.z));
+        if (measure.areaClosed && linePts.length > 1) linePts.push(linePts[0].clone());
+        measure.areaLine.geometry.dispose();
+        measure.areaLine.geometry = new THREE.BufferGeometry().setFromPoints(linePts);
+        measure.areaLine.visible = pts.length > 1;
+
+        if (pts.length >= 3) {
+            const shape = new THREE.Shape(pts.map(p => new THREE.Vector2(p.x, -p.z)));
+            const geo = new THREE.ShapeGeometry(shape);
+            geo.rotateX(-Math.PI / 2);
+            geo.translate(0, 0.04, 0);
+            measure.areaFill.geometry.dispose();
+            measure.areaFill.geometry = geo;
+            measure.areaFill.visible = true;
+        } else {
+            measure.areaFill.visible = false;
+        }
+    }
+
+    function closeAreaPolygon() {
+        const pts = measure.areaPoints;
+        if (pts.length < 3) return;
+        const area = polyArea(pts);
+        const peri = polyPerimeter(pts);
+        measure.areaClosed = true;
+        updateAreaVisual();
+        const c = polyCentroid(pts);
+        measure.areaSprite = Utils.createLabel(
+            `📐 ${Utils.fmt(area)} м² • периметр ${Utils.fmt(peri)} м`,
+            '#ffffff', 0.9, [7, 1.4], 640, 128, 34, 'rgba(20, 80, 140, 0.9)'
+        );
+        measure.areaSprite.position.set(c.x, 1.2, c.z);
+        scene.add(measure.areaSprite);
+        DOM.measureHint.textContent = `✅ Площадь: ${Utils.fmt(area)} м², периметр: ${Utils.fmt(peri)} м. Клик — новый контур`;
+        Utils.markDirty();
+    }
+
+    function resetAreaKeepMode() {
+        measure.areaPoints = [];
+        measure.areaMarkers.forEach(m => scene.remove(m));
+        measure.areaMarkers = [];
+        if (measure.areaSprite) { scene.remove(measure.areaSprite); measure.areaSprite = null; }
+        measure.areaClosed = false;
+        updateAreaVisual();
+    }
+
+    function handleAreaClick(pt) {
+        if (measure.areaClosed) resetAreaKeepMode();
+
+        const first = measure.areaPoints[0];
+        const last = measure.areaPoints[measure.areaPoints.length - 1];
+
+        if (last && Math.hypot(pt.x - last.x, pt.z - last.z) < 0.3) return;
+
+        if (first && measure.areaPoints.length >= 3 && Math.hypot(pt.x - first.x, pt.z - first.z) < 0.9) {
+            closeAreaPolygon();
+            return;
+        }
+
+        measure.areaPoints.push(pt.clone());
+        const m = new THREE.Mesh(areaMarkerGeo, areaMarkerMat);
+        m.position.set(pt.x, 0.5, pt.z);
+        scene.add(m);
+        measure.areaMarkers.push(m);
+        updateAreaVisual();
+
+        DOM.measureHint.textContent = measure.areaPoints.length < 3
+            ? `👆 Точек: ${measure.areaPoints.length} (нужно минимум 3)`
+            : `👆 Точек: ${measure.areaPoints.length} • пока ${Utils.fmt(polyArea(measure.areaPoints))} м² • двойной клик — завершить`;
+        Utils.markDirty();
+    }
+
+    function handleDistanceClick(pt) {
+        if (measure.points.length === 0) {
+            if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
+            measure.line.visible = false;
+            measure.marker.visible = false;
+            DOM.measureHint.textContent = '👆 Поставьте вторую точку';
+        }
+        measure.points.push(pt.clone());
+        measure.marker.position.copy(pt); measure.marker.position.y = 0.5;
+        measure.marker.visible = true;
+        Utils.markDirty();
+
+        if (measure.points.length === 2) {
+            const [p1, p2] = measure.points;
+            const dist = Math.sqrt((p1.x-p2.x)**2 + (p1.z-p2.z)**2);
+            measure.line.geometry.dispose();
+            measure.line.geometry = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+            measure.line.visible = true;
+            const mid = p1.clone().add(p2).multiplyScalar(0.5);
+            measure.marker.position.copy(mid); measure.marker.position.y = 0.5;
+            if (measure.sprite) scene.remove(measure.sprite);
+            measure.sprite = createDistanceLabel(`📏 ${dist.toFixed(2)} м`, mid.x, 0.8, mid.z);
+            scene.add(measure.sprite);
+            measure.points = [];
+            DOM.measureHint.textContent = '✅ Измерено! Клик для новой точки.';
+            setTimeout(() => {
+                if (measure.mode === 'dist') DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку';
+            }, 2000);
+            Utils.markDirty();
+        }
+    }
+
+    function handleMeasureClick(pt) {
+        if (pt.x < 0 || pt.x > CONFIG.plot.w || pt.z < 0 || pt.z > CONFIG.plot.d) {
+            DOM.measureHint.textContent = '❌ Клик за пределами участка!';
+            setTimeout(() => {
+                if (!measure.mode) return;
+                DOM.measureHint.textContent = measure.mode === 'dist'
+                    ? '👆 Коснитесь участка, чтобы поставить точку'
+                    : '👆 Кликайте углы контура (мин. 3). Двойной клик — завершить';
+            }, 1500);
+            return;
+        }
+        if (measure.mode === 'dist') handleDistanceClick(pt);
+        else if (measure.mode === 'area') handleAreaClick(pt);
     }
 
     function createDistanceLabel(text, x, y, z) {
@@ -1382,9 +1763,13 @@
         return sprite;
     }
 
+    let pointerDownPos = null;
+
     renderer.domElement.addEventListener('pointerdown', (e) => {
+        pointerDownPos = { x: e.clientX, y: e.clientY };
         if (!measure.mode) return;
         e.preventDefault();
+
         const rect = renderer.domElement.getBoundingClientRect();
         const clientX = e.clientX || e.pageX;
         const clientY = e.clientY || e.pageY;
@@ -1396,45 +1781,25 @@
         ray.setFromCamera(mouse, camera);
         const pt = new THREE.Vector3();
         if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), pt)) return;
+        handleMeasureClick(pt);
+    });
 
-        if (pt.x < 0 || pt.x > CONFIG.plot.w || pt.z < 0 || pt.z > CONFIG.plot.d) {
-            DOM.measureHint.textContent = '❌ Клик за пределами участка!';
-            setTimeout(() => { DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 1500);
-            return;
-        }
+    renderer.domElement.addEventListener('pointerup', (e) => {
+        if (!pointerDownPos) return;
+        const moved = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        pointerDownPos = null;
+        if (moved > 6 || measure.mode) return;
+        pickUtility(e);
+    });
 
-        if (measure.points.length === 0) {
-            if (measure.sprite) { scene.remove(measure.sprite); measure.sprite = null; }
-            measure.line.visible = false;
-            measure.marker.visible = false;
-            DOM.measureHint.textContent = '👆 Поставьте вторую точку';
-        }
-
-        measure.points.push(pt.clone());
-        measure.marker.position.copy(pt); measure.marker.position.y = 0.5;
-        measure.marker.visible = true;
-        Utils.markDirty();
-
-        if (measure.points.length === 2) {
-            const [p1, p2] = measure.points;
-            const dist = Math.sqrt((p1.x-p2.x)**2 + (p1.z-p2.z)**2);
-            measure.line.geometry.dispose();
-            measure.line.geometry = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-            measure.line.visible = true;
-            const mid = p1.clone().add(p2).multiplyScalar(0.5);
-            measure.marker.position.copy(mid); measure.marker.position.y = 0.5;
-            if (measure.sprite) scene.remove(measure.sprite);
-            measure.sprite = createDistanceLabel(`📏 ${dist.toFixed(2)} м`, mid.x, 0.8, mid.z);
-            scene.add(measure.sprite);
-            measure.points = [];
-            DOM.measureHint.textContent = '✅ Измерено! Клик для новой точки.';
-            setTimeout(() => { DOM.measureHint.textContent = '👆 Коснитесь участка, чтобы поставить точку'; }, 2000);
-            Utils.markDirty();
+    renderer.domElement.addEventListener('dblclick', () => {
+        if (measure.mode === 'area' && !measure.areaClosed && measure.areaPoints.length >= 3) {
+            closeAreaPolygon();
         }
     });
 
     // ═══════════════════════════════════════════════════════════════
-    // ВИДЫ КАМЕРЫ
+    // ВИДЫ КАМЕРЫ (плавно)
     // ═══════════════════════════════════════════════════════════════
     DOM.viewSelect.addEventListener('change', function() {
         const v = this.value;
@@ -1447,8 +1812,6 @@
             sunDisc.visible = true;
             sunGlow.visible = true;
         }
-        camera.position.set(...(CONFIG.camera[v] || CONFIG.camera.default));
-        controls.target.set(CONFIG.center.x, 0, CONFIG.center.z);
         if (v === 'night') {
             scene.background = new THREE.Color(0x0a0a1a);
             sunLight.intensity = 0.05;
@@ -1458,7 +1821,11 @@
             sunDisc.visible = false;
             sunGlow.visible = false;
         }
-        controls.update();
+        const pos = CONFIG.camera[v] || CONFIG.camera.default;
+        cameraTween.start(
+            new THREE.Vector3(pos[0], pos[1], pos[2]),
+            new THREE.Vector3(CONFIG.center.x, 0, CONFIG.center.z)
+        );
         Utils.markDirty();
     });
 
@@ -1471,18 +1838,20 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // СОЛНЦЕ
+    // СОЛНЦЕ + ПЛЕЕР (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+    // Время хранится в JS-переменной sunPlayer.hour,
+    // слайдеры только отображают его. Никакого чтения из DOM.
     // ═══════════════════════════════════════════════════════════════
-    function updateSun() {
+    function updateSun(hoursOverride) {
         const mi = parseInt(DOM.monthSlider.value) - 1;
         const month = CONFIG.months[mi];
         const dayLength = month.sunset - month.sunrise;
 
-        let hours = parseFloat(DOM.hourSlider.value);
+        // ИСТИННОЕ время: либо передано плеером/вызывающим, либо читаем слайдер
+        let hours = (hoursOverride !== undefined) ? hoursOverride : parseFloat(DOM.hourSlider.value);
         const minH = Math.max(0, month.sunrise - 0.5);
         const maxH = Math.min(24, month.sunset + 0.5);
         hours = Math.max(minH, Math.min(maxH, hours));
-        DOM.hourSlider.value = hours;
 
         const latRad = CONFIG.latitude * Math.PI / 180;
         const decRad = month.declination * Math.PI / 180;
@@ -1532,36 +1901,122 @@
         sunLight.position.set(x, y, z);
         sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
 
+        // Подписи — из ЛОКАЛЬНОГО hours, не из DOM
         const monthName = CONFIG.monthNames[mi];
         const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
         DOM.monthLabel.textContent = monthName;
         DOM.timeLabel.textContent = hoursStr;
-        if (DOM.mobile.monthLabel) DOM.mobile.monthLabel.textContent = monthName;
-        if (DOM.mobile.hourLabel) DOM.mobile.hourLabel.textContent = hoursStr;
+
+        // Слайдеры — только отображение истинного значения
+        DOM.hourSlider.value = hours;
+        if (DOM.sun.monthSlider && document.activeElement !== DOM.sun.monthSlider) {
+            DOM.sun.monthSlider.value = DOM.monthSlider.value;
+        }
+        if (DOM.sun.hourSlider && document.activeElement !== DOM.sun.hourSlider) {
+            DOM.sun.hourSlider.value = hours;
+        }
+        if (DOM.sun.monthLabel) DOM.sun.monthLabel.textContent = monthName;
+        if (DOM.sun.hourLabel) DOM.sun.hourLabel.textContent = hoursStr;
 
         const dayH = Math.floor(dayLength);
         const dayM = Math.round((dayLength - dayH) * 60);
         const status = isNight ? '🌙 Ночь' : '☀️ Высота: ' + Math.round(Math.max(altitude, 0)) + '°';
-        DOM.timeDisplay.textContent = `${status} | День: ${dayH}ч ${String(dayM).padStart(2, '0')}м`;
+        const statusStr = `${status} | День: ${dayH}ч ${String(dayM).padStart(2, '0')}м`;
+        DOM.timeDisplay.textContent = statusStr;
+        if (DOM.sun.status) DOM.sun.status.textContent = statusStr;
 
         renderer.shadowMap.needsUpdate = true;
         Utils.markDirty();
     }
 
-    DOM.monthSlider.addEventListener('input', updateSun);
-    DOM.hourSlider.addEventListener('input', updateSun);
-    if (DOM.mobile.monthSlider) {
-        DOM.mobile.monthSlider.addEventListener('input', () => {
-            DOM.monthSlider.value = DOM.mobile.monthSlider.value;
+    const sunPlayer = {
+        playing: false,
+        rafId: null,
+        lastTs: 0,
+        hour: 12,              // ← внутреннее время, источник истины
+        durationSec: 20,       // полный день за 20 секунд
+
+        toggle() {
+            if (this.playing) this.stop();
+            else this.start();
+        },
+
+        start() {
+            const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
+            this.hour = Math.max(0, m.sunrise - 0.5); // старт за 30 мин до рассвета
+            this.playing = true;
+            DOM.sun.playBtn.textContent = '⏸ Стоп';
+            DOM.sun.playBtn.classList.add('playing');
+            updateSun(this.hour);
+            this.lastTs = performance.now();
+            if (this.rafId) cancelAnimationFrame(this.rafId);
+            this.rafId = requestAnimationFrame(this.step);
+        },
+
+        step: (now) => {
+            const sp = sunPlayer;
+            if (!sp.playing) return;
+
+            let dt = (now - sp.lastTs) / 1000;
+            sp.lastTs = now;
+            if (dt > 0.1) dt = 0.1;  // защита от скачка после фоновой вкладки
+            if (dt < 0) dt = 0;
+
+            const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
+            const start = Math.max(0, m.sunrise - 0.5);
+            const end = Math.min(24, m.sunset + 0.5);
+            const speed = (end - start) / sp.durationSec;
+
+            sp.hour += dt * speed;   // время живёт в JS, а не в DOM
+
+            if (sp.hour >= end) {
+                sp.hour = end;
+                updateSun(sp.hour);
+                sp.stop();
+                return;
+            }
+            updateSun(sp.hour);
+            sp.rafId = requestAnimationFrame(sp.step);
+        },
+
+        stop() {
+            this.playing = false;
+            if (this.rafId) cancelAnimationFrame(this.rafId);
+            this.rafId = null;
+            DOM.sun.playBtn.textContent = '▶ Проиграть день';
+            DOM.sun.playBtn.classList.remove('playing');
+        }
+    };
+
+    DOM.monthSlider.addEventListener('input', () => updateSun());
+    DOM.hourSlider.addEventListener('input', () => updateSun());
+
+    if (DOM.sun.monthSlider) {
+        DOM.sun.monthSlider.addEventListener('input', () => {
+            if (sunPlayer.playing) sunPlayer.stop();
+            DOM.monthSlider.value = DOM.sun.monthSlider.value;
             updateSun();
         });
     }
-    if (DOM.mobile.hourSlider) {
-        DOM.mobile.hourSlider.addEventListener('input', () => {
-            DOM.hourSlider.value = DOM.mobile.hourSlider.value;
+    if (DOM.sun.hourSlider) {
+        DOM.sun.hourSlider.addEventListener('input', () => {
+            if (sunPlayer.playing) sunPlayer.stop();
+            DOM.hourSlider.value = DOM.sun.hourSlider.value;
             updateSun();
         });
     }
+    DOM.sun.playBtn.addEventListener('click', () => sunPlayer.toggle());
+
+    // Сворачивание панели
+    function setSunPanelCollapsed(collapsed) {
+        DOM.sun.panel.style.display = collapsed ? 'none' : 'block';
+        DOM.sun.fab.style.display = collapsed ? 'flex' : 'none';
+    }
+    DOM.sun.toggle.addEventListener('click', () => setSunPanelCollapsed(true));
+    DOM.sun.fab.addEventListener('click', () => setSunPanelCollapsed(false));
+    if (window.innerWidth < 769) setSunPanelCollapsed(true);
+    else setSunPanelCollapsed(false);
+
     updateSun();
 
     // ═══════════════════════════════════════════════════════════════
@@ -1569,7 +2024,12 @@
     // ═══════════════════════════════════════════════════════════════
     function animate() {
         requestAnimationFrame(animate);
-        if (controls.update()) Utils.markDirty();
+        const tweening = cameraTween.update();
+        if (tweening) {
+            Utils.markDirty();
+        } else if (controls.update()) {
+            Utils.markDirty();
+        }
         if (Utils.dirty) {
             renderer.render(scene, camera);
             Utils.dirty = false;
@@ -1804,6 +2264,9 @@
 
     DOM.exportPng.addEventListener('click', exportPNG);
 
+    document.getElementById('toggle-measure').addEventListener('click', () => setMeasureMode('dist'));
+    document.getElementById('toggle-area').addEventListener('click', () => setMeasureMode('area'));
+
     // ═══════════════════════════════════════════════════════════════
     // PDF
     // ═══════════════════════════════════════════════════════════════
@@ -1950,7 +2413,8 @@
         closeMenu();
     });
 
-    DOM.mobile.measure.addEventListener('click', () => { toggleMeasure(); closeMenu(); });
+    DOM.mobile.measure.addEventListener('click', () => { setMeasureMode('dist'); closeMenu(); });
+    DOM.mobile.area.addEventListener('click', () => { setMeasureMode('area'); closeMenu(); });
     DOM.mobile.norms.addEventListener('click', () => { openNorms(); closeMenu(); });
     DOM.mobile.report.addEventListener('click', () => { openReportModal(); closeMenu(); });
     DOM.mobile.plan.addEventListener('click', () => {
@@ -1965,7 +2429,7 @@
 
     // Инициализация
     updateNormBadge();
-    console.log('✅ Проект Берн запущен: автопроверка норм + автодоклад активны.');
+    console.log('✅ Проект Берн: плеер солнца исправлен (внутренние часы, плавный цикл 20 с).');
     </script>
 </body>
 </html>
