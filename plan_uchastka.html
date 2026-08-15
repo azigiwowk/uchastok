@@ -29,6 +29,11 @@
         .sun-row input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #3498db; cursor: pointer; border: none; }
         .sun-row span:last-child { min-width: 42px; text-align: right; color: #fff; font-size: 12px; }
         #sun-status { color: #ccc; font-size: 11px; margin: 4px 0 8px; text-align: center; }
+        #insolation-status { display: none; margin-top: 8px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 10px; font-size: 13px; line-height: 1.7; color: #eaf6ff; text-align: left; }
+        #insolation-status .ir-title { color: #ffcc44; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+        #insolation-status .ir-row { display: flex; justify-content: space-between; gap: 8px; }
+        #insolation-status .ir-val { font-weight: 700; white-space: nowrap; }
+        .ir-good { color: #7ded9b; } .ir-mid { color: #ffd166; } .ir-bad { color: #ff8f8f; }
         #sun-play-btn { width: 100%; background: rgba(255,170,0,0.15); border: 1px solid #ffaa00; color: #ffcc44; border-radius: 20px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         #sun-play-btn:hover { background: rgba(255,170,0,0.3); }
         #sun-play-btn.playing { background: rgba(231,76,60,0.25); border-color: #e74c3c; color: #ff9d8f; }
@@ -161,6 +166,8 @@
                 <div class="sun-row"><span>🕒</span><input type="range" id="sun-hour-side" min="0" max="24" value="12" step="0.05"><span id="hour-label-side">12:00</span></div>
                 <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
                 <button id="sun-play-btn">▶ Проиграть день</button>
+                <button id="insolation-btn" class="edit-btn" style="margin-top:6px; margin-bottom:0;">🌤 Теневой анализ</button>
+                <div id="insolation-status"></div>
             </div>
         </div>
 
@@ -385,7 +392,9 @@
             toggle: document.getElementById('sun-panel-toggle'),
             monthSlider: document.getElementById('sun-month-side'), hourSlider: document.getElementById('sun-hour-side'),
             monthLabel: document.getElementById('month-label-side'), hourLabel: document.getElementById('hour-label-side'),
-            status: document.getElementById('sun-status'), playBtn: document.getElementById('sun-play-btn')
+            status: document.getElementById('sun-status'), playBtn: document.getElementById('sun-play-btn'),
+            insolationBtn: document.getElementById('insolation-btn'),
+            insolationStatus: document.getElementById('insolation-status')
         },
         edit: {
             panel: document.getElementById('edit-panel'), fab: document.getElementById('edit-fab'),
@@ -898,17 +907,16 @@
         let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
         html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
 
-        // ── Раздел 1: ориентация и солнце (памятка) ──
         html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
-        html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» на 3D‑сцене означают стороны вдоль границ участка, а не истинные стороны света. Это сделано для удобства планировки.</p>`;
-        html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая сторона вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты относительно истинного севера на 57,3°. <strong>Зеркального перепутывания сторон нет</strong> — соответствие проверено по четырём межевым знакам из акта: знак 4 = юго‑западный угол (у калитки), 3 = юго‑восточный, 2 = северо‑восточный, 1 = северо‑западный.</p>`;
-        html += `<p><strong>Где истинные стороны света на экране</strong> (вид «🎥 Стандартный»): истинный север — влево‑вверх (между подписями «СЕВЕР» и «ВОСТОК»); истинный юг — вправо‑вниз; истинный восток — влево‑вниз; истинный запад — вправо‑вверх.</p>`;
-        html += `<p><strong>Солнце считается по реальным координатам</strong> (широта 56,04° с.ш., долгота 38,42° в.д., истинный солнечный полдень ≈ 12:26 по московскому времени), а затем поворачивается в оси сцены на 57,3° — поэтому тени на сцене совпадают с реальными.</p>`;
+        html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» на 3D‑сцене означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
+        html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая сторона вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты относительно истинного севера на 57,3°. <strong>Зеркального перепутывания сторон нет</strong>: знак 4 = юго‑западный угол (у калитки), 3 = юго‑восточный, 2 = северо‑восточный, 1 = северо‑западный.</p>`;
+        html += `<p><strong>Где истинные стороны света на экране</strong> (вид «🎥 Стандартный»): истинный север — влево‑вверх (между «СЕВЕР» и «ВОСТОК»); истинный юг — вправо‑вниз; истинный восток — влево‑вниз; истинный запад — вправо‑вверх.</p>`;
+        html += `<p><strong>Солнце считается по реальным координатам</strong> (широта 56,04° с.ш., долгота 38,42° в.д., истинный полдень ≈ 12:26), затем поворачивается в оси сцены на 57,3° — тени совпадают с реальностью.</p>`;
         html += `<p><strong>Примеры для самопроверки:</strong></p><ul>`;
-        html += `<li>Июнь, 12:20 — солнце почти в истинном юге, тень падает на истинный север: на экране тень ложится влево, к подписи «ВОСТОК». Это правильно, а не ошибка!</li>`;
-        html += `<li>Июнь, ~06:00 — солнце слева‑внизу (истинный восток‑северо‑восток), тени длинные, направлены вправо‑вверх.</li>`;
-        html += `<li>Июнь, ~21:00 — солнце у подписи «СЕВЕР» (истинный северо‑запад), тени вправо‑вниз (истинный юго‑восток).</li>`;
-        html += `<li>Декабрь, 12:20 — солнце низко справа (высота ≈ 10°), тени в 2–3 раза длиннее июньских и направлены влево‑вверх (истинный север).</li>`;
+        html += `<li>Июнь, 12:20 — солнце почти в истинном юге, тень на истинный север: на экране тень ложится влево, к «ВОСТОК». Это правильно!</li>`;
+        html += `<li>Июнь, ~06:00 — солнце слева‑внизу (истинный восток‑северо‑восток), тени длинные вправо‑вверх.</li>`;
+        html += `<li>Июнь, ~21:00 — солнце у «СЕВЕР» (истинный северо‑запад), тени вправо‑вниз (истинный юго‑восток).</li>`;
+        html += `<li>Декабрь, 12:20 — солнце низко справа (высота ≈ 10°), тени в 2–3 раза длиннее, влево‑вверх.</li>`;
         html += `</ul>`;
 
         html += `<h2>2. Автопроверка норм</h2>`;
@@ -1216,6 +1224,7 @@
             saveLayout();
             updateNormBadge();
             if (showViolationRings) buildViolationRings();
+            if (insolationOn) scheduleInsolation();
             const o = CONFIG.objects.find(x => x.id === id);
             toast(`💾 ${Norms.name(id)} → X ${Utils.fmt(o.x)}, Z ${Utils.fmt(o.z)} • сохранено`);
             renderer.shadowMap.needsUpdate = true;
@@ -1235,7 +1244,170 @@
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         updateNormBadge();
         if (showViolationRings) buildViolationRings();
+        if (insolationOn) scheduleInsolation();
         toast('🔄 Планировка сброшена к исходной');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ТЕНЕВОЙ АНАЛИЗ (ИНСОЛЯЦИЯ) — исправлено под Three.js r128
+    // ═══════════════════════════════════════════════════════════════
+    let insolationOn = false;
+    let insolationMesh = null;
+    let insolationTimer = null;
+
+    function calcSunAt(hours, mi) {
+        const month = CONFIG.months[mi];
+        const latRad = CONFIG.gps.lat * Math.PI / 180;
+        const decRad = month.declination * Math.PI / 180;
+        const hourAngle = (hours - CONFIG.gps.solarNoon) * 15 * Math.PI / 180;
+        const sinAlt = Math.sin(latRad)*Math.sin(decRad) + Math.cos(latRad)*Math.cos(decRad)*Math.cos(hourAngle);
+        const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
+        const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
+        const sunNorth = Math.cos(latRad)*Math.sin(decRad) - Math.sin(latRad)*Math.cos(decRad)*Math.cos(hourAngle);
+        return { altitude, sunEast, sunNorth, sinAlt };
+    }
+
+    function buildOccluders() {
+        const list = [];
+        const heights = { house: 7.0, bath: 4.3, shed: 4.2, greenhouse: 2.5 };
+        ['house','bath','shed','greenhouse'].forEach(id => {
+            const b = Norms.bounds(Norms.obj(id));
+            list.push({ ownId: id, box: new THREE.Box3(new THREE.Vector3(b.minX, 0, b.minZ), new THREE.Vector3(b.maxX, heights[id], b.maxZ)) });
+        });
+        const s = 0.7;
+        for (let z = 24; z <= 32; z += 1.5) {
+            list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(2, 2.4*s, z), 0.95*s) });
+            list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(23, 2.4*s, z), 0.95*s) });
+        }
+        for (let x = 6; x <= 19; x += 1.5) list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(x, 2.4*s, 38), 0.95*s) });
+        return list;
+    }
+
+    const _insRay = new THREE.Ray();
+    const _insHit = new THREE.Vector3();
+    function isShadowed(px, pz, dir, proxies) {
+        _insRay.origin.set(px, 0.3, pz);
+        _insRay.direction.copy(dir);
+        for (let i = 0; i < proxies.length; i++) {
+            const p = proxies[i];
+            if (p.box) { if (_insRay.intersectBox(p.box, _insHit)) return true; }
+            else if (_insRay.intersectSphere(p.sphere, _insHit)) return true;
+        }
+        return false;
+    }
+
+    function computeInsolation(mi) {
+        const month = CONFIG.months[mi];
+        const start = month.sunrise, end = month.sunset;
+        const stepH = 0.5, cell = 0.5;
+        const nx = Math.round(CONFIG.plot.w / cell), nz = Math.round(CONFIG.plot.d / cell);
+        const data = new Float32Array(nx * nz);
+        const inside = new Uint8Array(nx * nz);
+        const foots = ['house','bath','shed','greenhouse'].map(id => Norms.bounds(Norms.obj(id)));
+        for (let iz = 0; iz < nz; iz++) for (let ix = 0; ix < nx; ix++) {
+            const px = (ix + 0.5) * cell, pz = (iz + 0.5) * cell;
+            for (let f = 0; f < foots.length; f++) {
+                const b = foots[f];
+                if (px >= b.minX && px <= b.maxX && pz >= b.minZ && pz <= b.maxZ) { inside[iz*nx+ix] = 1; break; }
+            }
+        }
+        const proxies = buildOccluders();
+        const ang = CONFIG.gps.angle * Math.PI / 180;
+        const cosA = Math.cos(ang), sinA = Math.sin(ang);
+        const dir = new THREE.Vector3();
+        for (let h = start + stepH / 2; h < end; h += stepH) {
+            const s = calcSunAt(h, mi);
+            if (s.altitude <= 1) continue;
+            dir.set(s.sunEast * cosA + s.sunNorth * sinA, s.sinAlt, -s.sunEast * sinA + s.sunNorth * cosA).normalize();
+            for (let iz = 0; iz < nz; iz++) for (let ix = 0; ix < nx; ix++) {
+                const idx = iz * nx + ix;
+                if (inside[idx]) continue;
+                if (!isShadowed((ix + 0.5) * cell, (iz + 0.5) * cell, dir, proxies)) data[idx] += stepH;
+            }
+        }
+        return { data, inside, nx, nz, cell, daylight: end - start };
+    }
+
+    function rebuildHeatmap(res) {
+        if (insolationMesh) { scene.remove(insolationMesh); insolationMesh.geometry.dispose(); insolationMesh.material.dispose(); insolationMesh = null; }
+        const geo = new THREE.PlaneGeometry(CONFIG.plot.w, CONFIG.plot.d, res.nx - 1, res.nz - 1);
+        const colors = new Float32Array(res.nx * res.nz * 3);
+        const col = new THREE.Color();
+        for (let iy = 0; iy < res.nz; iy++) {
+            for (let ix = 0; ix < res.nx; ix++) {
+                const idx = iy * res.nx + ix;
+                if (res.inside[idx]) col.setRGB(0.12, 0.12, 0.15);
+                else {
+                    const f = Math.min(1, res.data[idx] / Math.max(4, res.daylight * 0.8));
+                    col.setHSL(0.33 * f, 0.95, 0.45 + 0.1 * (1 - f));
+                }
+                colors[idx*3] = col.r; colors[idx*3+1] = col.g; colors[idx*3+2] = col.b;
+            }
+        }
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geo.rotateX(-Math.PI / 2);
+        const mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false });
+        insolationMesh = new THREE.Mesh(geo, mat);
+        insolationMesh.position.set(CONFIG.center.x, 0.07, CONFIG.center.z);
+        scene.add(insolationMesh);
+        Utils.markDirty();
+    }
+
+    function zoneSunHours(zn, mi) {
+        const month = CONFIG.months[mi];
+        const stepH = 0.5, cell = 0.5;
+        const proxies = buildOccluders().filter(p => p.ownId !== zn.own);
+        const foots = ['house','bath','shed','greenhouse'].filter(id => id !== zn.own).map(id => Norms.bounds(Norms.obj(id)));
+        const ang = CONFIG.gps.angle * Math.PI / 180, cosA = Math.cos(ang), sinA = Math.sin(ang);
+        const dir = new THREE.Vector3();
+        let sum = 0, cnt = 0;
+        for (let px = zn.x - zn.w/2 + 0.25; px < zn.x + zn.w/2; px += cell) {
+            for (let pz = zn.z - zn.d/2 + 0.25; pz < zn.z + zn.d/2; pz += cell) {
+                let inOther = false;
+                for (let f = 0; f < foots.length; f++) { const b = foots[f]; if (px >= b.minX && px <= b.maxX && pz >= b.minZ && pz <= b.maxZ) { inOther = true; break; } }
+                if (inOther) continue;
+                cnt++;
+                let hrs = 0;
+                for (let h = month.sunrise + stepH/2; h < month.sunset; h += stepH) {
+                    const s = calcSunAt(h, mi);
+                    if (s.altitude <= 1) continue;
+                    dir.set(s.sunEast*cosA + s.sunNorth*sinA, s.sinAlt, -s.sunEast*sinA + s.sunNorth*cosA).normalize();
+                    if (!isShadowed(px, pz, dir, proxies)) hrs += stepH;
+                }
+                sum += hrs;
+            }
+        }
+        return cnt ? sum / cnt : 0;
+    }
+
+    function showInsolation() {
+        const mi = parseInt(DOM.monthSlider.value, 10) - 1;
+        const res = computeInsolation(mi);
+        rebuildHeatmap(res);
+        const zones = [
+            { icon: '🌱', name: 'Огород',   x: 2.5, z: 3.5, w: 5, d: 7, own: null },
+            { icon: '🌿', name: 'Теплица',  x: 1.5, z: 7,   w: 3, d: 6, own: 'greenhouse' },
+            { icon: '🧸', name: 'Площадка', x: 8,   z: 16,  w: 2, d: 2, own: null }
+        ];
+        const rows = zones.map(zn => {
+            const hrs = zoneSunHours(zn, mi);
+            const cls = hrs >= 8 ? 'ir-good' : (hrs >= 4 ? 'ir-mid' : 'ir-bad');
+            return `<div class="ir-row"><span>${zn.icon} ${zn.name}</span><span class="ir-val ${cls}">${Utils.fmt(hrs)} ч/день</span></div>`;
+        }).join('');
+        DOM.sun.insolationStatus.innerHTML = `<div class="ir-title">🌤 Инсоляция • ${CONFIG.monthNames[mi]}</div>` + rows;
+        DOM.sun.insolationStatus.style.display = 'block';
+        toast('🌤 Карта инсоляции построена', 2500);
+    }
+
+    function hideInsolation() {
+        if (insolationMesh) { scene.remove(insolationMesh); insolationMesh.geometry.dispose(); insolationMesh.material.dispose(); insolationMesh = null; }
+        DOM.sun.insolationStatus.style.display = 'none';
+        Utils.markDirty();
+    }
+
+    function scheduleInsolation() {
+        clearTimeout(insolationTimer);
+        insolationTimer = setTimeout(() => { try { showInsolation(); } catch (e) { console.error('Ошибка теневого анализа:', e); alert('⚠ Ошибка теневого анализа: ' + e.message); } }, 250);
     }
 
     let pointerDownPos = null;
@@ -1295,7 +1467,7 @@
     }
 
     function updateSun(hoursOverride) {
-        const mi = parseInt(DOM.monthSlider.value) - 1;
+        const mi = parseInt(DOM.monthSlider.value, 10) - 1;
         const month = CONFIG.months[mi];
         const dayLength = month.sunset - month.sunrise;
         let hours = (hoursOverride !== undefined) ? hoursOverride : parseFloat(DOM.hourSlider.value);
@@ -1370,7 +1542,7 @@
         playing: false, rafId: null, lastTs: 0, hour: 12, durationSec: 20,
         toggle() { if (this.playing) this.stop(); else this.start(); },
         start() {
-            const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
+            const m = CONFIG.months[parseInt(DOM.monthSlider.value, 10) - 1];
             this.hour = Math.max(0, m.sunrise - 0.5);
             this.playing = true;
             DOM.sun.playBtn.textContent = '⏸ Стоп';
@@ -1387,7 +1559,7 @@
             sp.lastTs = now;
             if (dt > 0.1) dt = 0.1;
             if (dt < 0) dt = 0;
-            const m = CONFIG.months[parseInt(DOM.monthSlider.value) - 1];
+            const m = CONFIG.months[parseInt(DOM.monthSlider.value, 10) - 1];
             const start = Math.max(0, m.sunrise - 0.5);
             const end = Math.min(24, m.sunset + 0.5);
             const speed = (end - start) / sp.durationSec;
@@ -1409,6 +1581,22 @@
     if (DOM.sun.monthSlider) DOM.sun.monthSlider.addEventListener('input', () => { if (sunPlayer.playing) sunPlayer.stop(); DOM.monthSlider.value = DOM.sun.monthSlider.value; updateSun(); });
     if (DOM.sun.hourSlider) DOM.sun.hourSlider.addEventListener('input', () => { if (sunPlayer.playing) sunPlayer.stop(); DOM.hourSlider.value = DOM.sun.hourSlider.value; updateSun(); });
     DOM.sun.playBtn.addEventListener('click', () => sunPlayer.toggle());
+
+    // Кнопка теневого анализа (с диагностикой ошибок)
+    DOM.sun.insolationBtn.addEventListener('click', function() {
+        try {
+            insolationOn = !insolationOn;
+            this.classList.toggle('active', insolationOn);
+            this.textContent = insolationOn ? '🌤 Анализ: ВКЛ' : '🌤 Теневой анализ';
+            if (insolationOn) showInsolation(); else hideInsolation();
+        } catch (e) {
+            console.error('Ошибка теневого анализа:', e);
+            alert('⚠ Ошибка теневого анализа: ' + e.message);
+        }
+    });
+    DOM.monthSlider.addEventListener('input', () => { if (insolationOn) scheduleInsolation(); });
+    if (DOM.sun.monthSlider) DOM.sun.monthSlider.addEventListener('input', () => { if (insolationOn) scheduleInsolation(); });
+
     function setSunPanelCollapsed(collapsed) {
         DOM.sun.panel.style.display = collapsed ? 'none' : 'block';
         DOM.sun.fab.style.display = collapsed ? 'flex' : 'none';
@@ -1632,7 +1820,7 @@
         if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
         else toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: в доклад добавлен раздел «Ориентация и солнце».');
+    console.log('✅ Проект Берн: полная версия с карточкой инсоляции и исправлением r128.');
     </script>
 </body>
 </html>
