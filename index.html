@@ -43,6 +43,10 @@
         .edit-btn:hover { background: rgba(52,152,219,0.32); }
         .edit-btn.active { background: rgba(46,204,113,0.25); border-color: #2ecc71; color: #b9f6ca; }
         .edit-btn.viol-active { background: rgba(255,51,51,0.25); border-color: #ff3333; color: #ffcccc; }
+        .edit-btn.auto-btn { background: rgba(155,89,182,0.2); border-color: #9b59b6; color: #d7bde2; }
+        .edit-btn.auto-btn:hover { background: rgba(155,89,182,0.4); }
+        .edit-btn.var-btn { background: rgba(46,204,113,0.15); border-color: #2ecc71; color: #a9dfbf; }
+        .edit-btn.var-btn:hover { background: rgba(46,204,113,0.35); }
         .edit-row { display: flex; gap: 6px; }
         .edit-row .edit-btn { margin-bottom: 0; }
         .edit-btn.danger { background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.7); color: #ffb3a7; }
@@ -93,9 +97,12 @@
         #object-modal table td:first-child { font-weight: 600; color: #555; width: 40%; }
         #object-modal table td:last-child { color: #222; }
         #object-modal .obj-note { background: #fff9e6; border-left: 3px solid #ffaa00; padding: 10px 14px; margin-top: 14px; font-size: 13px; color: #6b5900; border-radius: 6px; }
-        #norms-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
-        #norms-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
-        #norms-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+        #norms-table, #variants-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+        #norms-table th, #variants-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
+        #norms-table td, #variants-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+        #variants-table button { margin: 0 3px; padding: 4px 10px; border-radius: 6px; border: 1px solid #3498db; background: rgba(52,152,219,.15); color: #1e6fb0; cursor: pointer; font-size: 12px; }
+        #variants-table button.v-del { border-color: #e74c3c; background: rgba(231,76,60,.12); color: #c0392b; }
+        #variants-table tr.cur { background: #fff9e6; }
         .norm-ok { color: #27ae60; font-weight: 700; white-space: nowrap; }
         .norm-bad { color: #c0392b; font-weight: 700; white-space: nowrap; }
         .norm-warn { color: #e67e22; font-weight: 700; white-space: nowrap; }
@@ -146,8 +153,8 @@
             .modal-header h2 { font-size: 16px; }
             .modal-close { font-size: 24px; }
             .modal-footer button { font-size: 12px; padding: 4px 14px; }
-            #norms-table { font-size: 11px; }
-            #norms-table th, #norms-table td { padding: 5px 4px; }
+            #norms-table, #variants-table { font-size: 11px; }
+            #norms-table th, #norms-table td, #variants-table th, #variants-table td { padding: 5px 4px; }
             #measure-hint { font-size: 12px; bottom: 70px; padding: 6px 12px; }
             #comm-info { font-size: 11px; bottom: 75px; padding: 8px 12px; }
             #mobile-menu { min-width: 180px; max-width: 85vw; bottom: 80px; right: 10px; padding: 14px 14px; }
@@ -194,6 +201,9 @@
             <div class="edit-panel-body">
                 <button id="edit-mode-btn" class="edit-btn">🖐 Включить изменения на карте</button>
                 <button id="toggle-violations-btn" class="edit-btn">🔴 Показать нарушения</button>
+                <button id="autofix-btn" class="edit-btn auto-btn">🤖 Авторасстановка по нормам</button>
+                <button id="autofix-undo-btn" class="edit-btn" style="display:none;">↩️ Отменить авторасстановку</button>
+                <button id="variants-btn" class="edit-btn var-btn">📊 Варианты и сравнение</button>
                 <div class="edit-row">
                     <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
                     <button id="reset-layout-btn" class="edit-btn danger">🔄 Сброс</button>
@@ -268,6 +278,17 @@
             </table>
             <p style="font-size:11px; color:#777; margin-top:14px;">* Расстояния измеряются между ближайшими краями объектов, а не между центрами.<br>* Красные кольца и линии в 3D показывают проблемные зоны (видны, пока открыто это окно).</p>
             <div class="modal-footer"><button id="close-norms-btn">Закрыть</button></div>
+        </div>
+    </div>
+
+    <div id="variants-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px; height: auto; max-height: 85vh; overflow-y: auto; display: block; padding: 20px 30px;">
+            <span class="modal-close" id="close-variants-modal">&times;</span>
+            <h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">📊 Варианты планировки и сравнение</h2>
+            <button id="save-variant-btn" class="edit-btn var-btn" style="max-width:280px;">💾 Сохранить текущую как вариант</button>
+            <div id="variants-wrap"></div>
+            <p style="font-size:11px; color:#777; margin-top:12px;">* «Нарушения» — число несоблюдённых норм; «🌱/🌿» — часы солнца в июне для огорода/теплицы. Сравнивайте варианты и загружайте лучший кнопкой «Загрузить».</p>
+            <div class="modal-footer"><button id="close-variants-btn">Закрыть</button></div>
         </div>
     </div>
 
@@ -353,6 +374,7 @@
     };
 
     const STORAGE_KEY = 'bern_layout_v1';
+    const VARIANTS_KEY = 'bern_layout_variants';
     const DEFAULT_LAYOUT = {};
     CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z }; });
     let hadSavedLayout = false;
@@ -377,6 +399,8 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), objects }));
         } catch (e) { console.warn('Не удалось сохранить планировку:', e); }
     }
+    function loadVariants() { try { return JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch (e) { return {}; } }
+    function saveVariants(v) { try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(v)); } catch (e) {} }
 
     const DOM = {
         viewSelect: document.getElementById('view-select'),
@@ -403,6 +427,9 @@
         normsTbody: document.getElementById('norms-tbody'),
         normsSummary: document.getElementById('norms-summary'),
         normBadge: document.getElementById('norm-badge'),
+        variantsModal: document.getElementById('variants-modal'),
+        variantsWrap: document.getElementById('variants-wrap'),
+        saveVariantBtn: document.getElementById('save-variant-btn'),
         planContainer: document.getElementById('plan-container'),
         pdfCover: document.getElementById('pdf-cover-container'),
         pdfReport: document.getElementById('pdf-report-container'),
@@ -426,6 +453,9 @@
             toggle: document.getElementById('edit-panel-toggle'),
             modeBtn: document.getElementById('edit-mode-btn'),
             violationsBtn: document.getElementById('toggle-violations-btn'),
+            autofixBtn: document.getElementById('autofix-btn'),
+            autofixUndo: document.getElementById('autofix-undo-btn'),
+            variantsBtn: document.getElementById('variants-btn'),
             saveBtn: document.getElementById('save-layout-btn'),
             resetBtn: document.getElementById('reset-layout-btn'),
             status: document.getElementById('edit-status')
@@ -798,95 +828,45 @@
         else hideCommInfo();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // КАРТОЧКИ ОБЪЕКТОВ ПО КЛИКУ
-    // ═══════════════════════════════════════════════════════════════
     function showObjectCard(objectId) {
         const obj = CONFIG.objects.find(o => o.id === objectId);
         if (!obj) return;
-
         const emoji = obj.label.match(/^[^\s]+/)[0];
         const name = obj.label.replace(/^[^\s]+\s/, '');
         const b = Norms.bounds(obj);
         const area = obj.radius ? Math.PI * obj.radius * obj.radius : obj.w * obj.d;
         const gps = localToGPS(obj.x, obj.z);
-
-        let html = `<div class="obj-header">
-            <div class="obj-emoji">${emoji}</div>
-            <div>
-                <h2 class="obj-title">${name}</h2>
-                <div class="obj-subtitle">Объект на участке</div>
-            </div>
-        </div>`;
-
-        html += `<h3>📐 Размеры и площадь</h3>
-        <table>
+        let html = `<div class="obj-header"><div class="obj-emoji">${emoji}</div><div><h2 class="obj-title">${name}</h2><div class="obj-subtitle">Объект на участке</div></div></div>`;
+        html += `<h3>📐 Размеры и площадь</h3><table>
             <tr><td>Размеры</td><td>${obj.radius ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)} × ${Utils.fmt(obj.d)} м`}</td></tr>
             <tr><td>Площадь</td><td>${Utils.fmt(area)} м²</td></tr>
             ${obj.h ? `<tr><td>Высота</td><td>${Utils.fmt(obj.h)} м</td></tr>` : ''}
         </table>`;
-
-        html += `<h3>📍 Расположение на участке</h3>
-        <table>
+        html += `<h3>📍 Расположение на участке</h3><table>
             <tr><td>Центр (X, Z)</td><td>${Utils.fmt(obj.x)}, ${Utils.fmt(obj.z)} м</td></tr>
             <tr><td>Отступ с севера</td><td>${Utils.fmt(CONFIG.plot.d - b.maxZ)} м</td></tr>
             <tr><td>Отступ с юга</td><td>${Utils.fmt(b.minZ)} м</td></tr>
             <tr><td>Отступ с запада</td><td>${Utils.fmt(b.minX)} м</td></tr>
             <tr><td>Отступ с востока</td><td>${Utils.fmt(CONFIG.plot.w - b.maxX)} м</td></tr>
         </table>`;
-
-        html += `<h3>🌍 GPS-координаты</h3>
-        <table>
+        html += `<h3>🌍 GPS-координаты</h3><table>
             <tr><td>Широта</td><td>${gps.lat.toFixed(6)}°</td></tr>
             <tr><td>Долгота</td><td>${gps.lng.toFixed(6)}°</td></tr>
         </table>`;
-
-        // Расстояния до других объектов
         const distances = [];
-        CONFIG.objects.forEach(other => {
-            if (other.id === objectId) return;
-            const dist = Norms.dist(obj, other);
-            const otherName = other.label.replace(/^[^\s]+\s/, '');
-            distances.push({ name: otherName, dist });
-        });
+        CONFIG.objects.forEach(other => { if (other.id === objectId) return; distances.push({ name: other.label.replace(/^[^\s]+\s/, ''), dist: Norms.dist(obj, other) }); });
         distances.sort((a, b) => a.dist - b.dist);
-
         if (distances.length > 0) {
-            html += `<h3>📏 Расстояния до объектов</h3>
-            <table>`;
-            distances.slice(0, 5).forEach(d => {
-                html += `<tr><td>${d.name}</td><td>${Utils.fmt(d.dist)} м</td></tr>`;
-            });
+            html += `<h3>📏 Расстояния до объектов</h3><table>`;
+            distances.slice(0, 5).forEach(d => { html += `<tr><td>${d.name}</td><td>${Utils.fmt(d.dist)} м</td></tr>`; });
             html += `</table>`;
         }
-
-        // Специфическая информация
-        if (objectId === 'house') {
-            html += `<div class="obj-note">
-                <strong>💡 Рекомендация:</strong> Расстояние до бани (${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м) меньше нормы 15 м для деревянных строений. Рекомендуется использовать негорючие материалы для фасадов.
-            </div>`;
-        } else if (objectId === 'bath') {
-            html += `<div class="obj-note">
-                <strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м пристроена к северной стене, не пересекает дорожку к дому.
-            </div>`;
-        } else if (objectId === 'garden') {
-            html += `<div class="obj-note">
-                <strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка. Тени от дома и бани не достигают огорода.
-            </div>`;
-        } else if (objectId === 'greenhouse') {
-            html += `<div class="obj-note">
-                <strong>🌿 Теплица:</strong> Арочная конструкция, находится сразу за огородом. Её тень падает на север и не мешает грядкам.
-            </div>`;
-        } else if (objectId === 'septic') {
-            html += `<div class="obj-note">
-                <strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³. Расстояние до скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м (норма ≥15 м, соблюдено).
-            </div>`;
-        } else if (objectId === 'well') {
-            html += `<div class="obj-note">
-                <strong>💧 Скважина:</strong> Глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.
-            </div>`;
-        }
-
+        if (objectId === 'house') html += `<div class="obj-note"><strong>💡 Рекомендация:</strong> Расстояние до бани (${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м) меньше нормы 15 м для деревянных строений. Рекомендуется использовать негорючие материалы для фасадов.</div>`;
+        else if (objectId === 'bath') html += `<div class="obj-note"><strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м пристроена к северной стене, не пересекает дорожку к дому.</div>`;
+        else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка. Тени от дома и бани не достигают огорода.</div>`;
+        else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Арочная конструкция, находится сразу за огородом. Её тень падает на север и не мешает грядкам.</div>`;
+        else if (objectId === 'septic') html += `<div class="obj-note"><strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³. Расстояние до скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м (норма ≥15 м, соблюдено).</div>`;
+        else if (objectId === 'well') html += `<div class="obj-note"><strong>💧 Скважина:</strong> Глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</div>`;
         DOM.objectCardBody.innerHTML = html;
         DOM.objectModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -901,13 +881,7 @@
         const hits = ray.intersectObjects(draggableGroups, true);
         if (hits.length > 0) {
             let cur = hits[0].object;
-            while (cur) {
-                if (cur.userData && cur.userData.objectId) {
-                    showObjectCard(cur.userData.objectId);
-                    return;
-                }
-                cur = cur.parent;
-            }
+            while (cur) { if (cur.userData && cur.userData.objectId) { showObjectCard(cur.userData.objectId); return; } cur = cur.parent; }
         }
     }
 
@@ -1049,10 +1023,8 @@
         const checks = Norms.checkAll();
         const hard = checks.filter(c => !c.ok && !c.soft);
         const soft = checks.filter(c => !c.ok && c.soft);
-
         let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
         html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
-
         html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
         html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» на 3D‑сцене означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
         html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая сторона вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты относительно истинного севера на 57,3°. <strong>Зеркального перепутывания сторон нет</strong>: знак 4 = юго‑западный угол (у калитки), 3 = юго‑восточный, 2 = северо‑восточный, 1 = северо‑западный.</p>`;
@@ -1064,7 +1036,6 @@
         html += `<li>Июнь, ~21:00 — солнце у «СЕВЕР» (истинный северо‑запад), тени вправо‑вниз (истинный юго‑восток).</li>`;
         html += `<li>Декабрь, 12:20 — солнце низко справа (высота ≈ 10°), тени в 2–3 раза длиннее, влево‑вверх.</li>`;
         html += `</ul>`;
-
         html += `<h2>2. Автопроверка норм</h2>`;
         if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
         else {
@@ -1391,11 +1362,203 @@
         updateNormBadge();
         if (showViolationRings) buildViolationRings();
         if (insolationOn) scheduleInsolation();
+        DOM.edit.autofixUndo.style.display = 'none';
+        autoPrev = null;
         toast('🔄 Планировка сброшена к исходной');
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // ТЕНЕВОЙ АНАЛИЗ (ИНСОЛЯЦИЯ) — исправлено под Three.js r128
+    // ВАРИАНТЫ ПЛАНИРОВКИ + СРАВНЕНИЕ
+    // ═══════════════════════════════════════════════════════════════
+       function evaluateLayout(snapshot) {
+        const saved = CONFIG.objects;
+        // Сливаем координаты варианта с ПОЛНЫМИ описаниями объектов (размеры/типы),
+        // чтобы нормы и солнце считались по реальным габаритам.
+        CONFIG.objects = saved.map(full => {
+            const copy = Object.assign({}, full);
+            const s = (snapshot || []).find(p => p.id === full.id);
+            if (s && typeof s.x === 'number' && typeof s.z === 'number') { copy.x = s.x; copy.z = s.z; }
+            return copy;
+        });
+        let hard = 0, gardenSun = 0, ghSun = 0;
+        try { hard = Norms.checkAll().filter(c => !c.ok && !c.soft).length; } catch (e) {}
+        try {
+            gardenSun = zoneSunHours({ x: 2.5, z: 3.5, w: 5, d: 7, own: null }, 5);
+            ghSun = zoneSunHours({ x: 1.5, z: 7, w: 3, d: 6, own: 'greenhouse' }, 5);
+        } catch (e) {}
+        CONFIG.objects = saved;
+        return { hard, gardenSun, ghSun };
+    }
+    function openVariantsModal() {
+        const variants = loadVariants();
+        const names = Object.keys(variants);
+        let html = '<table id="variants-table"><thead><tr><th>Вариант</th><th>Нарушения</th><th>🌱 Огород</th><th>🌿 Теплица</th><th>Действия</th></tr></thead><tbody>';
+        const cur = evaluateLayout(CONFIG.objects);
+        html += `<tr class="cur"><td><b>Текущая</b></td><td>${cur.hard ? ' ' + cur.hard : '✅ 0'}</td><td>${Utils.fmt(cur.gardenSun)} ч</td><td>${Utils.fmt(cur.ghSun)} ч</td><td>—</td></tr>`;
+        names.forEach(n => {
+            const m = evaluateLayout(variants[n]);
+            html += `<tr><td>${n}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${n}">Загрузить</button><button class="v-del" data-v="${n}">🗑</button></td></tr>`;
+        });
+        html += '</tbody></table>';
+        if (!names.length) html = '<p style="margin-top:10px;">Сохранённых вариантов пока нет. Расставьте объекты и нажмите «💾 Сохранить текущую как вариант».</p>' + html;
+        DOM.variantsWrap.innerHTML = html;
+        DOM.variantsWrap.querySelectorAll('.v-load').forEach(b => b.onclick = () => loadVariant(b.dataset.v));
+        DOM.variantsWrap.querySelectorAll('.v-del').forEach(b => b.onclick = () => deleteVariant(b.dataset.v));
+        DOM.variantsModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    function saveCurrentVariant() {
+        const variants = loadVariants();
+        const def = 'Вариант ' + (Object.keys(variants).length + 1);
+        const name = prompt('Название варианта:', def);
+        if (!name) return;
+        variants[name] = CONFIG.objects.map(o => ({ id: o.id, x: o.x, z: o.z }));
+        saveVariants(variants);
+        toast('💾 Сохранено как «' + name + '»');
+        openVariantsModal();
+    }
+    function loadVariant(name) {
+        const variants = loadVariants();
+        const arr = variants[name];
+        if (!arr) return;
+        arr.forEach(p => { const o = CONFIG.objects.find(o => o.id === p.id); if (o) { o.x = p.x; o.z = p.z; } });
+        syncPositionsToScene();
+        saveLayout();
+        updateNormBadge();
+        if (showViolationRings) buildViolationRings();
+        if (insolationOn) scheduleInsolation();
+        DOM.variantsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        toast('📂 Загружен «' + name + '»');
+    }
+    function deleteVariant(name) {
+        if (!confirm('Удалить вариант «' + name + '»?')) return;
+        const variants = loadVariants();
+        delete variants[name];
+        saveVariants(variants);
+        openVariantsModal();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // УМНАЯ АВТОРАССТАНОВКА
+    // ═══════════════════════════════════════════════════════════════
+    let autoPrev = null;
+    const PLACE_REGIONS = {
+        septic:     { x:[1.5, 4],  z:[16, 20] },
+        well:       { x:[14, 20],  z:[18, 22] },
+        bath:       { x:[12, 18],  z:[4, 7]  },
+        shed:       { x:[18, 24],  z:[2, 4]  },
+        firepit:    { x:[4, 10],   z:[10, 14] },
+        greenhouse: { x:[1.5, 4],  z:[6, 12] },
+        garden:     { x:[2.5, 5],  z:[3.5, 6] },
+        playground: { x:[6, 12],   z:[14, 20] },
+        car:        { x:[18, 23],  z:[1, 4]  }
+    };
+    const DRIVEWAY = { minX: 11.5, maxX: 17.5, minZ: 0, maxZ: 9 };
+    const SETBACK = { house:3, bath:1, shed:1, septic:1, well:1, garden:0.5, greenhouse:0.5, playground:0.5, firepit:0.5, car:0.5 };
+    function pairOverlap(A, B) {
+        const ba = Norms.bounds(A), bb = Norms.bounds(B);
+        const ox = Math.min(ba.maxX, bb.maxX) - Math.max(ba.minX, bb.minX);
+        const oz = Math.min(ba.maxZ, bb.maxZ) - Math.max(ba.minZ, bb.minZ);
+        return (ox > 0 && oz > 0);
+    }
+    function rectIntersect(b, r) {
+        const ox = Math.min(b.maxX, r.maxX) - Math.max(b.minX, r.minX);
+        const oz = Math.min(b.maxZ, r.maxZ) - Math.max(b.minZ, r.minZ);
+        return (ox > 0 && oz > 0);
+    }
+    function inBounds(o) {
+        const b = Norms.bounds(o);
+        const sb = SETBACK[o.id] !== undefined ? SETBACK[o.id] : 0.5;
+        return b.minX >= sb && b.minZ >= sb && b.maxX <= CONFIG.plot.w - sb && b.maxZ <= CONFIG.plot.d - sb;
+    }
+    function sunScore(o) {
+        const proxies = ['house','bath','shed','greenhouse']
+            .filter(id => id !== o.id)
+            .map(id => {
+                const q = Norms.obj(id); const b = Norms.bounds(q);
+                const hgt = id==='house' ? 7 : (id==='greenhouse' ? 2.5 : 4.3);
+                return { box: new THREE.Box3(new THREE.Vector3(b.minX,0,b.minZ), new THREE.Vector3(b.maxX,hgt,b.maxZ)) };
+            });
+        const ang = CONFIG.gps.angle * Math.PI/180, cosA = Math.cos(ang), sinA = Math.sin(ang);
+        const dir = new THREE.Vector3();
+        let sun = 0, tot = 0;
+        for (let h = 8; h <= 18; h += 2) {
+            const s = calcSunAt(h, 5); tot++;
+            if (s.altitude <= 1) continue;
+            dir.set(s.sunEast*cosA + s.sunNorth*sinA, s.sinAlt, -s.sunEast*sinA + s.sunNorth*cosA).normalize();
+            if (!isShadowed(o.x, o.z, dir, proxies)) sun++;
+        }
+        return tot ? sun / tot : 0;
+    }
+    function layoutFeasible(o, placed) {
+        if (!inBounds(o)) return false;
+        const b = Norms.bounds(o);
+        if (o.id !== 'car' && rectIntersect(b, DRIVEWAY)) return false;
+        for (const p of placed) {
+            if (p.id === o.id) continue;
+            if (pairOverlap(o, p)) return false;
+            for (const r of Norms.rules) {
+                if (r.kind !== 'dist') continue;
+                if ((r.a === o.id && r.b === p.id) || (r.b === o.id && r.a === p.id)) {
+                    if (Norms.dist(o, p) < r.min) return false;
+                }
+            }
+        }
+        return true;
+    }
+    function smartAutoPlace() {
+        autoPrev = CONFIG.objects.map(o => ({ id: o.id, x: o.x, z: o.z }));
+        const house = Norms.obj('house');
+        const order = ['septic','well','bath','shed','firepit','greenhouse','garden','playground','car'];
+        const placed = [house];
+        for (const id of order) {
+            const o = Norms.obj(id);
+            const reg = PLACE_REGIONS[id] || { x:[2,23], z:[2,38] };
+            let best = null, bestScore = -1e9;
+            const ox = o.x, oz = o.z;
+            for (let x = reg.x[0]; x <= reg.x[1]; x += 0.5) {
+                for (let z = reg.z[0]; z <= reg.z[1]; z += 0.5) {
+                    o.x = x; o.z = z;
+                    if (!layoutFeasible(o, placed)) continue;
+                    let score = 0;
+                    if (id === 'garden' || id === 'greenhouse') score += sunScore(o) * 10;
+                    const orig = DEFAULT_LAYOUT[id];
+                    if (orig) score -= Math.hypot(x - orig.x, z - orig.z) * 0.3;
+                    if (score > bestScore) { bestScore = score; best = { x, z }; }
+                }
+            }
+            if (best) { o.x = best.x; o.z = best.z; } else { o.x = ox; o.z = oz; }
+            placed.push(o);
+        }
+        return autoPrev;
+    }
+    function applyAutoFix() {
+        smartAutoPlace();
+        syncPositionsToScene();
+        saveLayout();
+        updateNormBadge();
+        if (showViolationRings) buildViolationRings();
+        if (insolationOn) scheduleInsolation();
+        const hard = Norms.checkAll().filter(c => !c.ok && !c.soft).length;
+        DOM.edit.autofixUndo.style.display = 'block';
+        toast(hard === 0 ? '🤖 Умная расстановка: все нормы соблюдены ✅' : `🤖 Расстановка: осталось нарушений: ${hard}`, 4000);
+    }
+    function undoAutoFix() {
+        if (!autoPrev) return;
+        autoPrev.forEach(p => { const o = Norms.obj(p.id); if (o) { o.x = p.x; o.z = p.z; } });
+        autoPrev = null;
+        syncPositionsToScene();
+        saveLayout();
+        updateNormBadge();
+        if (showViolationRings) buildViolationRings();
+        if (insolationOn) scheduleInsolation();
+        DOM.edit.autofixUndo.style.display = 'none';
+        toast('↩️ Возвращена прежняя планировка', 3000);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ТЕНЕВОЙ АНАЛИЗ (ИНСОЛЯЦИЯ)
     // ═══════════════════════════════════════════════════════════════
     let insolationOn = false;
     let insolationMesh = null;
@@ -1418,7 +1581,7 @@
         const heights = { house: 7.0, bath: 4.3, shed: 4.2, greenhouse: 2.5 };
         ['house','bath','shed','greenhouse'].forEach(id => {
             const b = Norms.bounds(Norms.obj(id));
-            list.push({ ownId: id, box: new THREE.Box3(new THREE.Vector3(b.minX, 0, b.minZ), new THREE.Vector3(b.maxX, heights[id], b.maxZ)) });
+            list.push({ ownId: id, box: new THREE.Box3(new THREE.Vector3(b.minX,0,b.minZ), new THREE.Vector3(b.maxX,heights[id],b.maxZ)) });
         });
         const s = 0.7;
         for (let z = 24; z <= 32; z += 1.5) {
@@ -1621,17 +1784,14 @@
         const minH = Math.max(0, month.sunrise - 0.5);
         const maxH = Math.min(24, month.sunset + 0.5);
         hours = Math.max(minH, Math.min(maxH, hours));
-
         const latRad = CONFIG.gps.lat * Math.PI / 180;
         const decRad = month.declination * Math.PI / 180;
         const hourAngle = (hours - CONFIG.gps.solarNoon) * 15 * Math.PI / 180;
         const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
         const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
         const isNight = altitude < -2;
-
         const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
         const sunNorth = Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
-
         let x, y, z;
         const distance = 50;
         if (isNight) {
@@ -1666,7 +1826,6 @@
         }
         sunLight.position.set(x, y, z);
         sunLight.target.position.set(CONFIG.center.x, 0, CONFIG.center.z);
-
         const monthName = CONFIG.monthNames[mi];
         const hoursStr = String(Math.floor(hours)).padStart(2, '0') + ':' + String(Math.floor((hours % 1) * 60)).padStart(2, '0');
         DOM.monthLabel.textContent = monthName;
@@ -1729,7 +1888,6 @@
     if (DOM.sun.hourSlider) DOM.sun.hourSlider.addEventListener('input', () => { if (sunPlayer.playing) sunPlayer.stop(); DOM.hourSlider.value = DOM.sun.hourSlider.value; updateSun(); });
     DOM.sun.playBtn.addEventListener('click', () => sunPlayer.toggle());
 
-    // Кнопка теневого анализа (с диагностикой ошибок)
     DOM.sun.insolationBtn.addEventListener('click', function() {
         try {
             insolationOn = !insolationOn;
@@ -1776,6 +1934,7 @@
     setupModal(DOM.reportModal, ['close-report', 'close-report-btn']);
     setupModal(DOM.normsModal, ['close-norms-modal', 'close-norms-btn'], () => { clearHighlights(); Utils.markDirty(); });
     setupModal(DOM.objectModal, ['close-object-modal', 'close-object-btn']);
+    setupModal(DOM.variantsModal, ['close-variants-modal', 'close-variants-btn']);
     DOM.openReport.addEventListener('click', openReportModal);
     DOM.normBadge.addEventListener('click', openNorms);
 
@@ -1960,15 +2119,19 @@
     });
     DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast('💾 Планировка сохранена'); });
     DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка будет удалена.')) return; resetLayout(); });
+    DOM.edit.autofixBtn.addEventListener('click', () => { if (confirm('Умная авторасстановка расставит объекты по нормам и солнцу. Продолжить?')) applyAutoFix(); });
+    DOM.edit.autofixUndo.addEventListener('click', undoAutoFix);
+    DOM.edit.variantsBtn.addEventListener('click', openVariantsModal);
+    DOM.saveVariantBtn.addEventListener('click', saveCurrentVariant);
     DOM.edit.toggle.addEventListener('click', () => { const collapsed = DOM.edit.panel.classList.toggle('collapsed'); DOM.edit.toggle.textContent = collapsed ? '+' : '–'; DOM.edit.fab.style.display = collapsed ? 'flex' : 'none'; });
     DOM.edit.fab.addEventListener('click', () => { DOM.edit.panel.classList.remove('collapsed'); DOM.edit.toggle.textContent = '–'; DOM.edit.fab.style.display = 'none'; });
 
     updateNormBadge();
     setTimeout(() => {
         if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
-        else toast('💡 Кликните по любому объекту для просмотра карточки. Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
+        else toast('💡 Кликните по объекту для карточки. «📊 Варианты» — сохранить и сравнить планировки', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: карточки объектов по клику добавлены.');
+    console.log('✅ Проект Берн: варианты планировки + сравнение норм и солнца активны.');
     </script>
 </body>
 </html>
