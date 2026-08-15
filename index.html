@@ -82,6 +82,17 @@
         #report-modal .modal-content em { color: #888; font-size: 12px; }
         #report-modal .modal-content .norm { color: #c0392b; font-weight: 600; }
         #report-modal .modal-footer { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 16px; }
+        #object-modal .modal-content { max-width: 600px; height: auto; max-height: 85vh; overflow-y: auto; display: block; padding: 24px 28px; }
+        #object-modal .obj-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 2px solid #ffaa00; }
+        #object-modal .obj-emoji { font-size: 48px; line-height: 1; }
+        #object-modal .obj-title { font-size: 24px; font-weight: 700; color: #1a2a3a; margin: 0; }
+        #object-modal .obj-subtitle { font-size: 13px; color: #666; margin-top: 4px; }
+        #object-modal h3 { font-size: 15px; color: #1e4a6b; margin: 18px 0 8px 0; border-left: 3px solid #ffaa00; padding-left: 10px; }
+        #object-modal table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 14px; }
+        #object-modal table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        #object-modal table td:first-child { font-weight: 600; color: #555; width: 40%; }
+        #object-modal table td:last-child { color: #222; }
+        #object-modal .obj-note { background: #fff9e6; border-left: 3px solid #ffaa00; padding: 10px 14px; margin-top: 14px; font-size: 13px; color: #6b5900; border-radius: 6px; }
         #norms-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
         #norms-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
         #norms-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
@@ -128,6 +139,10 @@
             #report-modal .modal-content h1 { font-size: 18px; }
             #report-modal .modal-content h2 { font-size: 16px; }
             #report-modal .modal-content ul { margin-left: 10px; }
+            #object-modal .modal-content { padding: 16px 18px; max-height: 90vh; }
+            #object-modal .obj-emoji { font-size: 36px; }
+            #object-modal .obj-title { font-size: 20px; }
+            #object-modal table { font-size: 12px; }
             .modal-header h2 { font-size: 16px; }
             .modal-close { font-size: 24px; }
             .modal-footer button { font-size: 12px; padding: 4px 14px; }
@@ -144,7 +159,7 @@
 <body>
     <div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север (условный)</span></div>
     <div id="norm-badge"></div>
-    <div class="note">🖱 Вращать / Масштаб • ✏️ Редактирование — в панели слева</div>
+    <div class="note">🖱 Вращать / Масштаб • 🖱 Клик по объекту — карточка • ✏️ Редактирование — в панели слева</div>
     <div class="legend">
         <div class="legend-item"><span class="legend-color" style="background:#3366ff;"></span> Вода</div>
         <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество</div>
@@ -279,6 +294,14 @@
         </div>
     </div>
 
+    <div id="object-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="close-object-modal">&times;</span>
+            <div id="object-card-body"></div>
+            <div class="modal-footer"><button id="close-object-btn">Закрыть</button></div>
+        </div>
+    </div>
+
     <div id="pdf-cover-container"></div>
     <div id="pdf-report-container"></div>
     <div id="pdf-loader"><div class="spinner"></div><span>Формируем PDF-отчёт...</span></div>
@@ -387,6 +410,8 @@
         hamburger: document.getElementById('hamburger'),
         mobileMenu: document.getElementById('mobile-menu'),
         closeMenu: document.getElementById('closeMenu'),
+        objectModal: document.getElementById('object-modal'),
+        objectCardBody: document.getElementById('object-card-body'),
         sun: {
             panel: document.getElementById('sun-panel'), fab: document.getElementById('sun-fab'),
             toggle: document.getElementById('sun-panel-toggle'),
@@ -664,11 +689,19 @@
 
     const draggables = [];
     const labelSprites = {};
+    const objectMeshes = {};
     CONFIG.objects.forEach(obj => {
         const builder = Builders[obj.type];
-        if (builder) { const group = builder(obj); group.userData.objectId = obj.id; groups[obj.group || 'site'].add(group); draggables.push({ id: obj.id, group }); }
+        if (builder) {
+            const group = builder(obj);
+            group.userData.objectId = obj.id;
+            groups[obj.group || 'site'].add(group);
+            draggables.push({ id: obj.id, group });
+            objectMeshes[obj.id] = group;
+        }
         const label = Utils.createLabel(obj.label, obj.labelColor || '#fff', obj.labelSize || 0.8);
-        label.position.set(obj.x, obj.y, obj.z); groups.objectLabels.add(label);
+        label.position.set(obj.x, obj.y, obj.z);
+        groups.objectLabels.add(label);
         labelSprites[obj.id] = label;
     });
     const draggableGroups = draggables.map(d => d.group);
@@ -763,6 +796,119 @@
         const hits = pickRay.intersectObjects(commLines, false);
         if (hits.length) showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex]);
         else hideCommInfo();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // КАРТОЧКИ ОБЪЕКТОВ ПО КЛИКУ
+    // ═══════════════════════════════════════════════════════════════
+    function showObjectCard(objectId) {
+        const obj = CONFIG.objects.find(o => o.id === objectId);
+        if (!obj) return;
+
+        const emoji = obj.label.match(/^[^\s]+/)[0];
+        const name = obj.label.replace(/^[^\s]+\s/, '');
+        const b = Norms.bounds(obj);
+        const area = obj.radius ? Math.PI * obj.radius * obj.radius : obj.w * obj.d;
+        const gps = localToGPS(obj.x, obj.z);
+
+        let html = `<div class="obj-header">
+            <div class="obj-emoji">${emoji}</div>
+            <div>
+                <h2 class="obj-title">${name}</h2>
+                <div class="obj-subtitle">Объект на участке</div>
+            </div>
+        </div>`;
+
+        html += `<h3>📐 Размеры и площадь</h3>
+        <table>
+            <tr><td>Размеры</td><td>${obj.radius ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)} × ${Utils.fmt(obj.d)} м`}</td></tr>
+            <tr><td>Площадь</td><td>${Utils.fmt(area)} м²</td></tr>
+            ${obj.h ? `<tr><td>Высота</td><td>${Utils.fmt(obj.h)} м</td></tr>` : ''}
+        </table>`;
+
+        html += `<h3>📍 Расположение на участке</h3>
+        <table>
+            <tr><td>Центр (X, Z)</td><td>${Utils.fmt(obj.x)}, ${Utils.fmt(obj.z)} м</td></tr>
+            <tr><td>Отступ с севера</td><td>${Utils.fmt(CONFIG.plot.d - b.maxZ)} м</td></tr>
+            <tr><td>Отступ с юга</td><td>${Utils.fmt(b.minZ)} м</td></tr>
+            <tr><td>Отступ с запада</td><td>${Utils.fmt(b.minX)} м</td></tr>
+            <tr><td>Отступ с востока</td><td>${Utils.fmt(CONFIG.plot.w - b.maxX)} м</td></tr>
+        </table>`;
+
+        html += `<h3>🌍 GPS-координаты</h3>
+        <table>
+            <tr><td>Широта</td><td>${gps.lat.toFixed(6)}°</td></tr>
+            <tr><td>Долгота</td><td>${gps.lng.toFixed(6)}°</td></tr>
+        </table>`;
+
+        // Расстояния до других объектов
+        const distances = [];
+        CONFIG.objects.forEach(other => {
+            if (other.id === objectId) return;
+            const dist = Norms.dist(obj, other);
+            const otherName = other.label.replace(/^[^\s]+\s/, '');
+            distances.push({ name: otherName, dist });
+        });
+        distances.sort((a, b) => a.dist - b.dist);
+
+        if (distances.length > 0) {
+            html += `<h3>📏 Расстояния до объектов</h3>
+            <table>`;
+            distances.slice(0, 5).forEach(d => {
+                html += `<tr><td>${d.name}</td><td>${Utils.fmt(d.dist)} м</td></tr>`;
+            });
+            html += `</table>`;
+        }
+
+        // Специфическая информация
+        if (objectId === 'house') {
+            html += `<div class="obj-note">
+                <strong>💡 Рекомендация:</strong> Расстояние до бани (${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м) меньше нормы 15 м для деревянных строений. Рекомендуется использовать негорючие материалы для фасадов.
+            </div>`;
+        } else if (objectId === 'bath') {
+            html += `<div class="obj-note">
+                <strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м пристроена к северной стене, не пересекает дорожку к дому.
+            </div>`;
+        } else if (objectId === 'garden') {
+            html += `<div class="obj-note">
+                <strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка. Тени от дома и бани не достигают огорода.
+            </div>`;
+        } else if (objectId === 'greenhouse') {
+            html += `<div class="obj-note">
+                <strong>🌿 Теплица:</strong> Арочная конструкция, находится сразу за огородом. Её тень падает на север и не мешает грядкам.
+            </div>`;
+        } else if (objectId === 'septic') {
+            html += `<div class="obj-note">
+                <strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³. Расстояние до скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м (норма ≥15 м, соблюдено).
+            </div>`;
+        } else if (objectId === 'well') {
+            html += `<div class="obj-note">
+                <strong>💧 Скважина:</strong> Глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.
+            </div>`;
+        }
+
+        DOM.objectCardBody.innerHTML = html;
+        DOM.objectModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function pickObject(e) {
+        if (measure.mode || drag.active) return;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+        const ray = new THREE.Raycaster();
+        ray.setFromCamera(mouse, camera);
+        const hits = ray.intersectObjects(draggableGroups, true);
+        if (hits.length > 0) {
+            let cur = hits[0].object;
+            while (cur) {
+                if (cur.userData && cur.userData.objectId) {
+                    showObjectCard(cur.userData.objectId);
+                    return;
+                }
+                cur = cur.parent;
+            }
+        }
     }
 
     (() => {
@@ -1447,6 +1593,7 @@
         pointerDownPos = null;
         if (moved > 6 || measure.mode || drag.active) return;
         pickUtility(e);
+        pickObject(e);
     });
     renderer.domElement.addEventListener('dblclick', () => { if (measure.mode === 'area' && !measure.areaClosed && measure.areaPoints.length >= 3) closeAreaPolygon(); });
 
@@ -1628,6 +1775,7 @@
     }
     setupModal(DOM.reportModal, ['close-report', 'close-report-btn']);
     setupModal(DOM.normsModal, ['close-norms-modal', 'close-norms-btn'], () => { clearHighlights(); Utils.markDirty(); });
+    setupModal(DOM.objectModal, ['close-object-modal', 'close-object-btn']);
     DOM.openReport.addEventListener('click', openReportModal);
     DOM.normBadge.addEventListener('click', openNorms);
 
@@ -1818,9 +1966,9 @@
     updateNormBadge();
     setTimeout(() => {
         if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
-        else toast('💡 Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
+        else toast('💡 Кликните по любому объекту для просмотра карточки. Включите «✏️ Планировка → Изменения на карте», чтобы перетаскивать объекты', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: полная версия с карточкой инсоляции и исправлением r128.');
+    console.log('✅ Проект Берн: карточки объектов по клику добавлены.');
     </script>
 </body>
 </html>
