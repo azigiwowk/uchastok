@@ -202,7 +202,10 @@
                 <button id="edit-mode-btn" class="edit-btn">🖐 Включить изменения на карте</button>
                 <button id="toggle-violations-btn" class="edit-btn">🔴 Показать нарушения</button>
                 <button id="autofix-btn" class="edit-btn auto-btn">🤖 Авторасстановка по нормам</button>
-                <button id="autofix-undo-btn" class="edit-btn" style="display:none;">↩️ Отменить авторасстановку</button>
+                <div class="edit-row">
+                    <button id="undo-btn" class="edit-btn">↩️ Отменить</button>
+                    <button id="redo-btn" class="edit-btn">↪️ Вернуть</button>
+                </div>
                 <button id="variants-btn" class="edit-btn var-btn">📊 Варианты и сравнение</button>
                 <div class="edit-row">
                     <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
@@ -287,7 +290,7 @@
             <h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">📊 Варианты планировки и сравнение</h2>
             <button id="save-variant-btn" class="edit-btn var-btn" style="max-width:280px;">💾 Сохранить текущую как вариант</button>
             <div id="variants-wrap"></div>
-            <p style="font-size:11px; color:#777; margin-top:12px;">* «Нарушения» — число несоблюдённых норм; «🌱/🌿» — часы солнца в июне для огорода/теплицы. Сравнивайте варианты и загружайте лучший кнопкой «Загрузить».</p>
+            <p style="font-size:11px; color:#777; margin-top:12px;">* «Нарушения» — число несоблюдённых норм; «🌱/» — часы солнца в июне для огорода/теплицы. Сравнивайте варианты и загружайте лучший кнопкой «Загрузить».</p>
             <div class="modal-footer"><button id="close-variants-btn">Закрыть</button></div>
         </div>
     </div>
@@ -454,7 +457,9 @@
             modeBtn: document.getElementById('edit-mode-btn'),
             violationsBtn: document.getElementById('toggle-violations-btn'),
             autofixBtn: document.getElementById('autofix-btn'),
-            autofixUndo: document.getElementById('autofix-undo-btn'),
+            autofixUndo: null,
+            undoBtn: document.getElementById('undo-btn'),
+            redoBtn: document.getElementById('redo-btn'),
             variantsBtn: document.getElementById('variants-btn'),
             saveBtn: document.getElementById('save-layout-btn'),
             resetBtn: document.getElementById('reset-layout-btn'),
@@ -1011,8 +1016,8 @@
     const ENGINEERING_HTML = `
         <h3>💧 Водоснабжение</h3><ul><li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li><li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области — 1,4 м).</li><li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li><li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li><li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м, с возможностью консервации на зиму.</li><li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li></ul>
         <h3>🚽 Канализация</h3><ul><li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li><li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li><li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li></ul>
-        <h3>⚡ Электроснабжение</h3><ul><li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li><li>Щиток: 12 модулей, автоматы, УЗО, дифавтоматы.</li><li>К бане: ВВГнг 3×4 мм²; к хозблоку: ВВГнг 3×2,5 мм² — в гофре, глубина 0,8 м.</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости. Влагозащищённые розетки у дома и бани.</li></ul>
-        <h3>🔥 Газоснабжение</h3><ul><li>Магистральный газ низкого давления. Полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li><li>Ввод через стену: отключающий кран, счётчик. Котёл настенный 24 кВт, закрытая камера сгорания.</li></ul>`;
+        <h3>⚡ Электроснабжение</h3><ul><li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li><li>Щиток: 12 модулей, автоматы, УЗО, дифференциальные автоматы.</li><li>К бане: ВВГнг 3×4 мм² в гофре, глубина 0,8 м.</li><li>К хозблоку: ВВГнг 3×2,5 мм² в гофре, глубина 0,8 м.</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости.</li></ul>
+        <h3>🔥 Газоснабжение</h3><ul><li>Магистральный газ, полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li><li>Ввод в дом через стену, отключающий кран, газовый счётчик. Котёл 24 кВт.</li></ul>`;
 
     function buildReportHTML() {
         const now = new Date().toLocaleDateString('ru-RU');
@@ -1026,50 +1031,38 @@
         let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
         html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
         html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
-        html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» на 3D‑сцене означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
-        html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая сторона вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты относительно истинного севера на 57,3°. <strong>Зеркального перепутывания сторон нет</strong>: знак 4 = юго‑западный угол (у калитки), 3 = юго‑восточный, 2 = северо‑восточный, 1 = северо‑западный.</p>`;
-        html += `<p><strong>Где истинные стороны света на экране</strong> (вид «🎥 Стандартный»): истинный север — влево‑вверх (между «СЕВЕР» и «ВОСТОК»); истинный юг — вправо‑вниз; истинный восток — влево‑вниз; истинный запад — вправо‑вверх.</p>`;
-        html += `<p><strong>Солнце считается по реальным координатам</strong> (широта 56,04° с.ш., долгота 38,42° в.д., истинный полдень ≈ 12:26), затем поворачивается в оси сцены на 57,3° — тени совпадают с реальностью.</p>`;
-        html += `<p><strong>Примеры для самопроверки:</strong></p><ul>`;
-        html += `<li>Июнь, 12:20 — солнце почти в истинном юге, тень на истинный север: на экране тень ложится влево, к «ВОСТОК». Это правильно!</li>`;
-        html += `<li>Июнь, ~06:00 — солнце слева‑внизу (истинный восток‑северо‑восток), тени длинные вправо‑вверх.</li>`;
-        html += `<li>Июнь, ~21:00 — солнце у «СЕВЕР» (истинный северо‑запад), тени вправо‑вниз (истинный юго‑восток).</li>`;
-        html += `<li>Декабрь, 12:20 — солнце низко справа (высота ≈ 10°), тени в 2–3 раза длиннее, влево‑вверх.</li>`;
-        html += `</ul>`;
+        html += `<p><strong>Оси сцены — условные.</strong> Участок нарисован «выпрямленным»: подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
+        html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты на 57,3°. Зеркального перепутывания нет.</p>`;
         html += `<h2>2. Автопроверка норм</h2>`;
         if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
         else {
             if (hard.length) { html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
             if (soft.length) { html += `<p><strong>Рекомендации:</strong></p><ul>`; soft.forEach(c => { html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`; }); html += `</ul>`; }
-            html += `<p>Подробная таблица — в разделе «✅ Проверка норм».</p>`;
         }
         html += `<h2>3. Объекты и отступы</h2><ul>`;
         const house = o('house'), bath = o('bath'), shed = o('shed');
-        html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы до границ: ${sb(house)}. Терраса ${Utils.fmt(house.terrace.w)}×${Utils.fmt(house.terrace.d)} м — с южной стороны, во двор.</li>`;
-        html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.fmt(bath.x)}, Z=${Utils.fmt(bath.z)}). Отступы: ${sb(bath)}. Терраса ${Utils.fmt(bath.terrace.w)}×${Utils.fmt(bath.terrace.d)} м — с северной стороны.</li>`;
+        html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы: ${sb(house)}.</li>`;
+        html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.fmt(bath.x)}, Z=${Utils.fmt(bath.z)}). Отступы: ${sb(bath)}.</li>`;
         html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
-        html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго‑западный угол — самая солнечная часть участка.</li>`;
-        html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, сразу за огородом.</li>`;
-        html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}, на газоне перед окнами дома.</li>`;
-        html += `<li><strong>Костровище</strong> — ${dims(o('firepit'))}, центр (X=${Utils.fmt(o('firepit').x)}, Z=${Utils.fmt(o('firepit').z)}).</li>`;
-        html += `<li><strong>Машина</strong> — ${dims(o('car'))}, стоянка у ворот.</li>`;
-        html += `<li><strong>Септик</strong> — ${dims(o('septic'))}, центр (X=${Utils.fmt(o('septic').x)}, Z=${Utils.fmt(o('septic').z)}).</li>`;
-        html += `<li><strong>Скважина</strong> — ${dims(o('well'))}, центр (X=${Utils.fmt(o('well').x)}, Z=${Utils.fmt(o('well').z)}).</li>`;
+        html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго‑западный угол.</li>`;
+        html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, за огородом.</li>`;
+        html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}.</li>`;
+        html += `<li><strong>Костровище</strong> — ${dims(o('firepit'))}.</li>`;
+        html += `<li><strong>Септик</strong> — ${dims(o('septic'))}. <strong>Скважина</strong> — ${dims(o('well'))}.</li>`;
         html += `</ul>`;
         html += `<h2>4. Ключевые расстояния (между краями)</h2><ul>`;
-        html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма для деревянных ≥15 м)</li>`;
+        html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма ≥15 м)</li>`;
         html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (норма ≥5 м)</li>`;
         html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (норма ≥15 м)</li>`;
-        html += `<li>Скважина → дом: <strong>${dist('well','house')} м</strong> (рекомендация ≥3 м)</li>`;
-        html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong>, → дом: <strong>${dist('firepit','house')} м</strong> (пожарная норма ≥5 м)</li>`;
+        html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong> (норма ≥5 м)</li>`;
         html += `</ul>`;
         html += `<h2>5. Длины коммуникаций (авторасчёт)</h2><ul>`;
         CONFIG.utilities.forEach(u => { html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`; });
         html += `</ul>`;
         html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
         html += `<h2>7. Заключение</h2>`;
-        if (hard.length) html += `<p><span class="norm">Текущая планировка требует корректировки:</span> выявлено ${hard.length} нарушений нормативов (раздел 2). Возможные меры: увеличить разрывы между строениями, перенести костровище и септик, применить негорючие материалы фасадов и огнезащитную пропитку древесины.</p>`;
-        else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха и запас по инженерным системам.</p>`;
+        if (hard.length) html += `<p><span class="norm">Планировка требует корректировки:</span> ${hard.length} нарушений (раздел 2).</p>`;
+        else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха.</p>`;
         return html;
     }
     function openReportModal() {
@@ -1269,7 +1262,51 @@
         });
         Utils.markDirty();
     }
-    const drag = { active: false, moved: false, id: null, obj: null, group: null, plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), raycaster: new THREE.Raycaster(), point: new THREE.Vector3() };
+
+    // ═══════════════════════════════════════════════════════════════
+    // UNDO / REDO для ручных перемещений
+    // ═══════════════════════════════════════════════════════════════
+    const history = { undo: [], redo: [] };
+    const HISTORY_MAX = 50;
+    function snapshotPositions() { return CONFIG.objects.map(o => ({ id: o.id, x: o.x, z: o.z })); }
+    function applySnapshot(snap) {
+        snap.forEach(p => { const o = CONFIG.objects.find(o => o.id === p.id); if (o) { o.x = p.x; o.z = p.z; } });
+        syncPositionsToScene();
+        saveLayout();
+        updateNormBadge();
+        if (showViolationRings) buildViolationRings();
+        if (insolationOn) scheduleInsolation();
+    }
+    function pushUndo(snap) {
+        history.undo.push(snap);
+        if (history.undo.length > HISTORY_MAX) history.undo.shift();
+        history.redo = [];
+        updateHistoryButtons();
+    }
+    function undo() {
+        if (!history.undo.length) { toast('↩️ Нет действий для отмены'); return; }
+        const current = snapshotPositions();
+        const prev = history.undo.pop();
+        history.redo.push(current);
+        applySnapshot(prev);
+        updateHistoryButtons();
+        toast('↩️ Отменено');
+    }
+    function redo() {
+        if (!history.redo.length) { toast('↪️ Нет действий для возврата'); return; }
+        const current = snapshotPositions();
+        const next = history.redo.pop();
+        history.undo.push(current);
+        applySnapshot(next);
+        updateHistoryButtons();
+        toast('↪️ Возвращено');
+    }
+    function updateHistoryButtons() {
+        if (DOM.edit.undoBtn) DOM.edit.undoBtn.style.opacity = history.undo.length ? '1' : '0.4';
+        if (DOM.edit.redoBtn) DOM.edit.redoBtn.style.opacity = history.redo.length ? '1' : '0.4';
+    }
+
+    const drag = { active: false, moved: false, id: null, obj: null, group: null, startSnap: null, plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), raycaster: new THREE.Raycaster(), point: new THREE.Vector3() };
     let toastTimer = null;
     function toast(msg, ms = 2600) {
         clearTimeout(toastTimer);
@@ -1304,6 +1341,7 @@
         drag.id = root.userData.objectId;
         drag.obj = CONFIG.objects.find(o => o.id === drag.id);
         drag.group = root;
+        drag.startSnap = snapshotPositions();
         renderer.domElement.style.cursor = 'grabbing';
         hideCommInfo();
         showDragHint();
@@ -1334,10 +1372,12 @@
         if (!drag.active) return;
         const wasMoved = drag.moved;
         const id = drag.id;
-        drag.active = false; drag.id = null; drag.obj = null; drag.group = null;
+        const startSnap = drag.startSnap;
+        drag.active = false; drag.id = null; drag.obj = null; drag.group = null; drag.startSnap = null;
         renderer.domElement.style.cursor = '';
         hideDragHint();
         if (wasMoved) {
+            if (startSnap) pushUndo(startSnap);
             saveLayout();
             updateNormBadge();
             if (showViolationRings) buildViolationRings();
@@ -1359,21 +1399,16 @@
         CONFIG.objects.forEach(o => { const d = DEFAULT_LAYOUT[o.id]; if (d) { o.x = d.x; o.z = d.z; } });
         syncPositionsToScene();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        history.undo = []; history.redo = [];
+        updateHistoryButtons();
         updateNormBadge();
         if (showViolationRings) buildViolationRings();
         if (insolationOn) scheduleInsolation();
-        DOM.edit.autofixUndo.style.display = 'none';
-        autoPrev = null;
         toast('🔄 Планировка сброшена к исходной');
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // ВАРИАНТЫ ПЛАНИРОВКИ + СРАВНЕНИЕ
-    // ═══════════════════════════════════════════════════════════════
-       function evaluateLayout(snapshot) {
+    function evaluateLayout(snapshot) {
         const saved = CONFIG.objects;
-        // Сливаем координаты варианта с ПОЛНЫМИ описаниями объектов (размеры/типы),
-        // чтобы нормы и солнце считались по реальным габаритам.
         CONFIG.objects = saved.map(full => {
             const copy = Object.assign({}, full);
             const s = (snapshot || []).find(p => p.id === full.id);
@@ -1394,7 +1429,7 @@
         const names = Object.keys(variants);
         let html = '<table id="variants-table"><thead><tr><th>Вариант</th><th>Нарушения</th><th>🌱 Огород</th><th>🌿 Теплица</th><th>Действия</th></tr></thead><tbody>';
         const cur = evaluateLayout(CONFIG.objects);
-        html += `<tr class="cur"><td><b>Текущая</b></td><td>${cur.hard ? ' ' + cur.hard : '✅ 0'}</td><td>${Utils.fmt(cur.gardenSun)} ч</td><td>${Utils.fmt(cur.ghSun)} ч</td><td>—</td></tr>`;
+        html += `<tr class="cur"><td><b>Текущая</b></td><td>${cur.hard ? '⚠ ' + cur.hard : '✅ 0'}</td><td>${Utils.fmt(cur.gardenSun)} ч</td><td>${Utils.fmt(cur.ghSun)} ч</td><td>—</td></tr>`;
         names.forEach(n => {
             const m = evaluateLayout(variants[n]);
             html += `<tr><td>${n}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${n}">Загрузить</button><button class="v-del" data-v="${n}">🗑</button></td></tr>`;
@@ -1421,6 +1456,7 @@
         const variants = loadVariants();
         const arr = variants[name];
         if (!arr) return;
+        pushUndo(snapshotPositions());
         arr.forEach(p => { const o = CONFIG.objects.find(o => o.id === p.id); if (o) { o.x = p.x; o.z = p.z; } });
         syncPositionsToScene();
         saveLayout();
@@ -1442,7 +1478,6 @@
     // ═══════════════════════════════════════════════════════════════
     // УМНАЯ АВТОРАССТАНОВКА
     // ═══════════════════════════════════════════════════════════════
-    let autoPrev = null;
     const PLACE_REGIONS = {
         septic:     { x:[1.5, 4],  z:[16, 20] },
         well:       { x:[14, 20],  z:[18, 22] },
@@ -1508,7 +1543,7 @@
         return true;
     }
     function smartAutoPlace() {
-        autoPrev = CONFIG.objects.map(o => ({ id: o.id, x: o.x, z: o.z }));
+        const autoPrev = snapshotPositions();
         const house = Norms.obj('house');
         const order = ['septic','well','bath','shed','firepit','greenhouse','garden','playground','car'];
         const placed = [house];
@@ -1534,27 +1569,15 @@
         return autoPrev;
     }
     function applyAutoFix() {
-        smartAutoPlace();
+        const autoPrev = smartAutoPlace();
+        pushUndo(autoPrev);
         syncPositionsToScene();
         saveLayout();
         updateNormBadge();
         if (showViolationRings) buildViolationRings();
         if (insolationOn) scheduleInsolation();
         const hard = Norms.checkAll().filter(c => !c.ok && !c.soft).length;
-        DOM.edit.autofixUndo.style.display = 'block';
         toast(hard === 0 ? '🤖 Умная расстановка: все нормы соблюдены ✅' : `🤖 Расстановка: осталось нарушений: ${hard}`, 4000);
-    }
-    function undoAutoFix() {
-        if (!autoPrev) return;
-        autoPrev.forEach(p => { const o = Norms.obj(p.id); if (o) { o.x = p.x; o.z = p.z; } });
-        autoPrev = null;
-        syncPositionsToScene();
-        saveLayout();
-        updateNormBadge();
-        if (showViolationRings) buildViolationRings();
-        if (insolationOn) scheduleInsolation();
-        DOM.edit.autofixUndo.style.display = 'none';
-        toast('↩️ Возвращена прежняя планировка', 3000);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2120,18 +2143,20 @@
     DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast('💾 Планировка сохранена'); });
     DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка будет удалена.')) return; resetLayout(); });
     DOM.edit.autofixBtn.addEventListener('click', () => { if (confirm('Умная авторасстановка расставит объекты по нормам и солнцу. Продолжить?')) applyAutoFix(); });
-    DOM.edit.autofixUndo.addEventListener('click', undoAutoFix);
+    DOM.edit.undoBtn.addEventListener('click', undo);
+    DOM.edit.redoBtn.addEventListener('click', redo);
     DOM.edit.variantsBtn.addEventListener('click', openVariantsModal);
     DOM.saveVariantBtn.addEventListener('click', saveCurrentVariant);
     DOM.edit.toggle.addEventListener('click', () => { const collapsed = DOM.edit.panel.classList.toggle('collapsed'); DOM.edit.toggle.textContent = collapsed ? '+' : '–'; DOM.edit.fab.style.display = collapsed ? 'flex' : 'none'; });
     DOM.edit.fab.addEventListener('click', () => { DOM.edit.panel.classList.remove('collapsed'); DOM.edit.toggle.textContent = '–'; DOM.edit.fab.style.display = 'none'; });
 
     updateNormBadge();
+    updateHistoryButtons();
     setTimeout(() => {
         if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
         else toast('💡 Кликните по объекту для карточки. «📊 Варианты» — сохранить и сравнить планировки', 5500);
     }, 1200);
-    console.log('✅ Проект Берн: варианты планировки + сравнение норм и солнца активны.');
+    console.log('✅ Проект Берн: Undo/Redo для ручных перемещений активны.');
     </script>
 </body>
 </html>
