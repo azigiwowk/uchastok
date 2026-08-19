@@ -99,9 +99,11 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 #object-modal .obj-note { background: #fff9e6; border-left: 3px solid #ffaa00; padding: 10px 14px; margin-top: 14px; font-size: 13px; color: #6b5900; border-radius: 6px; }
 #object-modal input[type="number"] { width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 6px; }
 #object-modal input[type="range"] { width: 100%; }
-#norms-table, #variants-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
-#norms-table th, #variants-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
-#norms-table td, #variants-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+#norms-table, #variants-table, #smeta-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+#norms-table th, #variants-table th, #smeta-table th { background: #f0f0f0; border-bottom: 2px solid #ffaa00; padding: 8px; text-align: left; }
+#norms-table td, #variants-table td, #smeta-table td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+#smeta-table td:nth-child(2), #smeta-table td:nth-child(3), #smeta-table td:nth-child(4), #smeta-table td:nth-child(5) { text-align: right; white-space: nowrap; }
+#smeta-table tfoot td { background: #fff9e6; font-size: 15px; border-top: 2px solid #ffaa00; }
 #variants-table button { margin: 0 3px; padding: 4px 10px; border-radius: 6px; border: 1px solid #3498db; background: rgba(52,152,219,.15); color: #1e6fb0; cursor: pointer; font-size: 12px; }
 #variants-table button.v-del { border-color: #e74c3c; background: rgba(231,76,60,.12); color: #c0392b; }
 #variants-table tr.cur { background: #fff9e6; }
@@ -217,6 +219,8 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 </div>
 <button id="variants-btn" class="edit-btn var-btn">📊 Варианты и сравнение</button>
 <button id="catalog-btn" class="edit-btn var-btn">📦 Каталог объектов</button>
+<button id="drawing-btn" class="edit-btn var-btn">📐 2D-чертёж строителям</button>
+<button id="smeta-btn" class="edit-btn var-btn">💰 Смета</button>
 <div class="edit-row">
 <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
 <button id="reset-layout-btn" class="edit-btn danger">🔄 Сброс</button>
@@ -267,6 +271,8 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <button class="ctrl-btn pdf-btn" id="exportPdfBtnMob">📄 PDF</button>
 <button class="ctrl-btn" id="showGpsBtnMob">🌍 GPS координаты</button>
 <button class="ctrl-btn" id="catalogMob">📦 Каталог</button>
+<button class="ctrl-btn" id="showDrawingMob">📐 2D-чертёж</button>
+<button class="ctrl-btn" id="showSmetaMob">💰 Смета</button>
 <button class="close-menu" id="closeMenu">✕ Закрыть меню</button>
 </div>
 <div id="report-modal" class="modal">
@@ -329,6 +335,27 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <div id="catalog-placed"></div>
 <p style="font-size:11px; color:#777; margin-top:12px;">* Клик по карточке — объект добавится на свободное место (мангал сразу ищет точку ≥5 м от построек).<br>* Удаление — кнопкой 🗑 в списке выше или в карточке объекта. Добавленные/удалённые сохраняются между перезапусками.</p>
 <div class="modal-footer"><button id="close-catalog-btn">Закрыть</button></div>
+</div>
+</div>
+<div id="smeta-modal" class="modal">
+<div class="modal-content" style="max-width: 780px; height: auto; max-height: 85vh; overflow-y: auto; display: block; padding: 20px 30px;">
+<span class="modal-close" id="close-smeta-modal">&times;</span>
+<h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">💰 Предварительная смета</h2>
+<div id="smeta-body"></div>
+<div class="modal-footer"><button id="close-smeta-btn">Закрыть</button></div>
+</div>
+</div>
+<div id="drawing-modal" class="modal">
+<div class="modal-content" style="max-width: 760px; height: auto; max-height: 90vh; overflow-y: auto; display: block; padding: 20px 30px;">
+<span class="modal-close" id="close-drawing-modal">&times;</span>
+<h2 style="margin-top:0; border-bottom: 2px solid #ffaa00; padding-bottom: 8px;">📐 2D-чертёж участка для строителей</h2>
+<div style="text-align:center; overflow-x:auto;">
+<canvas id="drawing-canvas" style="border:1px solid #ddd; border-radius:8px;"></canvas>
+</div>
+<div class="modal-footer">
+<button id="drawing-png-btn" style="float:left; background:#3498db; color:#fff;">🖼 Скачать PNG</button>
+<button id="close-drawing-btn">Закрыть</button>
+</div>
 </div>
 </div>
 <div id="object-modal" class="modal">
@@ -1259,6 +1286,7 @@ html += `<h2>5. Длины коммуникаций (авторасчёт)</h2><
 CONFIG.utilities.forEach(u => { html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`; });
 html += `</ul>`;
 html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
+html += `<h2>6.5. Предварительная смета</h2>` + buildSmetaHTML();
 html += `<h2>7. Заключение</h2>`;
 if (hard.length) html += `<p><span class="norm">Планировка требует корректировки:</span> ${hard.length} нарушений (раздел 2).</p>`;
 else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха.</p>`;
@@ -1842,8 +1870,263 @@ saveVariants(variants);
 openVariantsModal();
 }
 // ═══════════════════════════════════════════════════════════════
+// 💰 СМЕТА — считается автоматически из текущей планировки
+// Цены ориентировочные (МО, 2026). Меняй под своих подрядчиков.
+// ═══════════════════════════════════════════════════════════════
+const SMETA_PRICES = {
+house:      { perM2: 80000, floors: 2 },          // дом, ₽/м² общей площади
+bath:       { unit: 950000, name: 'Баня 6×6 (под ключ)' },
+shed:       { unit: 280000, name: 'Хозблок 6×4' },
+garage:     { unit: 480000, name: 'Гараж 6×4' },
+gazebo:     { unit: 130000, name: 'Беседка 4×4' },
+grill:      { unit: 65000,  name: 'Мангальная зона' },
+pool:       { unit: 380000, name: 'Бассейн 4×6 (каркас + монтаж)' },
+fruit_tree: { unit: 6000,   name: 'Плодовое дерево (посадка)' },
+playground: { unit: 130000, name: 'Детская площадка' },
+firepit:    { unit: 45000,  name: 'Костровище' },
+greenhouse: { unit: 95000,  name: 'Теплица арочная 3×6' },
+garden:     { unit: 60000,  name: 'Огород (грядки)' },
+septic:     { unit: 190000, name: 'Септик 3 м³ (с монтажом)' },
+well:       { unit: 160000, name: 'Скважина 25 м (бурение + насос)' },
+fence:      { perM: 4500,   name: 'Забор (профнастил, под ключ)' },
+gate:       { unit: 95000,  name: 'Откатные ворота' },
+wicket:     { unit: 28000,  name: 'Калитка' },
+paving:     { perM2: 2600,  name: 'Дорожки и площадки (плитка)' },
+utilWater:  { perM: 380 }, utilSewer: { perM: 460 }, utilElec: { perM: 320 }, utilGas: { perM: 650 },
+utilConnect:{ unit: 220000, name: 'Подключения и вводные устройства' },
+earthHouse: { perM2: 900,   name: 'Земляные под фундамент дома' },
+earthPool:  { unit: 90000,  name: 'Котлован бассейна' }
+};
+function fmtMoney(v) { return Math.round(v).toLocaleString('ru-RU'); }
+function buildSmeta() {
+const P = SMETA_PRICES, rows = [];
+const add = (name, qty, unit, price) => rows.push({ name, qty, unit, price, total: qty * price });
+const o = id => CONFIG.objects.find(x => x.id === id);
+// Дом
+const house = o('house');
+if (house) { const area = house.w * house.d * P.house.floors; add(`Дом «Берн» — ${area} м² (${P.house.floors} эт.)`, area, 'м²', P.house.perM2); }
+// Забор: периметр минус ворота (4 м) и калитка (1 м)
+const fenceLen = 2 * (CONFIG.plot.w + CONFIG.plot.d) - 5;
+add(P.fence.name, fenceLen, 'пог. м', P.fence.perM);
+add(P.gate.name, 1, 'шт', P.gate.unit);
+add(P.wicket.name, 1, 'шт', P.wicket.unit);
+// Дорожки: дорожка 2×23 + площадка/парковка ~15 м²
+add(P.paving.name, 2 * 23 + 15, 'м²', P.paving.perM2);
+// Постройки и объекты каталога (каждый присутствующий)
+CONFIG.objects.forEach(obj => {
+if (obj.type === 'house' || obj.type === 'car') return;
+const spec = P[obj.type];
+if (spec && spec.unit) add(spec.name, 1, 'шт', spec.unit);
+});
+// Коммуникации — по фактическим длинам трасс
+let wLen = 0, sLen = 0, eLen = 0, gLen = 0;
+CONFIG.utilities.forEach(u => {
+const len = utilityLength(u);
+if (u.color === 0x3366ff) wLen += len;
+else if (u.color === 0x9900cc) sLen += len;
+else if (u.color === 0xff6600 || u.color === 0xff9933) eLen += len;
+else if (u.color === 0xffcc00) gLen += len;
+});
+add('Водопровод (ПНД)', wLen, 'пог. м', P.utilWater.perM);
+add('Канализация (ПВХ)', sLen, 'пог. м', P.utilSewer.perM);
+add('Электричество (гофра)', eLen, 'пог. м', P.utilElec.perM);
+add('Газ (ПЭ)', gLen, 'пог. м', P.utilGas.perM);
+add(P.utilConnect.name, 1, 'шт', P.utilConnect.unit);
+// Земляные работы
+if (house) add(P.earthHouse.name, house.w * house.d, 'м²', P.earthHouse.perM2);
+if (o('pool')) add(P.earthPool.name, 1, 'шт', P.earthPool.unit);
+return rows;
+}
+function buildSmetaHTML() {
+const rows = buildSmeta();
+let total = 0;
+let html = '<table id="smeta-table"><thead><tr><th>Статья</th><th>Кол-во</th><th>Ед.</th><th>Цена, ₽</th><th>Сумма, ₽</th></tr></thead><tbody>';
+rows.forEach(r => { total += r.total; html += `<tr><td>${r.name}</td><td>${Utils.fmt(r.qty)}</td><td>${r.unit}</td><td>${fmtMoney(r.price)}</td><td>${fmtMoney(r.total)}</td></tr>`; });
+html += `</tbody><tfoot><tr><td colspan="4"><b>ИТОГО (ориентировочно)</b></td><td><b>${fmtMoney(total)} ₽</b></td></tr></tfoot></table>`;
+html += `<p style="font-size:11px; color:#777; margin-top:12px;">* Цены ориентировочные (Московская область, 2026) заданы в блоке <code>SMETA_PRICES</code> — меняй под своих подрядчиков. Смета пересчитывается автоматически при изменении планировки (в т.ч. объектов каталога).</p>`;
+return html;
+}
+function openSmetaModal() {
+document.getElementById('smeta-body').innerHTML = buildSmetaHTML();
+document.getElementById('smeta-modal').style.display = 'block';
+document.body.style.overflow = 'hidden';
+}
+// ═══════════════════════════════════════════════════════════════
 // УМНАЯ АВТОРАССТАНОВКА (SETBACK пополнен типами каталога)
 // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// 📐 2D-ЧЕРТЁЖ ДЛЯ СТРОИТЕЛЕЙ (вид сверху, по акту выноса МСК-50)
+// ═══════════════════════════════════════════════════════════════
+const DRAW_COLORS = {
+house:{fill:'rgba(255,170,0,0.25)',stroke:'#c07000'}, bath:{fill:'rgba(230,126,34,0.20)',stroke:'#d35400'},
+shed:{fill:'rgba(127,140,141,0.25)',stroke:'#7f8c8d'}, garden:{fill:'rgba(46,204,113,0.20)',stroke:'#27ae60'},
+greenhouse:{fill:'rgba(136,204,255,0.30)',stroke:'#3498db'}, playground:{fill:'rgba(241,196,15,0.25)',stroke:'#f39c12'},
+firepit:{fill:'rgba(231,76,60,0.20)',stroke:'#c0392b'}, car:{fill:'rgba(192,57,43,0.20)',stroke:'#c0392b'},
+septic:{fill:'rgba(93,109,126,0.25)',stroke:'#5d6d7e'}, well:{fill:'rgba(52,152,219,0.25)',stroke:'#2980b9'},
+gazebo:{fill:'rgba(156,122,84,0.25)',stroke:'#9c7a54'}, pool:{fill:'rgba(58,166,217,0.30)',stroke:'#3aa6d9'},
+garage:{fill:'rgba(170,180,187,0.30)',stroke:'#78909c'}, fruit_tree:{fill:'rgba(90,158,75,0.30)',stroke:'#5a9e4b'},
+grill:{fill:'rgba(55,71,79,0.25)',stroke:'#37474f'}
+};
+function footprintCorners(o) {
+if (o.radius !== undefined) return null;
+const th = (o.rot || 0) * Math.PI/180, c = Math.cos(th), s = Math.sin(th);
+const hw = o.w/2, hd = o.d/2;
+return [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(p => ({ x: o.x + p[0]*c + p[1]*s, z: o.z - p[0]*s + p[1]*c }));
+}
+function _arrowHead(ctx, x, y, ang) {
+ctx.beginPath(); ctx.moveTo(x, y);
+ctx.lineTo(x - 7*Math.cos(ang-0.45), y - 7*Math.sin(ang-0.45));
+ctx.lineTo(x - 7*Math.cos(ang+0.45), y - 7*Math.sin(ang+0.45));
+ctx.closePath(); ctx.fill();
+}
+function _dimH(ctx, x1, x2, y, label) {
+ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
+_arrowHead(ctx, x2, y, 0); _arrowHead(ctx, x1, y, Math.PI);
+ctx.beginPath(); ctx.moveTo(x1, y-5); ctx.lineTo(x1, y+5); ctx.moveTo(x2, y-5); ctx.lineTo(x2, y+5); ctx.stroke();
+ctx.font = 'bold 11px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText(label, (x1+x2)/2, y - 6);
+}
+function _dimV(ctx, y1, y2, x, label) {
+ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x, y2); ctx.stroke();
+_arrowHead(ctx, x, y2, Math.PI/2); _arrowHead(ctx, x, y1, -Math.PI/2);
+ctx.beginPath(); ctx.moveTo(x-5, y1); ctx.lineTo(x+5, y1); ctx.moveTo(x-5, y2); ctx.lineTo(x+5, y2); ctx.stroke();
+ctx.save(); ctx.translate(x - 6, (y1+y2)/2); ctx.rotate(-Math.PI/2);
+ctx.font = 'bold 11px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText(label, 0, 0); ctx.restore();
+}
+function drawObject2D(ctx, o, X, Z, S) {
+const col = DRAW_COLORS[o.type] || { fill:'rgba(200,200,200,0.3)', stroke:'#999' };
+const corners = footprintCorners(o);
+ctx.save();
+if (corners) {
+ctx.beginPath();
+corners.forEach((p, i) => { const px = X(p.x), pz = Z(p.z); if (i===0) ctx.moveTo(px,pz); else ctx.lineTo(px,pz); });
+ctx.closePath(); ctx.fillStyle = col.fill; ctx.fill();
+ctx.strokeStyle = col.stroke; ctx.lineWidth = 1.5; ctx.stroke();
+} else {
+ctx.beginPath(); ctx.arc(X(o.x), Z(o.z), (o.radius||0.5)*S, 0, Math.PI*2);
+ctx.fillStyle = col.fill; ctx.fill(); ctx.strokeStyle = col.stroke; ctx.lineWidth = 1.5; ctx.stroke();
+}
+const name = o.label.replace(/^[^\s]+\s/, '');
+ctx.fillStyle = '#222'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center';
+ctx.fillText(name, X(o.x), Z(o.z) - 3);
+const dims = o.radius !== undefined ? 'Ø' + Utils.fmt(o.radius*2) : Utils.fmt(o.w) + '×' + Utils.fmt(o.d);
+ctx.fillStyle = '#777'; ctx.font = '9px Segoe UI, Arial';
+ctx.fillText(dims + ' м', X(o.x), Z(o.z) + 9);
+ctx.restore();
+}
+function drawPerimeterDims(ctx, X, Z) {
+const W = CONFIG.plot.w, D = CONFIG.plot.d;
+ctx.strokeStyle = '#333'; ctx.fillStyle = '#333'; ctx.lineWidth = 1;
+_dimH(ctx, X(0), X(W), Z(0) + 30, W + ' м');
+_dimV(ctx, Z(0), Z(D), X(0) - 26, D + ' м');
+}
+function drawHouseSetbacks(ctx, X, Z) {
+const h = CONFIG.objects.find(o => o.id === 'house'); if (!h) return;
+const b = Norms.bounds(h), W = CONFIG.plot.w, D = CONFIG.plot.d;
+ctx.strokeStyle = '#e74c3c'; ctx.fillStyle = '#e74c3c'; ctx.lineWidth = 1;
+_dimV(ctx, Z(0), Z(b.minZ), X(b.minX) - 14, Utils.fmt(b.minZ));
+_dimV(ctx, Z(b.maxZ), Z(D), X(b.maxX) + 14, Utils.fmt(D - b.maxZ));
+_dimH(ctx, X(0), X(b.minX), Z(b.minZ) + 14, Utils.fmt(b.minX));
+_dimH(ctx, X(b.maxX), X(W), Z(b.maxZ) - 14, Utils.fmt(W - b.maxX));
+}
+function drawBoundaryMarks(ctx, X, Z) {
+const W = CONFIG.plot.w, D = CONFIG.plot.d;
+const marks = [
+{ n:1, mx:0, mz:0, dx:-1, dy:1 }, { n:2, mx:W, mz:0, dx:1, dy:1 },
+{ n:3, mx:W, mz:D, dx:1, dy:-1 }, { n:4, mx:0, mz:D, dx:-1, dy:-1 }
+];
+marks.forEach(m => {
+const px = X(m.mx), pz = Z(m.mz);
+ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(px, pz, 4.5, 0, Math.PI*2); ctx.fill();
+ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(px, pz, 8, 0, Math.PI*2); ctx.stroke();
+ctx.fillStyle = '#c0392b'; ctx.font = 'bold 11px Segoe UI, Arial';
+ctx.textAlign = m.dx < 0 ? 'right' : 'left';
+ctx.fillText('Знак ' + m.n, px + m.dx*13, pz + m.dy*13 + 4);
+});
+const house = CONFIG.objects.find(o => o.id === 'house');
+if (house) {
+const corners = footprintCorners(house) || [{ x: house.x, z: house.z }];
+marks.forEach(m => {
+const sx = X(m.mx), sz = Z(m.mz);
+let best = corners[0], bd = Infinity;
+corners.forEach(c => { const dd = Math.hypot(c.x - m.mx, c.z - m.mz); if (dd < bd) { bd = dd; best = c; } });
+ctx.strokeStyle = 'rgba(192,57,43,0.45)'; ctx.lineWidth = 1; ctx.setLineDash([5,3]);
+ctx.beginPath(); ctx.moveTo(sx, sz); ctx.lineTo(X(best.x), Z(best.z)); ctx.stroke();
+ctx.setLineDash([]);
+ctx.fillStyle = '#c0392b'; ctx.font = '9px Segoe UI, Arial'; ctx.textAlign = 'center';
+ctx.fillText(bd.toFixed(2) + ' м', (sx + X(best.x))/2, (sz + Z(best.z))/2 - 3);
+});
+}
+}
+function drawNorthArrow(ctx, cx, cy) {
+const a = CONFIG.gps.angle * Math.PI/180;
+const nx = Math.sin(a), ny = -Math.cos(a);
+const len = 24;
+ctx.strokeStyle = '#1a2a3a'; ctx.fillStyle = '#1a2a3a'; ctx.lineWidth = 2;
+ctx.beginPath(); ctx.moveTo(cx - nx*len*0.4, cy - ny*len*0.4); ctx.lineTo(cx + nx*len, cy + ny*len); ctx.stroke();
+const ang = Math.atan2(ny, nx), hx = cx + nx*len, hy = cy + ny*len;
+ctx.beginPath(); ctx.moveTo(hx, hy);
+ctx.lineTo(hx - 8*Math.cos(ang-0.4), hy - 8*Math.sin(ang-0.4));
+ctx.lineTo(hx - 8*Math.cos(ang+0.4), hy - 8*Math.sin(ang+0.4));
+ctx.closePath(); ctx.fill();
+ctx.font = 'bold 13px Segoe UI, Arial'; ctx.textAlign = 'center';
+ctx.fillText('С', hx + nx*11, hy + ny*11 + 4);
+}
+function drawTitleBlock(ctx, X, Z) {
+const y0 = Z(0) + 52;
+ctx.textAlign = 'left';
+ctx.fillStyle = '#1a2a3a'; ctx.font = 'bold 10px Segoe UI, Arial';
+ctx.fillText('Межевые знаки (МСК-50, зона 2) — по акту выноса границ:', X(0), y0);
+ctx.font = '9px Segoe UI, Arial'; ctx.fillStyle = '#555';
+['Знак 1:  X 500473,82   Y 2245973,10', 'Знак 2:  X 500494,85   Y 2245986,62',
+ 'Знак 3:  X 500473,22   Y 2246020,27', 'Знак 4:  X 500452,19   Y 2246006,75']
+.forEach((r, i) => ctx.fillText(r, X(0) + (i%2)*190, y0 + 14 + Math.floor(i/2)*12));
+const sbY = y0 + 46, sbLen = 5*15;
+ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+ctx.beginPath(); ctx.moveTo(X(0), sbY); ctx.lineTo(X(0) + sbLen, sbY); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(X(0), sbY-4); ctx.lineTo(X(0), sbY+4);
+ctx.moveTo(X(0)+sbLen, sbY-4); ctx.lineTo(X(0)+sbLen, sbY+4); ctx.stroke();
+ctx.font = '10px Segoe UI, Arial'; ctx.fillStyle = '#333';
+ctx.fillText('5 м', X(0) + sbLen/2 - 8, sbY - 6);
+ctx.fillStyle = '#888';
+ctx.fillText('Ориентация: длинная сторона СЗ–ЮВ (азимут 122,7°). Все размеры в метрах.', X(0), sbY + 18);
+}
+function drawPlan2D() {
+const canvas = document.getElementById('drawing-canvas'); if (!canvas) return;
+const dpr = window.devicePixelRatio || 1;
+const S = 15, W = CONFIG.plot.w, D = CONFIG.plot.d;
+const ML = 95, MT = 70, MR = 85, MB = 130;
+const cssW = ML + W*S + MR, cssH = MT + D*S + MB;
+canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+canvas.width = Math.round(cssW*dpr); canvas.height = Math.round(cssH*dpr);
+const ctx = canvas.getContext('2d');
+ctx.setTransform(dpr,0,0,dpr,0,0);
+ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,cssW,cssH);
+const X = m => ML + m*S, Z = m => MT + (D - m)*S;
+ctx.fillStyle = '#1a2a3a'; ctx.font = 'bold 16px Segoe UI, Arial'; ctx.textAlign = 'left';
+ctx.fillText('2D-чертёж участка • Проект «Берн»', ML, 26);
+ctx.font = '11px Segoe UI, Arial'; ctx.fillStyle = '#666';
+ctx.fillText('Кадастровый 50:16:0202016:428 • Участок 25×40 м (1000 м²) • ' + new Date().toLocaleDateString('ru-RU'), ML, 44);
+ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+ctx.strokeRect(X(0), Z(D), W*S, D*S);
+CONFIG.objects.forEach(o => drawObject2D(ctx, o, X, Z, S));
+drawPerimeterDims(ctx, X, Z);
+drawHouseSetbacks(ctx, X, Z);
+drawBoundaryMarks(ctx, X, Z);
+drawNorthArrow(ctx, X(W) + 42, MT + 30);
+drawTitleBlock(ctx, X, Z);
+}
+function openDrawingModal() {
+document.getElementById('drawing-modal').style.display = 'block';
+document.body.style.overflow = 'hidden';
+drawPlan2D();
+}
+function downloadDrawingPNG() {
+const canvas = document.getElementById('drawing-canvas');
+const link = document.createElement('a');
+link.download = 'chertezh_uchastka.png';
+link.href = canvas.toDataURL('image/png');
+link.click();
+}
 const PLACE_REGIONS = {
 septic:     { x:[1.5, 4],  z:[16, 20] },
 well:       { x:[14, 20],  z:[18, 22] },
@@ -2334,9 +2617,16 @@ setupModal(DOM.reportModal, ['close-report', 'close-report-btn']);
 setupModal(DOM.normsModal, ['close-norms-modal', 'close-norms-btn'], () => { clearHighlights(); Utils.markDirty(); });
 setupModal(DOM.objectModal, ['close-object-modal', 'close-object-btn']);
 setupModal(DOM.variantsModal, ['close-variants-modal', 'close-variants-btn']);
+setupModal(document.getElementById('drawing-modal'), ['close-drawing-modal', 'close-drawing-btn']);
+document.getElementById('drawing-btn').addEventListener('click', openDrawingModal);
+document.getElementById('showDrawingMob').addEventListener('click', () => { openDrawingModal(); closeMenu(); });
+document.getElementById('drawing-png-btn').addEventListener('click', downloadDrawingPNG);
 setupModal(DOM.catalogModal, ['close-catalog-modal', 'close-catalog-btn']);   // v2.1: окно каталога
 DOM.openReport.addEventListener('click', openReportModal);
 DOM.normBadge.addEventListener('click', openNorms);
+setupModal(document.getElementById('smeta-modal'), ['close-smeta-modal', 'close-smeta-btn']);
+document.getElementById('smeta-btn').addEventListener('click', openSmetaModal);
+document.getElementById('showSmetaMob').addEventListener('click', () => { openSmetaModal(); closeMenu(); });
 const planState = { scene: null, camera: null, renderer: null, controls: null, group: null, currentPlan: 'main', isTopView: false };
 const MAIN_PLAN = {
 rooms: [
