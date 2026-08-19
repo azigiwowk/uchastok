@@ -33,6 +33,10 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 #insolation-status .ir-title { color: #ffcc44; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
 #insolation-status .ir-row { display: flex; justify-content: space-between; gap: 8px; }
 #insolation-status .ir-val { font-weight: 700; white-space: nowrap; }
+#solar-status { display: none; margin-top: 8px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 10px; font-size: 13px; line-height: 1.7; color: #eaf6ff; text-align: left; }
+#solar-status .ir-title { color: #ffcc44; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+#solar-status .ir-row { display: flex; justify-content: space-between; gap: 8px; }
+#solar-status .ir-val { font-weight: 700; white-space: nowrap; }
 .ir-good { color: #7ded9b; } .ir-mid { color: #ffd166; } .ir-bad { color: #ff8f8f; }
 #sun-play-btn { width: 100%; background: rgba(255,170,0,0.15); border: 1px solid #ffaa00; color: #ffcc44; border-radius: 20px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
 #sun-play-btn:hover { background: rgba(255,170,0,0.3); }
@@ -185,6 +189,8 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <div class="legend-item"><span class="legend-color" style="background:#ff6600;"></span> Электричество</div>
 <div class="legend-item"><span class="legend-color" style="background:#9900cc;"></span> Канализация</div>
 <div class="legend-item"><span class="legend-color" style="background:#ffcc00;"></span> Газ</div>
+<div class="legend-item"><span class="legend-color" style="background:#0097a7;"></span> Дренаж</div>
+<div class="legend-item"><span class="legend-color" style="background:#00bcd4;"></span> Ливнёвка</div>
 </div>
 <div id="left-panels">
 <button id="sun-fab" class="panel-fab" title="Открыть панель солнца">☀️</button>
@@ -200,7 +206,9 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <div id="sun-status">☀️ Высота: 56° | День: 17ч 30м</div>
 <button id="sun-play-btn">▶ Проиграть день</button>
 <button id="insolation-btn" class="edit-btn" style="margin-top:6px; margin-bottom:0;">🌤 Теневой анализ</button>
+<button id="solar-btn" class="edit-btn" style="margin-top:6px; margin-bottom:0;">🔆 Солнечные панели</button>
 <div id="insolation-status"></div>
+<div id="solar-status"></div>
 </div>
 </div>
 <div id="edit-panel">
@@ -979,6 +987,28 @@ if (hits.length) showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex
 else hideCommInfo();
 }
 // ═══════════════════════════════════════════════════════════════
+// 💧 ДРЕНАЖ И ЛИВНЁВКА (кольцо вокруг дома + сбор с крыш)
+// ═══════════════════════════════════════════════════════════════
+const DRAINAGE_UTILS = [
+{ name: 'Кольцевой дренаж дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная Ø110 в геотекстиле, уклон 2 см/м', depth: 0.9, route: [ {x:3.5,z:24},{x:21.5,z:24},{x:21.5,z:36},{x:3.5,z:36},{x:3.5,z:24} ] },
+{ name: 'Дренаж → колодец', icon: '🕳', color: 0x0097a7, pipe: 'Ø110, уклон 3 см/м', depth: 1.1, route: [ {x:21.5,z:24},{x:23,z:22} ] },
+{ name: 'Ливнёвка (дом)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {x:4.5,z:35},{x:4.5,z:25},{x:20.5,z:25},{x:20.5,z:35},{x:20.5,z:25},{x:23,z:25},{x:23,z:13} ] },
+{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {x:16,z:8},{x:23,z:8},{x:23,z:12} ] }
+];
+DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
+(() => {
+const wellMat = new THREE.MeshStandardMaterial({ color: 0x00838f, roughness: 0.6 });
+const lidMat = new THREE.MeshStandardMaterial({ color: 0x004d56, roughness: 0.5 });
+[ [23, 22, '🕳 Дренажный колодец'], [23, 12, '🌧 Ливневый колодец'] ].forEach(w => {
+const body = new THREE.Mesh(GeoPool.cylinder(0.5, 0.55, 1.0, 12), wellMat);
+body.position.set(w[0], 0.1, w[1]); body.castShadow = true; groups.comms.add(body);
+const lid = new THREE.Mesh(GeoPool.cylinder(0.55, 0.55, 0.1, 12), lidMat);
+lid.position.set(w[0], 0.65, w[1]); groups.comms.add(lid);
+const lbl = Utils.createLabel(w[2], '#ffffff', 0.6);
+lbl.position.set(w[0], 1.2, w[1]); groups.labels.add(lbl);
+});
+})();
+// ═══════════════════════════════════════════════════════════════
 // КАРТОЧКА ОБЪЕКТА + РЕДАКТОР (поворот + размеры + удаление каталога)
 // ═══════════════════════════════════════════════════════════════
 function showObjectCard(objectId) {
@@ -1250,6 +1280,16 @@ const hard = checks.filter(c => !c.ok && !c.soft);
 const soft = checks.filter(c => !c.ok && c.soft);
 let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
 html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
+html += `<h2>Паспорт участка (данные ЕГРН на 13.05.2026)</h2><ul>
+<li><strong>Кадастровый номер:</strong> 50:16:0202016:428</li>
+<li><strong>Адрес:</strong> Российская Федерация, Московская область, г.о. Черноголовка, г. Черноголовка, ул. Рассветная, з/у 7</li>
+<li><strong>Площадь:</strong> 1000 м² (уточнённая, погрешность 11,0)</li>
+<li><strong>Категория земель:</strong> земли населённых пунктов • <strong>ВРИ:</strong> для индивидуального жилищного строительства (дом ≤ 3 этажей и ≤ 20 м)</li>
+<li><strong>Кадастровая стоимость:</strong> 1 338 950 руб.</li>
+<li><strong>Собственник:</strong> Хорошев Роман Александрович (собственность; запись 50:16:0202016:428-50/137/2026-11 от 08.05.2026)</li>
+<li><strong>Основание:</strong> Договор купли-продажи № 50/749-н/50-2026-1-1343 от 07.05.2026</li>
+<li><strong>Ограничения и обременения:</strong> не зарегистрированы</li>
+</ul>`;
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Оси сцены — условные.</strong> Подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты на 57,3°. Зеркального перепутывания нет.</p>`;
@@ -1935,6 +1975,15 @@ add(P.utilConnect.name, 1, 'шт', P.utilConnect.unit);
 // Земляные работы
 if (house) add(P.earthHouse.name, house.w * house.d, 'м²', P.earthHouse.perM2);
 if (o('pool')) add(P.earthPool.name, 1, 'шт', P.earthPool.unit);
+// Дренаж и ливнёвка — по фактическим длинам трасс (колодцы включены в цену)
+let dLen = 0, rLen = 0;
+CONFIG.utilities.forEach(u => {
+const len = utilityLength(u);
+if (u.color === 0x0097a7) dLen += len;
+else if (u.color === 0x00bcd4) rLen += len;
+});
+add('Кольцевой дренаж + дренажный колодец', dLen, 'пог. м', 950);
+add('Ливнёвка + ливневый колодец', rLen, 'пог. м', 700);
 return rows;
 }
 function buildSmetaHTML() {
@@ -2404,6 +2453,163 @@ function scheduleInsolation() {
 clearTimeout(insolationTimer);
 insolationTimer = setTimeout(() => { try { showInsolation(); } catch (e) { console.error('Ошибка теневого анализа:', e); alert('⚠ Ошибка теневого анализа: ' + e.message); } }, 250);
 }
+// ═══════════════════════════════════════════════════════════════
+// 🔆 СОЛНЕЧНЫЕ ПАНЕЛИ (потенциал южного ската + визуализация)
+// ═══════════════════════════════════════════════════════════════
+let solarOn = false;
+let solarGroup = null;
+function houseRoofGeom() {
+const h = Norms.obj('house'); if (!h) return null;
+const rise = 2.5;
+const slopeLen = Math.sqrt((h.d/2)**2 + rise**2);
+return { h, rise, slopeLen, slopeArea: h.w * slopeLen, tilt: Math.atan2(rise, h.d/2) * 180/Math.PI };
+}
+function solarShadingFactor() {
+const g = houseRoofGeom(); if (!g) return 1;
+const h = g.h;
+const proxies = buildOccluders().filter(p => p.ownId !== 'house');
+const ang = CONFIG.gps.angle*Math.PI/180, cosA = Math.cos(ang), sinA = Math.sin(ang);
+const dir = new THREE.Vector3(), ray = new THREE.Ray(), hit = new THREE.Vector3();
+let lit = 0, tot = 0;
+[2, 5, 8, 11].forEach(mi => {
+const m = CONFIG.months[mi];
+for (let hh = m.sunrise + 1; hh <= m.sunset - 1; hh += 1) {
+const s = calcSunAt(hh, mi);
+if (s.altitude <= 5) continue;
+dir.set(s.sunEast*cosA + s.sunNorth*sinA, s.sinAlt, -s.sunEast*sinA + s.sunNorth*cosA).normalize();
+for (let t = 0.25; t <= 0.75; t += 0.25) for (let fx = 0.2; fx <= 0.8; fx += 0.3) {
+ray.origin.set(h.x - h.w/2 + fx*h.w, (h.h + g.rise) - g.rise*t + 0.05, h.z - (h.d/2)*t);
+ray.direction.copy(dir);
+let blocked = false;
+for (const p of proxies) { if (p.box ? ray.intersectBox(p.box, hit) : ray.intersectSphere(p.sphere, hit)) { blocked = true; break; } }
+tot++; if (!blocked) lit++;
+}
+}
+});
+return tot ? lit/tot : 1;
+}
+function computeSolar() {
+const g = houseRoofGeom(); if (!g) return null;
+const usable = g.slopeArea * 0.6;
+const count = Math.floor(usable / 1.9);
+const capacity = count * 0.4;
+const shading = solarShadingFactor();
+const annual = Math.round(capacity * 1000 * shading);
+const cost = Math.round(capacity * 60000);
+const savings = Math.round(annual * 6.5);
+return { tilt: g.tilt, count, capacity, shading, annual, cost, savings, payback: savings > 0 ? cost/savings : 0 };
+}
+function buildSolarPanels() {
+if (solarGroup) { scene.remove(solarGroup); solarGroup = null; }
+solarGroup = new THREE.Group();
+const h = Norms.obj('house'); if (!h) { scene.add(solarGroup); return; }
+const rise = 2.5, tilt = Math.atan2(rise, h.d/2);
+const panelMat = new THREE.MeshStandardMaterial({ color: 0x12305e, metalness: 0.6, roughness: 0.25 });
+const cols = 8, rows = 3;
+for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+const t = 0.2 + (r + 0.5) * (0.7/rows);
+const px = h.x - h.w/2 + ((c + 0.5)/cols) * h.w;
+const pz = h.z - (h.d/2)*t;
+const py = (h.h + rise) - rise*t + 0.06;
+const panel = new THREE.Mesh(GeoPool.box(1.6, 0.05, 0.95), panelMat);
+panel.position.set(px, py, pz);
+panel.rotation.x = -tilt;
+panel.castShadow = true;
+solarGroup.add(panel);
+}
+scene.add(solarGroup);
+Utils.markDirty();
+}
+function showSolarInfo() {
+const r = computeSolar(); if (!r) return;
+const el = document.getElementById('solar-status');
+el.style.display = 'block';
+el.innerHTML = `<div class="ir-title">🔆 Солнечные панели • южный скат</div>
+<div class="ir-row"><span>Уклон ската</span><span class="ir-val">${Math.round(r.tilt)}°</span></div>
+<div class="ir-row"><span>Панелей (≈1,9 м², 400 Вт)</span><span class="ir-val">${r.count} шт</span></div>
+<div class="ir-row"><span>Мощность</span><span class="ir-val">${r.capacity.toFixed(1)} кВт</span></div>
+<div class="ir-row"><span>Инсоляция с учётом тени</span><span class="ir-val">${Math.round(r.shading*100)}%</span></div>
+<div class="ir-row"><span>Выработка в год</span><span class="ir-val">${r.annual.toLocaleString('ru-RU')} кВт·ч</span></div>
+<div class="ir-row"><span>Экономия в год (6,5 ₽/кВт·ч)</span><span class="ir-val">${r.savings.toLocaleString('ru-RU')} ₽</span></div>
+<div class="ir-row"><span>Окупаемость (60 т.₽/кВт)</span><span class="ir-val">≈ ${r.payback.toFixed(0)} лет</span></div>`;
+}
+function toggleSolar() {
+solarOn = !solarOn;
+if (solarOn) { buildSolarPanels(); showSolarInfo(); toast('🔆 Панели на южном скате — расчёт ниже', 2500); }
+else { if (solarGroup) { scene.remove(solarGroup); solarGroup = null; } document.getElementById('solar-status').style.display = 'none'; }
+Utils.markDirty();
+}
+document.getElementById('solar-btn').addEventListener('click', toggleSolar);
+// ═══════════════════════════════════════════════════════════════
+// 🌨 СЕЗОННЫЙ ВИД v2 (снег на крышах + снегопад + листва)
+// ═══════════════════════════════════════════════════════════════
+const SEASON_PALETTE = {
+winter: { lawn: 0xeef3f7, lawnMap: false, foliage: 0xe8eef2, road: 0xcfd6db },
+spring: { lawn: 0xffffff, lawnMap: true,  foliage: 0x6fbf5a, road: 0x444444 },
+summer: { lawn: 0xffffff, lawnMap: true,  foliage: 0x2e7d32, road: 0x444444 },
+autumn: { lawn: 0xd8c98a, lawnMap: true,  foliage: 0xd08030, road: 0x4a4a44 }
+};
+function seasonForMonth(m) {
+// Зима: декабрь (12), январь (1), февраль (2)
+if (m === 12 || m === 1 || m === 2) return 'winter';
+if (m <= 5) return 'spring';   // март, апрель, май
+if (m <= 8) return 'summer';   // июнь, июль, август
+return 'autumn';               // сентябрь, октябрь, ноябрь
+}
+function collectFoliage() {
+const list = [];
+scene.traverse(o => {
+if (o.isMesh && o.geometry && o.geometry.type === 'SphereGeometry' && o.material && o.material.color) {
+const c = o.material.color.getHex();
+if ([0x2e7d32,0x5a9e4b,0x6fbf5a,0xd08030,0xe8eef2].includes(c)) list.push(o);
+}
+});
+return list;
+}
+let snowfall = null, snowCaps = null;
+function makeSnowfall() {
+const N = 800, geo = new THREE.BufferGeometry(), pos = new Float32Array(N*3);
+for (let i=0;i<N;i++){ pos[i*3]=Math.random()*CONFIG.plot.w; pos[i*3+1]=Math.random()*20; pos[i*3+2]=Math.random()*CONFIG.plot.d; }
+geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+snowfall = new THREE.Points(geo, new THREE.PointsMaterial({ color:0xffffff, size:0.12, transparent:true, opacity:0.9 }));
+scene.add(snowfall);
+(function loop(){ if(!snowfall) return; requestAnimationFrame(loop);
+const p = snowfall.geometry.attributes.position;
+for (let i=0;i<p.count;i++){ let y=p.getY(i)-0.06; if(y<0)y=20; p.setY(i,y); }
+p.needsUpdate = true; Utils.markDirty();
+})();
+}
+function buildSnowCaps() {
+const g = new THREE.Group();
+const mat = new THREE.MeshStandardMaterial({ color:0xf5f9fc, roughness:0.9 });
+['bath','shed','garage','gazebo'].forEach(id => { const o = Norms.obj(id); if (!o || o.radius!==undefined) return;
+const cap = new THREE.Mesh(GeoPool.box(o.w+0.4, 0.08, o.d+0.4), mat); cap.position.set(o.x, o.h+0.35, o.z); g.add(cap); });
+const h = Norms.obj('house');
+if (h) { const rise=2.5, tilt=Math.atan2(rise,h.d/2), len=Math.sqrt((h.d/2)**2+rise**2);
+[-1,1].forEach(s => { const cap = new THREE.Mesh(GeoPool.box(h.w+0.3,0.07,len+0.3), mat);
+cap.position.set(h.x, h.h+rise/2+0.05, h.z + s*(h.d/4)); cap.rotation.x = s*tilt; g.add(cap); }); }
+return g;
+}
+function setSnow(on) {
+if (on && !snowfall) makeSnowfall();
+if (!on && snowfall) { scene.remove(snowfall); snowfall.geometry.dispose(); snowfall.material.dispose(); snowfall=null; }
+if (on && !snowCaps) { snowCaps = buildSnowCaps(); scene.add(snowCaps); }
+if (!on && snowCaps) { scene.remove(snowCaps); snowCaps.traverse(c=>{if(c.geometry)c.geometry.dispose();}); snowCaps=null; }
+}
+function applySeason() {
+const m = parseInt(DOM.monthSlider.value,10) || 6;
+const P = SEASON_PALETTE[seasonForMonth(m)];
+ground.material.map = P.lawnMap ? Textures.grass : null;
+ground.material.color.setHex(P.lawn);
+ground.material.needsUpdate = true;
+if (road && road.material) road.material.color.setHex(P.road);
+collectFoliage().forEach(mesh => mesh.material.color.setHex(P.foliage));
+setSnow(seasonForMonth(m) === 'winter');
+Utils.markDirty();
+}
+DOM.monthSlider.addEventListener('input', () => applySeason());
+if (DOM.sun.monthSlider) DOM.sun.monthSlider.addEventListener('input', () => { DOM.monthSlider.value = DOM.sun.monthSlider.value; applySeason(); });
+applySeason();
 // ═══════════════════════════════════════════════════════════════
 // ОБРАБОТКА УКАЗАТЕЛЯ
 // ═══════════════════════════════════════════════════════════════
