@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v3.3 (ориентация + трассы коммуникаций)';
+const APP_VERSION = 'v4.0 (рабочая планировка v1 + корректная инсоляция пустого участка)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -454,25 +454,25 @@ center: { x: 12.5005, z: 20.001 },
 // angle — поворот локальной оси +Z относительно истинного севера.
 gps: { lat: 56.042291, lng: 38.417342, angle: 57.263397, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
 infrastructure: {
-powerPole: { x: 21, z: -9, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, ориентировочно напротив хозблока; точное положение требует обмера' },
+powerPole: { x: 20.5, z: -9, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, ориентировочно напротив начала переднего забора; точное положение требует обмера' },
 entrance: { x: 14.5, z: 0, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд и калитка на короткой уличной стороне z=0; точное положение уточнить по месту' }
 },
 latitude: 56,
 camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [14.5, 2, -2] },
 objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
-{ id: 'bath', type: 'bath', label: '🧖 Баня', x: 19, z: 11, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
+{ id: 'bath', type: 'bath', label: '🧖 Баня', x: 20, z: 15, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
 { id: 'shed', type: 'shed', label: '🛠 Хозблок', x: 21, z: 5, y: 4.0, w: 6, d: 4, h: 3, rot: 0, color: 0x5d4037, roofColor: 0x333333, labelColor: '#cccccc', labelSize: 1.0, group: 'site' },
-{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 2.5, z: 3.5, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
-{ id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 1.5, z: 7, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
-{ id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 8, z: 16, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site' },
-{ id: 'firepit', type: 'firepit', label: '🔥 Зона мангала', x: 16, z: 6, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier' },
-{ id: 'car', type: 'car', label: '🚗 Машина', x: 22.5, z: 1.0, y: 1.5, w: 5, d: 2, rot: 0, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site' },
-{ id: 'septic', type: 'septic', label: '🚽 Септик', x: 3, z: 30, y: 2.0, w: 1.5, d: 1.2, rot: 0, color: 0x5d6d7e, labelColor: '#aa66cc', labelSize: 0.8, group: 'site' },
-{ id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
+{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 9, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
+{ id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 2, z: 8, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
+{ id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 11, z: 17, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site' },
+{ id: 'firepit', type: 'firepit', label: '🔥 Зона мангала', x: 7, z: 17, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier' },
+{ id: 'car', type: 'car', label: '🚗 Машина', x: 14.5, z: 5.5, y: 1.5, w: 5, d: 2, rot: 90, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site' },
+{ id: 'septic', type: 'septic', label: '🚽 Септик', x: 3, z: 19, y: 2.0, w: 1.5, d: 1.2, rot: 0, color: 0x5d6d7e, labelColor: '#aa66cc', labelSize: 0.8, group: 'site' },
+{ id: 'well', type: 'well', label: '💧 Скважина', x: 22, z: 20, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
 ],
 utilities: [
-{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 21, z: 0 }, { x: 21, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
+{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 20.5, z: 0 }, { x: 20.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
 { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
 { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'shed', side: 'east', along: 0 } ] },
 { name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 22 }, { obj: 'house', side: 'south', along: 0 } ] },
@@ -511,15 +511,18 @@ const PROJECT_FACTS = [
 { id: 'cadastral', label: 'Кадастровый номер 50:16:0202016:428', status: 'confirmed', note: 'По выписке ЕГРН' },
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
-{ id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' }
+{ id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
+{ id: 'workingLayout', label: 'Рабочая планировка v1', status: 'assumption', note: 'Первый планировочный вариант: дом сзади, въезд по центру, хозяйственная зона справа, солнечная зона теплицы и огорода спереди слева. Требует ручной проверки владельцем.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
+const REVIEW_LAYOUT = new URLSearchParams(window.location.search).get('review') === 'layout-v1';
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
 function loadSavedLayout() {
 try {
+if (REVIEW_LAYOUT) return;
 const raw = localStorage.getItem(STORAGE_KEY);
 if (!raw) return;
 const data = JSON.parse(raw);
@@ -1029,8 +1032,7 @@ if (typeof renderCatalogModal === 'function' && DOM.catalogModal.style.display =
 }
 };
 window.CAT = CAT;
-for (let z = 24; z <= 32; z += 1.5) { const t1 = makeTree(0.7); t1.position.set(2, 0, z); groups.site.add(t1); const t2 = makeTree(0.7); t2.position.set(23, 0, z); groups.site.add(t2); }
-for (let x = 6; x <= 19; x += 1.5) { const t = makeTree(0.7); t.position.set(x, 0, 38); groups.site.add(t); }
+// Участок фактически пустой: не добавляем вымышленные деревья и не учитываем их в тенях.
 (() => {
 const postGeo = GeoPool.cylinder(0.08, 0.08, 0.6, 8);
 const postMat = MaterialPool.get(0xaaaaaa);
@@ -1564,6 +1566,7 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
+html += `<p><strong>Рабочая планировка v1.</strong> Дом оставлен в задней части участка; автомобильная ось идёт от ворот по центру; баня и хозблок собраны справа; теплица и небольшой огород вынесены в переднюю левую, наиболее открытую для солнца часть; септик и скважина разведены в разные стороны. Деревья на участке не моделируются, потому что участок фактически пустой. Эта схема — планировочный вариант для ручной проверки, а не рабочий строительный проект.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
 else { html += `<p><span class="norm">⚠ Выявлено обязательных нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при требовании ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
@@ -2623,15 +2626,15 @@ link.href = canvas.toDataURL('image/png');
 link.click();
 }
 const PLACE_REGIONS = {
-septic:     { x:[1.5, 4],  z:[16, 20] },
-well:       { x:[14, 20],  z:[18, 22] },
-bath:       { x:[12, 18],  z:[4, 7]  },
-shed:       { x:[18, 24],  z:[2, 4]  },
-firepit:    { x:[4, 10],   z:[10, 14] },
-greenhouse: { x:[1.5, 4],  z:[6, 12] },
-garden:     { x:[2.5, 5],  z:[3.5, 6] },
-playground: { x:[6, 12],   z:[14, 20] },
-car:        { x:[18, 23],  z:[1, 4]  }
+septic:     { x:[2.5, 4],   z:[18, 22] },
+well:       { x:[21, 23.5], z:[18, 22] },
+bath:       { x:[18, 21],   z:[13, 17] },
+shed:       { x:[19, 22],   z:[4, 6]   },
+firepit:    { x:[6, 9],     z:[16, 19] },
+greenhouse: { x:[1.5, 3],   z:[7, 10]  },
+garden:     { x:[5.5, 8],   z:[7, 11]  },
+playground: { x:[9, 13],    z:[15, 20] },
+car:        { x:[14, 15],   z:[4, 7]   }
 };
 const DRIVEWAY = { minX: 11.5, maxX: 17.5, minZ: 0, maxZ: 9 };
 const DRIVEWAY_SHAPE = { id: '__driveway__', x: (DRIVEWAY.minX+DRIVEWAY.maxX)/2, z: (DRIVEWAY.minZ+DRIVEWAY.maxZ)/2, w: DRIVEWAY.maxX-DRIVEWAY.minX, d: DRIVEWAY.maxZ-DRIVEWAY.minZ, rot: 0 };
@@ -2798,12 +2801,7 @@ const h = CAT_HEIGHT[o.type] || 0; if (h <= 0) return;
 const b = Norms.bounds(o);
 list.push({ ownId: o.id, box: new THREE.Box3(new THREE.Vector3(b.minX,0,b.minZ), new THREE.Vector3(b.maxX,h,b.maxZ)) });
 });
-const s = 0.7;
-for (let z = 24; z <= 32; z += 1.5) {
-list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(2, 2.4*s, z), 0.95*s) });
-list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(23, 2.4*s, z), 0.95*s) });
-}
-for (let x = 6; x <= 19; x += 1.5) list.push({ ownId: 'tree', sphere: new THREE.Sphere(new THREE.Vector3(x, 2.4*s, 38), 0.95*s) });
+// Внешние деревья пока не моделируем: подтверждённых координат и высот нет.
 return list;
 }
 const _insRay = new THREE.Ray();
@@ -3582,14 +3580,15 @@ DOM.catalogModal.style.display = 'block';
 document.body.style.overflow = 'hidden';
 }
 DOM.edit.catalogBtn.addEventListener('click', openCatalog);
-CAT.load();   // восстановление добавленных/удалённых объектов каталога между перезапусками
+if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавленных/удалённых объектов каталога между перезапусками
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
+if (REVIEW_LAYOUT) toast('🏗 Режим проверки: рабочая планировка v1 без старых локальных сохранений', 5000);
+else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v3.3: фасад по z=0, коммуникации перепривязаны и помечены по степени достоверности.');
+console.log('✅ Проект Берн v4.0: рабочая планировка v1, пустой участок без вымышленных деревьев, review=layout-v1.');
 </script>
 </body>
 </html>
