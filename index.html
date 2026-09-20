@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v4.0 (рабочая планировка v1 + корректная инсоляция пустого участка)';
+const APP_VERSION = 'v4.1 (рабочая планировка v2: функциональные зоны, навес и свободный центр)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -463,25 +463,26 @@ objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
 { id: 'bath', type: 'bath', label: '🧖 Баня', x: 20, z: 15, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
 { id: 'shed', type: 'shed', label: '🛠 Хозблок', x: 21, z: 5, y: 4.0, w: 6, d: 4, h: 3, rot: 0, color: 0x5d4037, roofColor: 0x333333, labelColor: '#cccccc', labelSize: 1.0, group: 'site' },
-{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 9, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
-{ id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 2, z: 8, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
-{ id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 11, z: 17, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site' },
-{ id: 'firepit', type: 'firepit', label: '🔥 Зона мангала', x: 7, z: 17, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier' },
-{ id: 'car', type: 'car', label: '🚗 Машина', x: 14.5, z: 5.5, y: 1.5, w: 5, d: 2, rot: 90, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site' },
+{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 10, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
+{ id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 2, z: 9, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
+{ id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 14, z: 12.5, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site', status: 'planned', note: 'Площадка размещена у переднего края центрального газона с прямой видимостью от дома' },
+{ id: 'firepit', type: 'firepit', label: '🔥 Мангальная / костровая зона', x: 9.5, z: 18.5, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier', status: 'planned', note: 'Функционально относится к бане; в модели соблюдён запас не менее 5 м до дома, бани и хозблока для режима мангала' },
+{ id: 'car', type: 'car', label: '🚗 Машина (1 место)', x: 14.5, z: 6, y: 1.5, w: 5, d: 2, rot: 90, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site', status: 'assumption', note: 'Одно внутреннее машиноместо; гостевая парковка предполагается снаружи участка' },
+{ id: 'canopy', type: 'canopy', label: '▱ Навес (в будущем)', x: 14.5, z: 6, y: 4.2, w: 4, d: 6, h: 2.8, rot: 0, color: 0x90a4ae, labelColor: '#d7e3e8', labelSize: 0.82, group: 'site', status: 'planned', note: 'Планировочный резерв 4×6 м над единственным внутренним машиноместом; конструкция и фундамент не утверждены' },
 { id: 'septic', type: 'septic', label: '🚽 Септик', x: 3, z: 19, y: 2.0, w: 1.5, d: 1.2, rot: 0, color: 0x5d6d7e, labelColor: '#aa66cc', labelSize: 0.8, group: 'site' },
 { id: 'well', type: 'well', label: '💧 Скважина', x: 22, z: 20, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
 ],
 utilities: [
-{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 20.5, z: 0 }, { x: 20.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
+{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
 { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
 { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'shed', side: 'east', along: 0 } ] },
-{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 22 }, { obj: 'house', side: 'south', along: 0 } ] },
-{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
-{ name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 2.5, z: 29 }, { obj: 'garden', point: 'center' } ] },
-{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', side: 'south', along: -0.35 }, { x: 3, z: 29 }, { obj: 'septic', point: 'center' } ] },
-{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 3, z: 11 }, { obj: 'septic', point: 'center' } ] },
+{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 23.5 }, { obj: 'house', side: 'south', along: 0 } ] },
+{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.5, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 12.5, z: 23.5 }, { x: 2.5, z: 23.5 }, { obj: 'garden', point: 'center' } ] },
+{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', side: 'south', along: -0.35 }, { x: 9.7, z: 23.5 }, { x: 4, z: 22 }, { obj: 'septic', point: 'center' } ] },
+{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 16, z: 20.5 }, { x: 5, z: 21 }, { obj: 'septic', point: 'center' } ] },
 { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Наличие и точное положение газовой магистрали в исходных данных не подтверждены. Линия показана только как сценарий возможного прохождения вдоль Рассветной улицы.', route: [ { x: 0, z: -0.8 }, { x: 25.001, z: -0.8 } ] },
-{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 21, z: 0 }, { x: 21, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
+{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
 ],
 // Репрезентативный день каждого месяца. Положение солнца, восход и закат
 // вычисляются по координатам участка, долготе и часовому поясу UTC+3.
@@ -493,11 +494,15 @@ months: [
 ],
 monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
-const STORAGE_KEY = 'bern_layout_v1';
-const VARIANTS_KEY = 'bern_layout_variants';
-const CATALOG_KEY = 'bern_catalog_v1';
-const PROJECT_STATE_KEY = 'bern_project_state_v1';
-const BACKUPS_KEY = 'bern_project_backups_v1';
+const LAYOUT_ZONES = {
+  lawn: { x: 14, z: 17, w: 6, d: 9, label: 'Газон / свободная зона', status: 'planned' },
+  guestParking: { label: 'Гостевая парковка — снаружи вдоль улицы', status: 'assumption', note: 'Не является подтверждённой парковочной полосой; возможность стоянки проверить по фактической обочине и ПДД' }
+};
+const STORAGE_KEY = 'bern_layout_v2';
+const VARIANTS_KEY = 'bern_layout_variants_v2';
+const CATALOG_KEY = 'bern_catalog_v2';
+const PROJECT_STATE_KEY = 'bern_project_state_v2';
+const BACKUPS_KEY = 'bern_project_backups_v2';
 const BACKUP_FORMAT = 'bern-project-backup';
 const BACKUP_SCHEMA = 1;
 const BACKUP_LIMIT = 5;
@@ -512,11 +517,11 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v1', status: 'assumption', note: 'Первый планировочный вариант: дом сзади, въезд по центру, хозяйственная зона справа, солнечная зона теплицы и огорода спереди слева. Требует ручной проверки владельцем.' }
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Функциональный вариант: дом закреплён сзади; справа одно машиноместо с резервом навеса, хозблок и баня; слева солнечные теплица и огород; центр сохранён под цельный газон и детскую площадку. Требует ручной проверки владельцем.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = new URLSearchParams(window.location.search).get('review') === 'layout-v1';
+const REVIEW_LAYOUT = new URLSearchParams(window.location.search).get('review') === 'layout-v2';
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -585,7 +590,8 @@ return JSON.parse(JSON.stringify(value, (key, item) => key.startsWith('_') ? und
 }
 function snapshotFullScene() {
 return {
-	v: 4,
+	v: 5,
+	layoutVersion: 2,
 	savedAt: Date.now(),
 	objects: plainClone(CONFIG.objects),
 	utilities: plainClone(CONFIG.utilities),
@@ -899,6 +905,7 @@ greenhouse: makeGreenhouse,
 playground(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.3, b.d, b.color, [0, 0.15, 0])); g.add(makeCylinder(0.08, 0.08, 0.8, 0x888888, [0.5, 0.4, 0.5])); g.position.set(b.x, 0, b.z); return g; },
 firepit(b) { const g = new THREE.Group(); g.add(makeCylinder(b.radius, b.radius, 0.2, b.color, [0, 0.1, 0])); for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; g.add(makeCylinder(0.12, 0.18, 0.15, 0x7a6a5a, [Math.cos(a) * (b.radius + 0.1), 0.15, Math.sin(a) * (b.radius + 0.1)])); } g.position.set(b.x, 0, b.z); return g; },
 car(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.5, b.d, b.color, [0, 0.25, 0])); g.add(makeBox(1.2, 0.35, 1.6, 0x2c3e50, [1.3, 0.55, 0])); g.position.set(b.x, 0, b.z); return g; },
+canopy(b) { const g = new THREE.Group(); const px = b.w/2 - 0.14, pz = b.d/2 - 0.14; [[px,pz],[px,-pz],[-px,pz],[-px,-pz]].forEach(p => g.add(makeBox(0.16, b.h, 0.16, 0x607d8b, [p[0], b.h/2, p[1]]))); const roof = makeBox(b.w + 0.25, 0.12, b.d + 0.25, b.color, [0, b.h, 0]); roof.material = new THREE.MeshStandardMaterial({ color: b.color, transparent: true, opacity: 0.34, roughness: 0.35, metalness: 0.2 }); g.add(roof); const outline = new THREE.LineSegments(new THREE.EdgesGeometry(GeoPool.box(b.w, b.h, b.d)), new THREE.LineDashedMaterial({ color: 0xd7e3e8, dashSize: 0.35, gapSize: 0.2, transparent: true, opacity: 0.75 })); outline.computeLineDistances(); outline.position.y = b.h/2; g.add(outline); g.position.set(b.x, 0, b.z); return g; },
 septic(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.8, b.d, b.color, [0, 0.4, 0])); g.position.set(b.x, 0, b.z); return g; },
 well(b) { const g = new THREE.Group(); g.add(makeCylinder(b.radius, b.radius * 1.5, 0.8, b.color, [0, 0.4, 0])); g.add(makeCylinder(b.radius * 2, b.radius * 2.2, 0.1, 0x95a5a6, [0, 0.85, 0])); g.position.set(b.x, 0, b.z); return g; }
 };
@@ -936,6 +943,17 @@ roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
 const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
 path.rotation.x = -Math.PI/2; path.position.set(12, 0.03, 11.5); path.receiveShadow = true;
 groups.site.add(path);
+// Прямой автомобильный въезд к единственному машиноместу и резерву будущего навеса.
+const drivewaySurface = new THREE.Mesh(GeoPool.plane(4, 9), new THREE.MeshStandardMaterial({ color: 0x8d9398, transparent: true, opacity: 0.62, roughness: 0.9 }));
+drivewaySurface.rotation.x = -Math.PI/2; drivewaySurface.position.set(14.5, 0.025, 4.5); drivewaySurface.receiveShadow = true; groups.site.add(drivewaySurface);
+// Центральная зона остаётся визуально цельной: это газон, а не новая твёрдая площадка.
+const lawn = LAYOUT_ZONES.lawn;
+const lawnReserve = new THREE.Mesh(GeoPool.plane(lawn.w, lawn.d), new THREE.MeshStandardMaterial({ color: 0x8fd47d, transparent: true, opacity: 0.18, roughness: 1, depthWrite: false }));
+lawnReserve.rotation.x = -Math.PI/2; lawnReserve.position.set(lawn.x, 0.018, lawn.z); groups.site.add(lawnReserve);
+const lawnLabel = Utils.createLabel('🌿 Газон / свободная зона', '#dfffd8', 0.75, [7, 1.4], 640, 128, 34, 'rgba(28,80,36,0.68)');
+lawnLabel.position.set(lawn.x, 0.8, lawn.z + 2.8); groups.labels.add(lawnLabel);
+const guestParkingLabel = Utils.createLabel('ⓘ Гостевая парковка предполагается на улице — обочину уточнить', '#e2e8ec', 0.58, [10, 1.5], 1024, 128, 30, 'rgba(35,42,48,0.78)');
+guestParkingLabel.position.set(6.5, 1.1, -6.2); groups.labels.add(guestParkingLabel);
 const draggables = [];
 const labelSprites = {};
 const objectMeshes = {};
@@ -957,7 +975,7 @@ labelSprites[obj.id] = label;
 CONFIG.objects.forEach(registerObject);
 const draggableGroups = draggables.map(d => d.group);
 // ═══════════════════════════════════════════════════════════════
-// КАТАЛОГ: добавление / удаление / сохранение (ключ bern_catalog_v1)
+// КАТАЛОГ: добавление / удаление / сохранение (ключ bern_catalog_v2)
 // ═══════════════════════════════════════════════════════════════
 const CAT = {
 items() { return CONFIG.objects.filter(o => CATALOG[o.type]); },
@@ -1154,13 +1172,13 @@ const DRAINAGE_UTILS = [
 { name: 'Кольцевой дренаж дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная Ø110 в геотекстиле, уклон 2 см/м', depth: 0.9, route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
 { name: 'Дренаж → колодец', icon: '🕳', color: 0x0097a7, pipe: 'Ø110, уклон 3 см/м', depth: 1.1, route: [ {obj:'house',corner:'se',outward:1},{x:23,z:22} ] },
 { name: 'Ливнёвка (дом)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'house',corner:'nw',outward:0.2},{obj:'house',corner:'sw',outward:0.2},{obj:'house',corner:'se',outward:0.2},{obj:'house',corner:'ne',outward:0.2},{obj:'house',corner:'se',outward:0.2},{x:23,z:25},{x:23,z:13} ] },
-{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'bath',corner:'sw',outward:0.2},{obj:'bath',corner:'se',outward:0.2},{x:23,z:12} ] }
+{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'bath',corner:'sw',outward:0.2},{obj:'bath',corner:'se',outward:0.2},{x:24.3,z:10} ] }
 ];
 DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
 (() => {
 const wellMat = new THREE.MeshStandardMaterial({ color: 0x00838f, roughness: 0.6 });
 const lidMat = new THREE.MeshStandardMaterial({ color: 0x004d56, roughness: 0.5 });
-[ [23, 22, '🕳 Дренажный колодец'], [23, 12, '🌧 Ливневый колодец'] ].forEach(w => {
+[ [23, 22, '🕳 Дренажный колодец'], [24.3, 10, '🌧 Ливневый колодец'] ].forEach(w => {
 const body = new THREE.Mesh(GeoPool.cylinder(0.5, 0.55, 1.0, 12), wellMat);
 body.position.set(w[0], 0.1, w[1]); body.castShadow = true; groups.comms.add(body);
 const lid = new THREE.Mesh(GeoPool.cylinder(0.55, 0.55, 0.1, 12), lidMat);
@@ -1210,7 +1228,9 @@ html += `</table>`;
 if (objectId === 'house') html += `<div class="obj-note"><strong>ℹ Пожарный разрыв:</strong> до бани ${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м. Внутри одного участка ИЖС расстояние дом—хозяйственная постройка по СП 4.13130 не нормируется; отдельно нужно проверить здания соседей и конструктивные решения.</div>`;
 else if (objectId === 'bath') html += `<div class="obj-note"><strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м пристроена к северной стене, не пересекает дорожку к дому.</div>`;
 else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка.</div>`;
-else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Арочная конструкция, находится сразу за огородом.</div>`;
+else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Выбрана передняя левая открытая зона; июньская доступность прямого солнца сравнивается с альтернативами в отчёте.</div>`;
+else if (objectId === 'canopy') html += `<div class="obj-note"><strong>▱ Будущий навес:</strong> Планировочный резерв 4×6 м над одним машиноместом. Это не существующая постройка; конструкция и фундамент требуют отдельного решения.</div>`;
+else if (objectId === 'car') html += `<div class="obj-note"><strong>🚗 Парковка:</strong> Внутри участка предусмотрено одно место. Гостевые машины предполагаются снаружи вдоль улицы после проверки фактической обочины.</div>`;
 else if (objectId === 'septic') html += `<div class="obj-note"><strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³ — предварительное предположение. До скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м; окончательное расстояние определить после выбора ЛОС и получения геологии.</div>`;
 else if (objectId === 'well') html += `<div class="obj-note"><strong>💧 Скважина:</strong> Глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</div>`;
 else if (o.type === 'grill') html += `<div class="obj-note"><strong>🍢 Мангал:</strong> Норма — не ближе 5 м от построек (противопожарный режим). Красное кольцо — если ближе.</div>`;
@@ -1349,7 +1369,7 @@ const cx = CONFIG.center.x, cz = CONFIG.center.z, r = 27;
 { text: '← ЗАПАД', pos: [cx - Math.cos(a)*r, 3, cz + Math.sin(a)*r], color: '#99cc99' }
 ].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); scene.add(lbl); });
 })();
-[ { text: 'Локальная ось X (25,001 м)', pos: [24, 1.5, 20], color: '#ff6666' }, { text: 'Локальная ось Z (40,002 м)', pos: [12.5, 1.5, 39], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
+[ { text: 'Фасад вдоль улицы (25,001 м)', pos: [12.5, 1.5, 0.8], color: '#ff6666' }, { text: 'Глубина участка (40,002 м)', pos: [1.2, 1.5, 37.5], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
 // ═══════════════════════════════════════════════════════════════
 // НОРМЫ (bounds учитывает поворот объекта) + ПРАВИЛА КАТАЛОГА
 // ═══════════════════════════════════════════════════════════════
@@ -1551,6 +1571,9 @@ const checks = Norms.checkAll();
 const hard = checks.filter(c => c.ok === false && c.level === 'mandatory');
 const conditional = checks.filter(c => c.level === 'conditional' && c.ok !== true);
 const recommendations = checks.filter(c => c.level === 'recommendation' && c.ok === false);
+const greenhouseSun = juneSunAudit('greenhouse', [[2,9],[2,10.5],[2.5,9]]);
+const gardenSun = juneSunAudit('garden', [[6.5,10],[7,11],[7.5,12]]);
+const pct = v => Math.round(v * 100) + '%';
 let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
 html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
 html += `<h2>Паспорт участка (данные ЕГРН на 13.05.2026)</h2><ul>
@@ -1566,7 +1589,8 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
-html += `<p><strong>Рабочая планировка v1.</strong> Дом оставлен в задней части участка; автомобильная ось идёт от ворот по центру; баня и хозблок собраны справа; теплица и небольшой огород вынесены в переднюю левую, наиболее открытую для солнца часть; септик и скважина разведены в разные стороны. Деревья на участке не моделируются, потому что участок фактически пустой. Эта схема — планировочный вариант для ручной проверки, а не рабочий строительный проект.</p>`;
+html += `<p><strong>Рабочая планировка v2.</strong> Дом сохранён без переноса. Справа собраны прямой въезд, одно машиноместо с резервом навеса 4×6 м, хозблок и баня; слева размещены теплица и небольшой огород; центральный прямоугольник ${LAYOUT_ZONES.lawn.w}×${LAYOUT_ZONES.lawn.d} м оставлен под цельный газон, а детская площадка стоит у его переднего края в поле зрения дома. Мангальная зона функционально относится к бане, но вынесена к левому краю газона ради проверяемого запаса 5 м до построек. Деревья не моделируются: участок фактически пустой.</p>`;
+html += `<p><strong>Июньская проверка прямого солнца по текущей солнечной модели (21 июня, контрольные часы 08:00–18:00):</strong> выбранная теплица X=2, Z=9 — ${pct(greenhouseSun.find(p => p.x===2 && p.z===9).score)}; альтернативы X=2/Z=10,5 — ${pct(greenhouseSun.find(p => p.x===2 && p.z===10.5).score)}, X=2,5/Z=9 — ${pct(greenhouseSun.find(p => p.x===2.5 && p.z===9).score)}. Выбранный огород X=6,5, Z=10 — ${pct(gardenSun.find(p => p.x===6.5 && p.z===10).score)}. Все три практичные позиции теплицы дали одинаковый результат, поэтому окончательно выбрана X=2/Z=9 как наиболее компактная рядом с огородом и вне въезда. Это сравнительная модель затенения существующими объектами проекта, а не агрономическая гарантия.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
 else { html += `<p><span class="norm">⚠ Выявлено обязательных нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при требовании ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
@@ -1580,7 +1604,9 @@ html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.
 html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
 html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, в передней левой части участка относительно локальной схемы.</li>`;
 html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, за огородом.</li>`;
-html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}. <strong>Зона мангала</strong> — ${dims(o('firepit'))}; режим открытого костра не выбран.</li>`;
+html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}, у переднего края центрального газона. <strong>Мангальная / костровая зона</strong> — ${dims(o('firepit'))}; в автоматической проверке принят режим мангала, режим открытого костра не утверждён.</li>`;
+html += `<li><strong>Одно внутреннее машиноместо</strong> — ${dims(o('car'))}; над ним зарезервирован <strong>будущий навес</strong> ${dims(o('canopy'))}. Гостевая парковка предполагается снаружи вдоль ул. Рассветной; наличие пригодной обочины и режим стоянки не подтверждены.</li>`;
+html += `<li><strong>Центральный газон / свободная зона</strong> — ориентировочный контур ${LAYOUT_ZONES.lawn.w}×${LAYOUT_ZONES.lawn.d} м, без твёрдого покрытия и без статуса капитального объекта.</li>`;
 html += `<li><strong>Септик</strong> — ${dims(o('septic'))}. <strong>Скважина</strong> — ${dims(o('well'))}.</li>`;
 CAT.items().forEach(c => { html += `<li><strong>${c.label}</strong> — ${dims(c)}, центр (X=${Utils.fmt(c.x)}, Z=${Utils.fmt(c.z)}). Отступы: ${sb(c)}. <em>(добавлен из каталога)</em></li>`; });
 html += `</ul>`;
@@ -1588,7 +1614,8 @@ html += `<h2>4. Ключевые расстояния (между краями)<
 html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong>. В пределах одного участка ИЖС противопожарный разрыв между домом и хозяйственной постройкой не нормируется (СП 4.13130; разъяснение МЧС).</li>`;
 html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (проектный ориентир 5 м; уточнить по выбранной ЛОС).</li>`;
 html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (проектный ориентир 15 м; окончательное решение после геологии и выбора ЛОС).</li>`;
-html += `<li>Зона мангала → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong> (для мангала ≥5 м; открытый костёр требует другого режима).</li>`;
+html += `<li>Зона мангала → дом: <strong>${dist('firepit','house')} м</strong>, → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong> (для принятого режима мангала ≥5 м; открытый костёр требует другого решения).</li>`;
+html += `<li>Навес → хозблок: <strong>${dist('canopy','shed')} м</strong>; машина полностью размещена внутри резервного контура навеса, въезд идёт прямо от ворот.</li>`;
 CONFIG.objects.filter(x => x.type === 'grill').forEach(g => {
 ['house','bath','shed','garage','gazebo'].forEach(bid => {
 const bb = Norms.obj(bid); if (!bb) return;
@@ -2021,7 +2048,7 @@ const res = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandator
 for (let i = 0; i < CONFIG.objects.length; i++) for (let j = i + 1; j < CONFIG.objects.length; j++) {
 const a = CONFIG.objects[i], b = CONFIG.objects[j];
 const d = Norms.dist(a, b);
-if (d < 0) res.push({ kind: 'dist', ids: [a.id, b.id], actual: d, min: 0, overlap: true });
+if (d < 0 && !isAllowedOverlap(a, b)) res.push({ kind: 'dist', ids: [a.id, b.id], actual: d, min: 0, overlap: true });
 }
 return res;
 }
@@ -2052,7 +2079,7 @@ let okAll = true;
 for (const t of CONFIG.objects) {
 if (t.id === o.id) continue;
 const d = Norms.dist(o, t);
-if (d < 0) { okAll = false; break; }
+if (d < 0 && !isAllowedOverlap(o, t)) { okAll = false; break; }
 for (const r of Norms.rules) {
 if (r.kind !== 'dist') continue;
 if ((r.a === o.id && r.b === t.id) || (r.b === o.id && r.a === t.id)) { if (d < r.min) { okAll = false; break; } }
@@ -2459,6 +2486,7 @@ house:{fill:'rgba(255,170,0,0.25)',stroke:'#c07000'}, bath:{fill:'rgba(230,126,3
 shed:{fill:'rgba(127,140,141,0.25)',stroke:'#7f8c8d'}, garden:{fill:'rgba(46,204,113,0.20)',stroke:'#27ae60'},
 greenhouse:{fill:'rgba(136,204,255,0.30)',stroke:'#3498db'}, playground:{fill:'rgba(241,196,15,0.25)',stroke:'#f39c12'},
 firepit:{fill:'rgba(231,76,60,0.20)',stroke:'#c0392b'}, car:{fill:'rgba(192,57,43,0.20)',stroke:'#c0392b'},
+canopy:{fill:'rgba(144,164,174,0.18)',stroke:'#607d8b'},
 septic:{fill:'rgba(93,109,126,0.25)',stroke:'#5d6d7e'}, well:{fill:'rgba(52,152,219,0.25)',stroke:'#2980b9'},
 gazebo:{fill:'rgba(156,122,84,0.25)',stroke:'#9c7a54'}, pool:{fill:'rgba(58,166,217,0.30)',stroke:'#3aa6d9'},
 garage:{fill:'rgba(170,180,187,0.30)',stroke:'#78909c'}, fruit_tree:{fill:'rgba(90,158,75,0.30)',stroke:'#5a9e4b'},
@@ -2586,7 +2614,7 @@ ctx.moveTo(X(0)+sbLen, sbY-4); ctx.lineTo(X(0)+sbLen, sbY+4); ctx.stroke();
 ctx.font = '10px Segoe UI, Arial'; ctx.fillStyle = '#333';
 ctx.fillText('5 м', X(0) + sbLen/2 - 8, sbY - 6);
 ctx.fillStyle = '#888';
-ctx.fillText('Ориентация: длинная сторона СЗ–ЮВ (азимут 122,7°). Все размеры в метрах.', X(0), sbY + 18);
+ctx.fillText('Улица проходит по короткой стороне 25,001 м (z=0); глубина участка 40,002 м. Все размеры в метрах.', X(0), sbY + 18);
 }
 function drawPlan2D() {
 const canvas = document.getElementById('drawing-canvas'); if (!canvas) return;
@@ -2606,6 +2634,13 @@ ctx.font = '11px Segoe UI, Arial'; ctx.fillStyle = '#666';
 ctx.fillText('Кадастровый 50:16:0202016:428 • Участок 25×40 м (1000 м²) • ' + new Date().toLocaleDateString('ru-RU'), ML, 44);
 ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
 ctx.strokeRect(X(0), Z(D), W*S, D*S);
+const lawn2d = LAYOUT_ZONES.lawn;
+ctx.fillStyle = 'rgba(143,212,125,0.16)'; ctx.strokeStyle = 'rgba(46,125,50,0.65)'; ctx.lineWidth = 1; ctx.setLineDash([6,4]);
+ctx.fillRect(X(lawn2d.x-lawn2d.w/2), Z(lawn2d.z+lawn2d.d/2), lawn2d.w*S, lawn2d.d*S);
+ctx.strokeRect(X(lawn2d.x-lawn2d.w/2), Z(lawn2d.z+lawn2d.d/2), lawn2d.w*S, lawn2d.d*S); ctx.setLineDash([]);
+ctx.fillStyle = '#2e7d32'; ctx.font = 'bold 9px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText('Газон / свободная зона', X(lawn2d.x), Z(lawn2d.z));
+ctx.fillStyle = '#555'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText('УЛ. РАССВЕТНАЯ • ФАСАД 25,001 м', X(W/2), Z(0)+17);
+ctx.font = '9px Segoe UI, Arial'; ctx.fillStyle = '#777'; ctx.fillText('Гостевая парковка предполагается снаружи; обочина и режим стоянки требуют проверки', X(W/2), Z(0)+31);
 CONFIG.objects.forEach(o => drawObject2D(ctx, o, X, Z, S));
 drawPerimeterDims(ctx, X, Z);
 drawHouseSetbacks(ctx, X, Z);
@@ -2630,17 +2665,23 @@ septic:     { x:[2.5, 4],   z:[18, 22] },
 well:       { x:[21, 23.5], z:[18, 22] },
 bath:       { x:[18, 21],   z:[13, 17] },
 shed:       { x:[19, 22],   z:[4, 6]   },
-firepit:    { x:[6, 9],     z:[16, 19] },
+firepit:    { x:[9, 11],    z:[18, 19] },
 greenhouse: { x:[1.5, 3],   z:[7, 10]  },
 garden:     { x:[5.5, 8],   z:[7, 11]  },
-playground: { x:[9, 13],    z:[15, 20] },
-car:        { x:[14, 15],   z:[4, 7]   }
+playground: { x:[13, 15],   z:[12, 14] },
+car:        { x:[14, 15],   z:[4, 7]   },
+canopy:     { x:[14, 15],   z:[5, 7]   }
 };
 const DRIVEWAY = { minX: 11.5, maxX: 17.5, minZ: 0, maxZ: 9 };
 const DRIVEWAY_SHAPE = { id: '__driveway__', x: (DRIVEWAY.minX+DRIVEWAY.maxX)/2, z: (DRIVEWAY.minZ+DRIVEWAY.maxZ)/2, w: DRIVEWAY.maxX-DRIVEWAY.minX, d: DRIVEWAY.maxZ-DRIVEWAY.minZ, rot: 0 };
 function drivewayIntersects(o) { return Norms.dist(o, DRIVEWAY_SHAPE) <= 0; }
-const SETBACK = { house: 3, bath: 1, shed: 1, septic: 1, well: 1, garden: 0.5, greenhouse: 0.5, playground: 0.5, firepit: 0.5, car: 0.5, gazebo: 1, garage: 1, grill: 0.5, pool: 1, fruit_tree: 1 };
+const SETBACK = { house: 3, bath: 1, shed: 1, septic: 1, well: 1, garden: 0.5, greenhouse: 0.5, playground: 0.5, firepit: 0.5, car: 0.5, canopy: 0.5, gazebo: 1, garage: 1, grill: 0.5, pool: 1, fruit_tree: 1 };
+function isAllowedOverlap(A, B) {
+const pair = new Set([A.id, B.id]);
+return pair.size === 2 && pair.has('car') && pair.has('canopy');
+}
 function pairOverlap(A, B) {
+if (isAllowedOverlap(A, B)) return false;
 const ba = Norms.bounds(A), bb = Norms.bounds(B);
 const ox = Math.min(ba.maxX, bb.maxX) - Math.max(ba.minX, bb.minX);
 const oz = Math.min(ba.maxZ, bb.maxZ) - Math.max(ba.minZ, bb.minZ);
@@ -2659,7 +2700,9 @@ if (!(b.minX >= sb && b.minZ >= sb && b.maxX <= CONFIG.plot.w - sb && b.maxZ <= 
 if (o.id === 'house' && b.minZ < 5) return false;
 return true;
 }
-function sunScore(o) {
+function sunScore(o, at) {
+const sampleX = at && Number.isFinite(at.x) ? at.x : o.x;
+const sampleZ = at && Number.isFinite(at.z) ? at.z : o.z;
 const proxies = ['house','bath','shed','greenhouse']
 .filter(id => id !== o.id)
 .map(id => {
@@ -2674,9 +2717,13 @@ for (let h = 8; h <= 18; h += 2) {
 const s = calcSunAt(h, 5); tot++;
 if (s.altitude <= 1) continue;
 dir.set(s.sunEast*cosA + s.sunNorth*sinA, s.sinAlt, -s.sunEast*sinA + s.sunNorth*cosA).normalize();
-if (!isShadowed(o.x, o.z, dir, proxies)) sun++;
+if (!isShadowed(sampleX, sampleZ, dir, proxies)) sun++;
 }
 return tot ? sun / tot : 0;
+}
+function juneSunAudit(id, candidates) {
+const obj = Norms.obj(id);
+return candidates.map(p => ({ x: p[0], z: p[1], score: sunScore(obj, { x: p[0], z: p[1] }) })).sort((a,b) => b.score - a.score);
 }
 function layoutFeasible(o, placed) {
 if (!inBounds(o)) return false;
@@ -3584,11 +3631,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🏗 Режим проверки: рабочая планировка v1 без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🏗 Режим проверки: рабочая планировка v2 без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v4.0: рабочая планировка v1, пустой участок без вымышленных деревьев, review=layout-v1.');
+console.log('✅ Проект Берн v4.1: рабочая планировка v2, функциональные зоны и резерв навеса, review=layout-v2.');
 </script>
 </body>
 </html>
