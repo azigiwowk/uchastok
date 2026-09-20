@@ -416,6 +416,10 @@ streetSide: 'east'
 center: { x: 12.5005, z: 20.001 },
 // angle — поворот локальной оси +Z относительно истинного севера.
 gps: { lat: 56.042291, lng: 38.417342, angle: 57.267, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
+infrastructure: {
+powerPole: { x: 33.5, z: 5, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, напротив хозблока' },
+entrance: { x: 25.001, z: 14.5, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд, немного смещён к хозблоку' }
+},
 latitude: 56,
 camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [30, 2, 14.5] },
 objects: [
@@ -425,7 +429,7 @@ objects: [
 { id: 'garden', type: 'garden', label: '🌱 Огород', x: 2.5, z: 3.5, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
 { id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 1.5, z: 7, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
 { id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 8, z: 16, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site' },
-{ id: 'firepit', type: 'firepit', label: '🔥 Костровище', x: 16, z: 6, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site' },
+{ id: 'firepit', type: 'firepit', label: '🔥 Зона мангала', x: 16, z: 6, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier' },
 { id: 'car', type: 'car', label: '🚗 Машина', x: 22.5, z: 1.0, y: 1.5, w: 5, d: 2, rot: 0, color: 0xc0392b, labelColor: '#88aaff', labelSize: 0.8, group: 'site' },
 { id: 'septic', type: 'septic', label: '🚽 Септик', x: 3, z: 30, y: 2.0, w: 1.5, d: 1.2, rot: 0, color: 0x5d6d7e, labelColor: '#aa66cc', labelSize: 0.8, group: 'site' },
 { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
@@ -1059,11 +1063,11 @@ html += `<h3>📏 Расстояния до объектов</h3><table>`;
 distances.slice(0, 5).forEach(d => { html += `<tr><td>${d.name}</td><td>${Utils.fmt(d.dist)} м</td></tr>`; });
 html += `</table>`;
 }
-if (objectId === 'house') html += `<div class="obj-note"><strong>💡 Рекомендация:</strong> Расстояние до бани (${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м) меньше нормы 15 м для деревянных строений. Рекомендуется использовать негорючие материалы для фасадов.</div>`;
+if (objectId === 'house') html += `<div class="obj-note"><strong>ℹ Пожарный разрыв:</strong> до бани ${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м. Внутри одного участка ИЖС расстояние дом—хозяйственная постройка по СП 4.13130 не нормируется; отдельно нужно проверить здания соседей и конструктивные решения.</div>`;
 else if (objectId === 'bath') html += `<div class="obj-note"><strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м пристроена к северной стене, не пересекает дорожку к дому.</div>`;
 else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка.</div>`;
 else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Арочная конструкция, находится сразу за огородом.</div>`;
-else if (objectId === 'septic') html += `<div class="obj-note"><strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³. Расстояние до скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м (норма ≥15 м).</div>`;
+else if (objectId === 'septic') html += `<div class="obj-note"><strong>🚽 Септик:</strong> Трёхкамерный, объём 3 м³ — предварительное предположение. До скважины ${Utils.fmt(Norms.dist(obj, Norms.obj('well')))} м; окончательное расстояние определить после выбора ЛОС и получения геологии.</div>`;
 else if (objectId === 'well') html += `<div class="obj-note"><strong>💧 Скважина:</strong> Глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</div>`;
 else if (o.type === 'grill') html += `<div class="obj-note"><strong>🍢 Мангал:</strong> Норма — не ближе 5 м от построек (противопожарный режим). Красное кольцо — если ближе.</div>`;
 else if (o.type === 'gazebo' || o.type === 'garage') html += `<div class="obj-note"><strong>${o.type === 'garage' ? '🚗 Гараж' : '⛱ Беседка'}:</strong> Отступ от границы участка — не менее 1 м (СП 42.13330 / СП 53.13330).</div>`;
@@ -1158,6 +1162,24 @@ const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat); pedLeaf.po
 const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00)); pedHandle.position.set(-2.7, 0.85, 0.1); gateGroup.add(pedHandle);
 scene.add(gateGroup);
 })();
+// Существующая опора электросети и электрощит — фиксированная исходная точка.
+(() => {
+const p = CONFIG.infrastructure.powerPole;
+const group = new THREE.Group();
+const pole = new THREE.Mesh(GeoPool.cylinder(0.16, 0.23, p.h, 12), MaterialPool.get(0x777777, { roughness: 0.85 }));
+pole.position.y = p.h / 2; pole.castShadow = true; pole.receiveShadow = true; group.add(pole);
+const crossbar = new THREE.Mesh(GeoPool.box(2.2, 0.14, 0.14), MaterialPool.get(0x555555, { roughness: 0.7 }));
+crossbar.position.y = p.h - 0.7; crossbar.castShadow = true; group.add(crossbar);
+[-0.8, 0, 0.8].forEach(x => {
+const insulator = new THREE.Mesh(GeoPool.cylinder(0.07, 0.07, 0.28, 8), MaterialPool.get(0xe8e8dd));
+insulator.position.set(x, p.h - 0.45, 0); group.add(insulator);
+});
+const shield = new THREE.Mesh(GeoPool.box(0.65, 0.9, 0.28), MaterialPool.get(0x9aa0a6, { roughness: 0.45, metalness: 0.55 }));
+shield.position.set(-0.35, 1.65, -0.22); shield.castShadow = true; group.add(shield);
+group.position.set(p.x, 0, p.z); group.userData.fixedInfrastructure = 'powerPole'; scene.add(group);
+const label = Utils.createLabel('⚡ Существующий столб и электрощит\nположение ориентировочное', '#ffe066', 0.72, [7, 2], 512, 160, 34, 'rgba(25,25,20,0.82)', 10);
+label.position.set(p.x, p.h + 1.5, p.z); groups.labels.add(label);
+})();
 (() => {
 const a = CONFIG.gps.angle * Math.PI / 180;
 const cx = CONFIG.center.x, cz = CONFIG.center.z, r = 27;
@@ -1174,16 +1196,25 @@ const cx = CONFIG.center.x, cz = CONFIG.center.z, r = 27;
 // ═══════════════════════════════════════════════════════════════
 const Norms = {
 rules: [
-{ kind: 'dist', a: 'house', b: 'bath', min: 15, doc: 'СП 4.13130 — противопожарный разрыв (дерево)' },
-{ kind: 'dist', a: 'septic', b: 'well', min: 15, doc: 'СанПиН 2.1.3684-21' },
-{ kind: 'dist', a: 'septic', b: 'house', min: 5, doc: 'СП 42.13330.2016' },
-{ kind: 'dist', a: 'firepit', b: 'bath', min: 5, doc: 'Правила противопожарного режима, п. 73' },
-{ kind: 'dist', a: 'firepit', b: 'shed', min: 5, doc: 'Правила противопожарного режима, п. 73' },
-{ kind: 'dist', a: 'firepit', b: 'house', min: 5, doc: 'Правила противопожарного режима, п. 73' },
-{ kind: 'dist', a: 'well', b: 'house', min: 3, doc: 'Рекомендация (защита фундамента)', soft: true },
-{ kind: 'setback', obj: 'house', min: 3, doc: 'СП 42.13330 — жилой дом' },
-{ kind: 'setback', obj: 'bath', min: 1, doc: 'СП 53.13330 — баня' },
-{ kind: 'setback', obj: 'shed', min: 1, doc: 'СП 53.13330 — хозпостройка' }
+// Обязательное для выбранного сценария: объект firepit используется как мангал/жаровня.
+{ kind: 'dist', a: 'firepit', b: 'bath', min: 5, level: 'mandatory', doc: 'ПП РФ №1479, приложение №4; разъяснение МЧС: мангал ≥5 м от построек', condition: 'Для мангала или иной несгораемой ёмкости. Для открытого костра действуют иные расстояния.' },
+{ kind: 'dist', a: 'firepit', b: 'shed', min: 5, level: 'mandatory', doc: 'ПП РФ №1479, приложение №4; разъяснение МЧС: мангал ≥5 м от построек', condition: 'Для мангала или иной несгораемой ёмкости. Для открытого костра действуют иные расстояния.' },
+{ kind: 'dist', a: 'firepit', b: 'house', min: 5, level: 'mandatory', doc: 'ПП РФ №1479, приложение №4; разъяснение МЧС: мангал ≥5 м от построек', condition: 'Для мангала или иной несгораемой ёмкости. Для открытого костра действуют иные расстояния.' },
+// Условные градостроительные проверки: окончательно сверяются с ГПЗУ, красными линиями и ПЗЗ Черноголовки.
+{ kind: 'setback', obj: 'house', min: 3, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительная проверка от соседних границ; подтвердить по ГПЗУ и местным ПЗЗ', condition: 'Не проверяет расстояния до зданий на соседних участках.' },
+{ kind: 'setback', obj: 'house', min: 5, sides: ['east'], level: 'conditional', doc: 'Предварительно от уличной границы; точная красная линия пока не загружена', condition: 'Применимо, только если восточная граница участка совпадает с красной линией улицы.' },
+{ kind: 'setback', obj: 'bath', min: 1, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Восточная сторона отдельно рассматривается как уличная.' },
+{ kind: 'setback', obj: 'shed', min: 1, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Восточная сторона отдельно рассматривается как уличная.' },
+// Проектные буферы, не выдаваемые за универсальную норму закона.
+{ kind: 'dist', a: 'septic', b: 'well', min: 15, level: 'recommendation', doc: 'Предварительный проектный буфер', condition: 'Фактическое расстояние определяется типом ЛОС, грунтами, направлением грунтовых вод и санитарным расчётом.' },
+{ kind: 'dist', a: 'septic', b: 'house', min: 5, level: 'recommendation', doc: 'Предварительный эксплуатационный буфер', condition: 'Уточнить после выбора типа и паспорта ЛОС.' },
+{ kind: 'dist', a: 'well', b: 'house', min: 3, level: 'recommendation', doc: 'Проектная рекомендация для обслуживания и защиты фундамента', condition: 'Не является универсальной федеральной нормой.' }
+],
+manualChecks: [
+{ level: 'information', title: 'Дом ↔ баня внутри одного участка', ok: true, doc: 'СП 4.13130; официальное разъяснение МЧС России', detail: 'Противопожарное расстояние между домом и хозяйственной постройкой внутри одного участка ИЖС не нормируется. Прежняя проверка ≥15 м удалена.' },
+{ level: 'conditional', title: 'Соседние здания и сооружения', ok: null, doc: 'СП 4.13130, таблица 1 и подраздел 5.3', detail: 'Нужны контуры, назначение и степень огнестойкости объектов на соседних участках.' },
+{ level: 'conditional', title: 'Красная линия Рассветной улицы', ok: null, doc: 'ГПЗУ / документация по планировке территории / местные ПЗЗ', detail: 'В проекте пока используется граница участка как приближение; юридическое положение красной линии не загружено.' },
+{ level: 'conditional', title: 'Септик/ЛОС и скважина', ok: null, doc: 'Тип установки, геология, УГВ и направление потока грунтовых вод', detail: 'Числовые буферы в модели являются проектными рекомендациями до получения исходных данных.' }
 ],
 obj(id) { return CONFIG.objects.find(o => o.id === id); },
 bounds(o) {
@@ -1210,27 +1241,29 @@ const res = this.rules.map(r => {
 if (r.kind === 'dist') {
 const A = this.obj(r.a), B = this.obj(r.b);
 const d = this.dist(A, B);
-return { kind: 'dist', ids: [r.a, r.b], title: `${this.name(r.a)} → ${this.name(r.b)}`, actual: d, min: r.min, ok: d >= r.min, soft: !!r.soft, doc: r.doc, detail: 'между ближайшими краями' };
+return { kind: 'dist', ids: [r.a, r.b], title: `${this.name(r.a)} → ${this.name(r.b)}`, actual: d, min: r.min, ok: d >= r.min, level: r.level, soft: r.level !== 'mandatory', doc: r.doc, detail: `Между ближайшими краями. ${r.condition || ''}` };
 }
 const O = this.obj(r.obj);
 const s = this.setbacks(O);
-const minVal = Math.min(s.south, s.north, s.west, s.east);
-return { kind: 'setback', ids: [r.obj], title: `${this.name(r.obj)} — отступ до границы`, actual: minVal, min: r.min, ok: minVal >= r.min, soft: !!r.soft, doc: r.doc, detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м` };
+const sides = r.sides || ['south','north','west','east'];
+const minVal = Math.min(...sides.map(side => s[side]));
+return { kind: 'setback', ids: [r.obj], title: `${this.name(r.obj)} — отступ до границы`, actual: minVal, min: r.min, ok: minVal >= r.min, level: r.level, soft: r.level !== 'mandatory', doc: r.doc, detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м. ${r.condition || ''}` };
 });
 // ── КАТАЛОГ: мангал ≥5 м от построек (противопожарный режим) ──
 const BUILDINGS = ['house','bath','shed','garage','gazebo'];
 CONFIG.objects.filter(o => o.type === 'grill').forEach(g => {
 CONFIG.objects.filter(b => BUILDINGS.includes(b.type)).forEach(b => {
 const d = this.dist(g, b);
-res.push({ kind: 'dist', ids: [g.id, b.id], title: `${this.name(g.id)} → ${this.name(b.id)}`, actual: d, min: 5, ok: d >= 5, soft: false, doc: 'Противопожарный режим: мангал ≥5 м от построек', detail: 'между ближайшими краями' });
+res.push({ kind: 'dist', ids: [g.id, b.id], title: `${this.name(g.id)} → ${this.name(b.id)}`, actual: d, min: 5, ok: d >= 5, level: 'mandatory', soft: false, doc: 'ПП РФ №1479, приложение №4; мангал ≥5 м от построек', detail: 'Между ближайшими краями; территория очищается от горючих материалов минимум на 2 м.' });
 });
 });
 // ── КАТАЛОГ: беседка и гараж — отступ ≥1 м от границы ──
 CONFIG.objects.filter(o => o.type === 'gazebo' || o.type === 'garage').forEach(o => {
 const s = this.setbacks(o);
 const minVal = Math.min(s.south, s.north, s.west, s.east);
-res.push({ kind: 'setback', ids: [o.id], title: `${this.name(o.id)} — отступ до границы`, actual: minVal, min: 1, ok: minVal >= 1, soft: false, doc: 'СП 42.13330 / СП 53.13330 (беседка, гараж)', detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м` });
+res.push({ kind: 'setback', ids: [o.id], title: `${this.name(o.id)} — отступ до границы`, actual: minVal, min: 1, ok: minVal >= 1, level: 'conditional', soft: true, doc: 'Предварительная проверка; подтвердить по ГПЗУ и местным ПЗЗ', detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м` });
 });
+this.manualChecks.forEach(c => res.push({ kind: 'manual', ids: [], min: null, actual: null, soft: true, ...c }));
 return res;
 }
 };
@@ -1244,7 +1277,7 @@ if (c.material) { if (c.material.map) c.material.map.dispose(); c.material.dispo
 }
 function showHighlights() {
 clearHighlights();
-const failed = Norms.checkAll().filter(c => !c.ok);
+const failed = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandatory');
 const ids = new Set();
 failed.forEach(c => c.ids.forEach(id => ids.add(id)));
 ids.forEach(id => {
@@ -1269,15 +1302,23 @@ Utils.markDirty();
 }
 function openNorms() {
 const checks = Norms.checkAll();
-const hard = checks.filter(c => !c.ok && !c.soft);
-const soft = checks.filter(c => !c.ok && c.soft);
-if (!hard.length && !soft.length) DOM.normsSummary.innerHTML = '<span class="norm-ok">✅ Все нормы соблюдены. Планировка безопасна.</span>';
-else DOM.normsSummary.innerHTML = (hard.length ? `<span class="norm-bad">⚠ Нарушений: ${hard.length}</span>` : '') + (hard.length && soft.length ? ' &nbsp;|&nbsp; ' : '') + (soft.length ? `<span class="norm-warn">Рекомендаций: ${soft.length}</span>` : '') + '<div style="font-size:12px; color:#666; margin-top:6px;">Красные кольца и линии на 3D-сцене показывают проблемные объекты и расстояния.</div>';
+const mandatory = checks.filter(c => c.ok === false && c.level === 'mandatory');
+const conditional = checks.filter(c => c.level === 'conditional' && c.ok !== true);
+const recommendations = checks.filter(c => c.level === 'recommendation' && c.ok === false);
+DOM.normsSummary.innerHTML = (mandatory.length ? `<span class="norm-bad">⚠ Обязательных нарушений: ${mandatory.length}</span>` : '<span class="norm-ok">✓ По автоматически проверяемым обязательным требованиям нарушений не найдено</span>') +
+`<div style="font-size:12px; color:#666; margin-top:7px;">Условных проверок требуют внимания: ${conditional.length}. Невыполненных проектных рекомендаций: ${recommendations.length}. Результат не заменяет ГПЗУ, ПЗЗ, проектную документацию и проверку соседних объектов.</div>`;
 DOM.normsTbody.innerHTML = '';
 checks.forEach(c => {
 const tr = document.createElement('tr');
-const st = c.ok ? '<span class="norm-ok">✓ ОК</span>' : (c.soft ? '<span class="norm-warn">⚠ Рекомендация</span>' : '<span class="norm-bad">✗ Нарушение</span>');
-tr.innerHTML = `<td>${c.title}<div class="norm-doc">${c.doc}</div></td><td style="text-align:center; white-space:nowrap;">≥ ${c.min} м</td><td style="text-align:center; font-weight:700; white-space:nowrap;">${Utils.fmt(c.actual)} м</td><td style="text-align:center;">${st}</td><td class="norm-detail">${c.detail}</td>`;
+let st;
+if (c.level === 'information') st = '<span class="norm-ok">ℹ Учтено</span>';
+else if (c.ok === null) st = '<span class="norm-warn">? Нужны данные</span>';
+else if (c.level === 'mandatory') st = c.ok ? '<span class="norm-ok">✓ Выполнено</span>' : '<span class="norm-bad">✗ Нарушение</span>';
+else if (c.level === 'conditional') st = c.ok ? '<span class="norm-ok">✓ Предварительно</span>' : '<span class="norm-warn">⚠ Условно</span>';
+else st = c.ok ? '<span class="norm-ok">✓ Рекомендация</span>' : '<span class="norm-warn">⚠ Рекомендация</span>';
+const minCell = c.min == null ? '—' : `≥ ${c.min} м`;
+const actualCell = c.actual == null ? '—' : `${Utils.fmt(c.actual)} м`;
+tr.innerHTML = `<td>${c.title}<div class="norm-doc">${c.doc}</div></td><td style="text-align:center; white-space:nowrap;">${minCell}</td><td style="text-align:center; font-weight:700; white-space:nowrap;">${actualCell}</td><td style="text-align:center;">${st}</td><td class="norm-detail">${c.detail}</td>`;
 DOM.normsTbody.appendChild(tr);
 });
 DOM.normsModal.style.display = 'block';
@@ -1286,14 +1327,15 @@ showHighlights();
 }
 function updateNormBadge() {
 const checks = Norms.checkAll();
-const hard = checks.filter(c => !c.ok && !c.soft).length;
-if (hard) { DOM.normBadge.textContent = `⚠ Нормы: нарушений ${hard} — нажмите для проверки`; DOM.normBadge.classList.add('bad'); }
-else { DOM.normBadge.textContent = '✅ Нормы: всё в порядке'; DOM.normBadge.classList.remove('bad'); }
+const hard = checks.filter(c => c.ok === false && c.level === 'mandatory').length;
+const pending = checks.filter(c => c.level === 'conditional' && c.ok !== true).length;
+if (hard) { DOM.normBadge.textContent = `⚠ Обязательных нарушений: ${hard}`; DOM.normBadge.classList.add('bad'); }
+else { DOM.normBadge.textContent = `✓ Проверяемые нормы: без нарушений • уточнить: ${pending}`; DOM.normBadge.classList.remove('bad'); }
 }
 const ENGINEERING_HTML = `
 <h3>💧 Водоснабжение</h3><ul><li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li><li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области – 1,4 м).</li><li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li><li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li><li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м (с возможностью консервации на зиму).</li><li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li></ul>
 <h3>🚽 Канализация</h3><ul><li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li><li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li><li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li></ul>
-<h3>⚡ Электроснабжение</h3><ul><li>Ввод в дом: ВВГнг 5×10 мм², глубина 0,8 м в гофре.</li><li>Щиток: 12 модулей, автоматы, УЗО, дифференциальные автоматы.</li><li>К бане: ВВГнг 3×4 мм²; к хозблоку: ВВГнг 3×2,5 мм² — в гофре, глубина 0,8 м.</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости.</li></ul>
+<h3>⚡ Электроснабжение</h3><ul><li><strong>Существует:</strong> электрический столб со щитом за Рассветной улицей, напротив хозблока; положение на схеме ориентировочное.</li><li><strong>Предположение:</strong> ввод в дом ВВГнг 5×10 мм², глубина 0,8 м в защитной трубе — сечение и способ прокладки подтвердить проектом электроснабжения.</li><li><strong>Предположение:</strong> щиток 12 модулей, автоматы, УЗО, дифференциальные автоматы.</li><li><strong>Предположение:</strong> к бане ВВГнг 3×4 мм²; к хозблоку ВВГнг 3×2,5 мм².</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости.</li></ul>
 <h3>🔥 Газоснабжение</h3><ul><li>Магистральный газ, полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li><li>Ввод в дом через стену, отключающий кран, газовый счётчик. Котёл 24 кВт.</li></ul>`;
 function buildReportHTML() {
 const now = new Date().toLocaleDateString('ru-RU');
@@ -1302,8 +1344,9 @@ const dims = obj => obj.radius !== undefined ? `Ø${Utils.fmt(obj.radius * 2)} �
 const sb = obj => { const s = Norms.setbacks(obj); return `север ${Utils.fmt(s.north)} м, юг ${Utils.fmt(s.south)} м, запад ${Utils.fmt(s.west)} м, восток ${Utils.fmt(s.east)} м`; };
 const dist = (a, b) => Utils.fmt(Norms.dist(o(a), o(b)));
 const checks = Norms.checkAll();
-const hard = checks.filter(c => !c.ok && !c.soft);
-const soft = checks.filter(c => !c.ok && c.soft);
+const hard = checks.filter(c => c.ok === false && c.level === 'mandatory');
+const conditional = checks.filter(c => c.level === 'conditional' && c.ok !== true);
+const recommendations = checks.filter(c => c.level === 'recommendation' && c.ok === false);
 let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
 html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
 html += `<h2>Паспорт участка (данные ЕГРН на 13.05.2026)</h2><ul>
@@ -1320,11 +1363,11 @@ html += `<h2>1. Ориентация участка и солнце — как �
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Длинные стороны имеют азимуты около 122,733° / 302,733°, короткие — 32,737° / 212,737°. Дорожный участок 50:16:0202016:526 показан у восточной длинной границы по схеме ЕГРН. Положение ворот — планируемое и требует подтверждения на местности.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
-if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
-else {
-if (hard.length) { html += `<p><span class="norm">⚠ Выявлено нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при норме ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
-if (soft.length) { html += `<p><strong>Рекомендации:</strong></p><ul>`; soft.forEach(c => { html += `<li>${c.title} — факт ${Utils.fmt(c.actual)} м при рекомендации ≥ ${c.min} м</li>`; }); html += `</ul>`; }
-}
+if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
+else { html += `<p><span class="norm">⚠ Выявлено обязательных нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при требовании ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
+if (conditional.length) { html += `<p><strong>Условные проверки, требующие исходных данных:</strong></p><ul>`; conditional.forEach(c => { html += `<li>${c.title}${c.actual == null ? '' : ` — предварительно ${Utils.fmt(c.actual)} м`} (${c.detail})</li>`; }); html += `</ul>`; }
+if (recommendations.length) { html += `<p><strong>Невыполненные проектные рекомендации:</strong></p><ul>`; recommendations.forEach(c => { html += `<li>${c.title} — ${Utils.fmt(c.actual)} м при ориентире ≥ ${c.min} м (${c.detail})</li>`; }); html += `</ul>`; }
+html += `<p><em>Автопроверка не подтверждает соответствие всей планировки законодательству: не загружены ГПЗУ, юридическая красная линия, геология и здания соседей.</em></p>`;
 html += `<h2>3. Объекты и отступы</h2><ul>`;
 const house = o('house'), bath = o('bath'), shed = o('shed');
 html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы: ${sb(house)}.</li>`;
@@ -1332,15 +1375,15 @@ html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.
 html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
 html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго‑западный угол.</li>`;
 html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, за огородом.</li>`;
-html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}. <strong>Костровище</strong> — ${dims(o('firepit'))}.</li>`;
+html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}. <strong>Зона мангала</strong> — ${dims(o('firepit'))}; режим открытого костра не выбран.</li>`;
 html += `<li><strong>Септик</strong> — ${dims(o('septic'))}. <strong>Скважина</strong> — ${dims(o('well'))}.</li>`;
 CAT.items().forEach(c => { html += `<li><strong>${c.label}</strong> — ${dims(c)}, центр (X=${Utils.fmt(c.x)}, Z=${Utils.fmt(c.z)}). Отступы: ${sb(c)}. <em>(добавлен из каталога)</em></li>`; });
 html += `</ul>`;
 html += `<h2>4. Ключевые расстояния (между краями)</h2><ul>`;
-html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong> (норма ≥15 м)</li>`;
-html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (норма ≥5 м)</li>`;
-html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (норма ≥15 м)</li>`;
-html += `<li>Костровище → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong> (норма ≥5 м)</li>`;
+html += `<li>Дом → баня: <strong>${dist('house','bath')} м</strong>. В пределах одного участка ИЖС противопожарный разрыв между домом и хозяйственной постройкой не нормируется (СП 4.13130; разъяснение МЧС).</li>`;
+html += `<li>Септик → дом: <strong>${dist('septic','house')} м</strong> (проектный ориентир 5 м; уточнить по выбранной ЛОС).</li>`;
+html += `<li>Септик → скважина: <strong>${dist('septic','well')} м</strong> (проектный ориентир 15 м; окончательное решение после геологии и выбора ЛОС).</li>`;
+html += `<li>Зона мангала → баня: <strong>${dist('firepit','bath')} м</strong>, → хозблок: <strong>${dist('firepit','shed')} м</strong> (для мангала ≥5 м; открытый костёр требует другого режима).</li>`;
 CONFIG.objects.filter(x => x.type === 'grill').forEach(g => {
 ['house','bath','shed','garage','gazebo'].forEach(bid => {
 const bb = Norms.obj(bid); if (!bb) return;
@@ -1354,8 +1397,8 @@ html += `</ul>`;
 html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
 html += `<h2>6.5. Предварительная смета</h2>` + buildSmetaHTML();
 html += `<h2>7. Заключение</h2>`;
-if (hard.length) html += `<p><span class="norm">Планировка требует корректировки:</span> ${hard.length} нарушений (раздел 2).</p>`;
-else html += `<p>Планировка обеспечивает безопасность, инсоляцию огорода и теплицы, удобство зоны отдыха.</p>`;
+if (hard.length) html += `<p><span class="norm">Планировка требует корректировки:</span> ${hard.length} автоматически выявленных обязательных нарушений (раздел 2).</p>`;
+else html += `<p>По автоматически проверяемым обязательным параметрам нарушений не найдено. До строительства необходимо закрыть условные проверки из раздела 2.</p>`;
 return html;
 }
 function openReportModal() {
@@ -1742,7 +1785,7 @@ for (let i = 0; i < draggableGroups.length; i++) if (draggableGroups[i] === oldG
 // 🩹 ИСПРАВЛЕНИЕ НАРУШЕНИЙ — этап 1: расталкивание, этап 2: спасательный перебор
 // ═══════════════════════════════════════════════════════════════
 function collectFixTargets() {
-const res = Norms.checkAll().filter(c => !c.ok && !c.soft).map(c => ({ kind: c.kind, ids: c.ids.slice(), actual: c.actual, min: c.min }));
+const res = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandatory').map(c => ({ kind: c.kind, ids: c.ids.slice(), actual: c.actual, min: c.min }));
 for (let i = 0; i < CONFIG.objects.length; i++) for (let j = i + 1; j < CONFIG.objects.length; j++) {
 const a = CONFIG.objects[i], b = CONFIG.objects[j];
 const d = Norms.dist(a, b);
@@ -1882,7 +1925,7 @@ if (s && typeof s.radius === 'number') copy.radius = s.radius;
 return copy;
 });
 let hard = 0, gardenSun = 0, ghSun = 0;
-try { hard = Norms.checkAll().filter(c => !c.ok && !c.soft).length; } catch (e) {}
+try { hard = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandatory').length; } catch (e) {}
 try {
 gardenSun = zoneSunHours({ x: 2.5, z: 3.5, w: 5, d: 7, own: null }, 5);
 ghSun = zoneSunHours({ x: 1.5, z: 7, w: 3, d: 6, own: 'greenhouse' }, 5);
@@ -1949,7 +1992,7 @@ grill:      { unit: 65000,  name: 'Мангальная зона' },
 pool:       { unit: 380000, name: 'Бассейн 4×6 (каркас + монтаж)' },
 fruit_tree: { unit: 6000,   name: 'Плодовое дерево (посадка)' },
 playground: { unit: 130000, name: 'Детская площадка' },
-firepit:    { unit: 45000,  name: 'Костровище' },
+firepit:    { unit: 45000,  name: 'Зона мангала' },
 greenhouse: { unit: 95000,  name: 'Теплица арочная 3×6' },
 garden:     { unit: 60000,  name: 'Огород (грядки)' },
 septic:     { unit: 190000, name: 'Септик 3 м³ (с монтажом)' },
@@ -2310,8 +2353,8 @@ saveLayout();
 updateNormBadge();
 if (showViolationRings) buildViolationRings();
 if (insolationOn) scheduleInsolation();
-const hard = Norms.checkAll().filter(c => !c.ok && !c.soft).length;
-toast(hard === 0 ? '🤖 Умная расстановка: все нормы соблюдены ✅' : `🤖 Расстановка выполнена: нарушений ${hard}`, 4000);
+const hard = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandatory').length;
+toast(hard === 0 ? '🤖 По автоматически проверяемым обязательным требованиям нарушений нет' : `🤖 Обязательных нарушений: ${hard}`, 4000);
 } catch (e) {
 console.error('Ошибка авторасстановки:', e);
 alert('⚠ Ошибка авторасстановки: ' + e.message);
