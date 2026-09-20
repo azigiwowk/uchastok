@@ -384,7 +384,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v2.1 (каталог объектов + исправление нарушений + undo с размерами)';
+const APP_VERSION = 'v3.0 (точная геометрия + живые коммуникации + полные варианты)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -435,15 +435,16 @@ objects: [
 { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
 ],
 utilities: [
-{ name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
-{ name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 7.5, dz: -1 }, { x: 24, z: 29 }, { obj: 'shed', dx: 3, dz: 0 } ] },
-{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', dx: 0, dz: 0 }, { x: 12.5, z: 22 }, { obj: 'house', dx: 0, dz: -1 } ] },
-{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', dx: 5, dz: 0 } ] },
-{ name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 2.5, z: 29 }, { obj: 'garden', dx: 0, dz: 0 } ] },
-{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', dx: 0, dz: -1 }, { x: 3, z: 29 }, { obj: 'septic', dx: 0, dz: 0 } ] },
-{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', dx: 0, dz: 0 }, { x: 3, z: 11 }, { obj: 'septic', dx: 0, dz: 0 } ] },
+{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, route: [ { infrastructure: 'powerPole' }, { x: 25, z: 5 }, { obj: 'house', side: 'east', along: -0.2 } ] },
+{ name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'shed', side: 'east', along: 0 } ] },
+{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 22 }, { obj: 'house', side: 'south', along: 0 } ] },
+{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 20, z: 29 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 2.5, z: 29 }, { obj: 'garden', point: 'center' } ] },
+{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', side: 'south', along: -0.35 }, { x: 3, z: 29 }, { obj: 'septic', point: 'center' } ] },
+{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 3, z: 11 }, { obj: 'septic', point: 'center' } ] },
 { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
-{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false, route: [ { x: 24.5, z: 29 }, { obj: 'house', dx: 7.5, dz: -1 } ] }
+{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false, route: [ { x: 24.5, z: 29 }, { obj: 'house', side: 'east', along: -0.2 } ] }
 ],
 // Репрезентативный день каждого месяца. Положение солнца, восход и закат
 // вычисляются по координатам участка, долготе и часовому поясу UTC+3.
@@ -491,6 +492,22 @@ if (window.CAT) window.CAT.save();
 }
 function loadVariants() { try { return JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch (e) { return {}; } }
 function saveVariants(v) { try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(v)); } catch (e) {} }
+function plainClone(value) {
+return JSON.parse(JSON.stringify(value, (key, item) => key.startsWith('_') ? undefined : item));
+}
+function snapshotFullScene() {
+return {
+v: 3,
+savedAt: Date.now(),
+objects: plainClone(CONFIG.objects),
+utilities: plainClone(CONFIG.utilities),
+infrastructure: plainClone(CONFIG.infrastructure)
+};
+}
+function snapshotObjectList(snapshot) {
+if (Array.isArray(snapshot)) return snapshot;
+return snapshot && Array.isArray(snapshot.objects) ? snapshot.objects : [];
+}
 const DOM = {
 viewSelect: document.getElementById('view-select'),
 monthSlider: document.getElementById('month-slider'),
@@ -853,6 +870,7 @@ const spec = CATALOG[type]; if (!spec) return null;
 ov = ov || {};
 const id = ov.id || this.nextId(type);
 if (CONFIG.objects.some(o => o.id === id)) return CONFIG.objects.find(o => o.id === id);
+if (!silent && typeof snapshotFullScene === 'function' && typeof pushUndo === 'function') pushUndo(snapshotFullScene());
 const num = parseInt(id.split('_')[1]) || 1;
 const obj = Object.assign({ id, type, label: spec.label + (num > 1 ? ' ' + num : ''), x: 0, z: 0, y: (spec.h || 2) + 1.6, rot: 0, w: spec.w, d: spec.d, h: spec.h, radius: spec.radius, color: spec.color, labelColor: spec.labelColor, labelSize: spec.labelSize, group: 'site' }, ov);
 if (typeof ov.x !== 'number') {
@@ -888,14 +906,15 @@ return { x: CONFIG.plot.w / 2, z: CONFIG.plot.d / 2 };
 spotFree(o, sb) {
 const b = Norms.bounds(o);
 if (b.minX < sb || b.minZ < sb || b.maxX > CONFIG.plot.w - sb || b.maxZ > CONFIG.plot.d - sb) return false;
-if (o.id !== 'car' && rectIntersect(b, DRIVEWAY)) return false;
+if (o.id !== 'car' && drivewayIntersects(o)) return false;
 for (const t of CONFIG.objects) { if (t.id === o.id) continue; if (Norms.dist(o, t) < 0.3) return false; }
 return true;
 },
-remove(id) {
+remove(id, silent) {
 const i = CONFIG.objects.findIndex(o => o.id === id); if (i < 0) return;
 const obj = CONFIG.objects[i];
 if (!CATALOG[obj.type]) { toast('🗑 Удалять можно только объекты из каталога'); return; }
+if (!silent && typeof snapshotFullScene === 'function' && typeof pushUndo === 'function') pushUndo(snapshotFullScene());
 const grp = objectMeshes[id];
 if (grp) { if (grp.parent) grp.parent.remove(grp); grp.traverse(c => { if (c.geometry) c.geometry.dispose(); }); delete objectMeshes[id]; }
 const di = draggables.findIndex(d => d.id === id); if (di >= 0) draggables.splice(di, 1);
@@ -904,11 +923,13 @@ const lbl = labelSprites[id]; if (lbl) { groups.objectLabels.remove(lbl); delete
 CONFIG.objects.splice(i, 1);
 if (DOM.objectModal.style.display === 'block') { DOM.objectModal.style.display = 'none'; document.body.style.overflow = 'auto'; }
 this.save(); updateNormBadge();
+if (!silent) {
 if (showViolationRings) buildViolationRings();
 if (insolationOn) scheduleInsolation();
 renderer.shadowMap.needsUpdate = true; Utils.markDirty();
 toast('🗑 Удалено: ' + obj.label);
 if (typeof renderCatalogModal === 'function' && DOM.catalogModal.style.display === 'block') renderCatalogModal();
+}
 }
 };
 window.CAT = CAT;
@@ -929,9 +950,29 @@ posts.count = idx; posts.instanceMatrix.needsUpdate = true; scene.add(posts);
 // КОММУНИКАЦИИ (живые трассы с якорями)
 // ═══════════════════════════════════════════════════════════════
 const commLines = [];
+function rotateLocalPoint(o, lx, lz) {
+const a = (o.rot || 0) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+return [o.x + lx*c + lz*s, o.z - lx*s + lz*c];
+}
+function objectAnchorPoint(o, anchor) {
+if (!o) return [0, 0];
+if (o.radius !== undefined || anchor.point === 'center') return [o.x, o.z];
+const hw = o.w/2, hd = o.d/2, along = Math.max(-1, Math.min(1, anchor.along || 0)), out = anchor.outward || 0;
+let lx = 0, lz = 0;
+if (anchor.corner) {
+const map = { sw:[-hw-out,-hd-out], se:[hw+out,-hd-out], ne:[hw+out,hd+out], nw:[-hw-out,hd+out] };
+[lx,lz] = map[anchor.corner] || [0,0];
+} else if (anchor.side === 'east') { lx=hw+out; lz=along*hd; }
+else if (anchor.side === 'west') { lx=-hw-out; lz=along*hd; }
+else if (anchor.side === 'north') { lx=along*hw; lz=hd+out; }
+else if (anchor.side === 'south') { lx=along*hw; lz=-hd-out; }
+else { lx=anchor.dx || 0; lz=anchor.dz || 0; }
+return rotateLocalPoint(o,lx,lz);
+}
 function utilityPoints(u) {
 return u.route.map(a => {
-if (a.obj) { const o = CONFIG.objects.find(x => x.id === a.obj); if (o) return [o.x + (a.dx || 0), o.z + (a.dz || 0)]; }
+if (a.infrastructure) { const p = CONFIG.infrastructure[a.infrastructure]; if (p) return [p.x,p.z]; }
+if (a.obj) { const o = CONFIG.objects.find(x => x.id === a.obj); if (o) return objectAnchorPoint(o,a); }
 return [a.x, a.z];
 });
 }
@@ -1007,10 +1048,10 @@ else hideCommInfo();
 // 💧 ДРЕНАЖ И ЛИВНЁВКА (кольцо вокруг дома + сбор с крыш)
 // ═══════════════════════════════════════════════════════════════
 const DRAINAGE_UTILS = [
-{ name: 'Кольцевой дренаж дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная Ø110 в геотекстиле, уклон 2 см/м', depth: 0.9, route: [ {x:3.5,z:24},{x:21.5,z:24},{x:21.5,z:36},{x:3.5,z:36},{x:3.5,z:24} ] },
-{ name: 'Дренаж → колодец', icon: '🕳', color: 0x0097a7, pipe: 'Ø110, уклон 3 см/м', depth: 1.1, route: [ {x:21.5,z:24},{x:23,z:22} ] },
-{ name: 'Ливнёвка (дом)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {x:4.5,z:35},{x:4.5,z:25},{x:20.5,z:25},{x:20.5,z:35},{x:20.5,z:25},{x:23,z:25},{x:23,z:13} ] },
-{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {x:16,z:8},{x:23,z:8},{x:23,z:12} ] }
+{ name: 'Кольцевой дренаж дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная Ø110 в геотекстиле, уклон 2 см/м', depth: 0.9, route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
+{ name: 'Дренаж → колодец', icon: '🕳', color: 0x0097a7, pipe: 'Ø110, уклон 3 см/м', depth: 1.1, route: [ {obj:'house',corner:'se',outward:1},{x:23,z:22} ] },
+{ name: 'Ливнёвка (дом)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'house',corner:'nw',outward:0.2},{obj:'house',corner:'sw',outward:0.2},{obj:'house',corner:'se',outward:0.2},{obj:'house',corner:'ne',outward:0.2},{obj:'house',corner:'se',outward:0.2},{x:23,z:25},{x:23,z:13} ] },
+{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'bath',corner:'sw',outward:0.2},{obj:'bath',corner:'se',outward:0.2},{x:23,z:12} ] }
 ];
 DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
 (() => {
@@ -1101,8 +1142,11 @@ if (grp) grp.rotation.y = o.rot * Math.PI / 180;
 rotVal.textContent = o.rot + '°';
 clampObject(o);
 if (grp) grp.position.set(o.x, 0, o.z);
+refreshUtilitiesFor(objectId);
 updateNormBadge();
 if (showViolationRings) buildViolationRings();
+if (insolationOn) scheduleInsolation();
+if (solarOn && objectId === 'house') { buildSolarPanels(); showSolarInfo(); }
 Utils.markDirty();
 };
 rotSlider.addEventListener('input', () => applyRot(parseInt(rotSlider.value) || 0));
@@ -1118,8 +1162,10 @@ if (w > 0) o.w = w; if (d > 0) o.d = d; if (h > 0) o.h = h;
 }
 rebuildObject(objectId);
 clampObject(o);
+syncPositionsToScene();
 updateNormBadge();
 if (showViolationRings) buildViolationRings();
+if (solarOn && objectId === 'house') { buildSolarPanels(); showSolarInfo(); }
 saveLayout();
 Utils.markDirty();
 toast('✅ Размеры применены');
@@ -1225,14 +1271,58 @@ const hw = (o.w * c + o.d * s) / 2;
 const hd = (o.w * s + o.d * c) / 2;
 return { minX: o.x - hw, maxX: o.x + hw, minZ: o.z - hd, maxZ: o.z + hd, circle: false };
 },
+corners(o) {
+if (o.radius !== undefined) return null;
+const hw = o.w / 2, hd = o.d / 2, a = (o.rot || 0) * Math.PI / 180;
+const c = Math.cos(a), s = Math.sin(a);
+return [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(([x,z]) => ({ x: o.x + x*c + z*s, z: o.z - x*s + z*c }));
+},
+pointInPolygon(p, poly) {
+let sign = 0;
+for (let i = 0; i < poly.length; i++) {
+const a = poly[i], b = poly[(i + 1) % poly.length];
+const cross = (b.x-a.x)*(p.z-a.z) - (b.z-a.z)*(p.x-a.x);
+if (Math.abs(cross) < 1e-9) continue;
+const cur = Math.sign(cross);
+if (sign && cur !== sign) return false;
+sign = cur;
+}
+return true;
+},
+pointSegmentDistance(p, a, b) {
+const vx = b.x-a.x, vz = b.z-a.z, l2 = vx*vx + vz*vz;
+const t = l2 ? Math.max(0, Math.min(1, ((p.x-a.x)*vx + (p.z-a.z)*vz) / l2)) : 0;
+return Math.hypot(p.x - (a.x + vx*t), p.z - (a.z + vz*t));
+},
+polygonDistance(A, B) {
+let overlap = true, minOverlap = Infinity;
+const axes = [];
+[A,B].forEach(poly => poly.forEach((p,i) => { const q = poly[(i+1)%poly.length], ex=q.x-p.x, ez=q.z-p.z, len=Math.hypot(ex,ez)||1; axes.push({x:-ez/len,z:ex/len}); }));
+for (const axis of axes) {
+const pa=A.map(p=>p.x*axis.x+p.z*axis.z), pb=B.map(p=>p.x*axis.x+p.z*axis.z);
+const minA=Math.min(...pa), maxA=Math.max(...pa), minB=Math.min(...pb), maxB=Math.max(...pb);
+const amount=Math.min(maxA,maxB)-Math.max(minA,minB);
+if (amount < 0) overlap=false; else minOverlap=Math.min(minOverlap,amount);
+}
+if (overlap) return -Math.max(0, minOverlap);
+let best=Infinity;
+A.forEach(p => B.forEach((q,i) => { best=Math.min(best,this.pointSegmentDistance(p,q,B[(i+1)%B.length])); }));
+B.forEach(p => A.forEach((q,i) => { best=Math.min(best,this.pointSegmentDistance(p,q,A[(i+1)%A.length])); }));
+return best;
+},
+circlePolygonDistance(circle, poly) {
+const center={x:circle.x,z:circle.z};
+let edge=Infinity;
+poly.forEach((p,i)=>{ edge=Math.min(edge,this.pointSegmentDistance(center,p,poly[(i+1)%poly.length])); });
+return this.pointInPolygon(center,poly) ? -(edge + circle.radius) : edge - circle.radius;
+},
 dist(a, b) {
-const A = this.bounds(a), B = this.bounds(b);
-if (A.circle && B.circle) return Math.hypot(a.x - b.x, a.z - b.z) - a.radius - b.radius;
-if (A.circle) { const px = Math.max(B.minX, Math.min(a.x, B.maxX)); const pz = Math.max(B.minZ, Math.min(a.z, B.maxZ)); return Math.hypot(a.x - px, a.z - pz) - a.radius; }
-if (B.circle) { const px = Math.max(A.minX, Math.min(b.x, A.maxX)); const pz = Math.max(A.minZ, Math.min(b.z, A.maxZ)); return Math.hypot(b.x - px, b.z - pz) - b.radius; }
-const dx = Math.max(0, B.minX - A.maxX, A.minX - B.maxX);
-const dz = Math.max(0, B.minZ - A.maxZ, A.minZ - B.maxZ);
-return Math.hypot(dx, dz);
+if (!a || !b) return Infinity;
+if (a.radius !== undefined && b.radius !== undefined) return Math.hypot(a.x-b.x,a.z-b.z)-a.radius-b.radius;
+const A=this.corners(a), B=this.corners(b);
+if (a.radius !== undefined) return this.circlePolygonDistance(a,B);
+if (b.radius !== undefined) return this.circlePolygonDistance(b,A);
+return this.polygonDistance(A,B);
 },
 setbacks(o) { const b = this.bounds(o); return { south: b.minZ, north: CONFIG.plot.d - b.maxZ, west: b.minX, east: CONFIG.plot.w - b.maxX }; },
 name(id) { const o = this.obj(id); return o ? o.label.replace(/^[^\s]+\s/, '') : id; },
@@ -1587,7 +1677,7 @@ if (c.geometry) c.geometry.dispose();
 if (c.material) c.material.dispose();
 }
 const checks = Norms.checkAll();
-const failed = checks.filter(c => !c.ok);
+const failed = checks.filter(c => c.ok === false && c.level === 'mandatory');
 const ids = new Set();
 failed.forEach(c => c.ids.forEach(id => ids.add(id)));
 ids.forEach(id => {
@@ -1603,7 +1693,7 @@ groups.violRings.add(ring);
 Utils.markDirty();
 }
 // ═══════════════════════════════════════════════════════════════
-// UNDO / REDO (v2.1 — снимки теперь хранят и размеры)
+// UNDO / REDO (v3 — поддерживает полные снимки сцены и старые массивы)
 // ═══════════════════════════════════════════════════════════════
 const history = { undo: [], redo: [] };
 const HISTORY_MAX = 50;
@@ -1625,6 +1715,26 @@ updateNormBadge();
 if (showViolationRings) buildViolationRings();
 if (insolationOn) scheduleInsolation();
 }
+function applyFullSceneSnapshot(snapshot) {
+const list = snapshotObjectList(snapshot);
+if (!list.length) return;
+if (!Array.isArray(snapshot)) {
+const wantedCatalog = new Set(list.filter(o => CATALOG[o.type]).map(o => o.id));
+CAT.items().slice().forEach(o => { if (!wantedCatalog.has(o.id)) CAT.remove(o.id, true); });
+list.filter(o => CATALOG[o.type]).forEach(o => { if (!Norms.obj(o.id)) CAT.make(o.type, plainClone(o), true); });
+if (snapshot.infrastructure) Object.keys(snapshot.infrastructure).forEach(k => {
+if (CONFIG.infrastructure[k]) Object.assign(CONFIG.infrastructure[k], plainClone(snapshot.infrastructure[k]));
+});
+if (Array.isArray(snapshot.utilities)) snapshot.utilities.forEach(saved => {
+const current = CONFIG.utilities.find(u => u.name === saved.name);
+if (!current) return;
+['route','pipe','depth','label'].forEach(key => { if (saved[key] !== undefined) current[key] = plainClone(saved[key]); });
+});
+}
+applySnapshot(list);
+CONFIG.utilities.forEach(refreshUtility);
+if (window.CAT) window.CAT.save();
+}
 function pushUndo(snap) {
 history.undo.push(snap);
 if (history.undo.length > HISTORY_MAX) history.undo.shift();
@@ -1633,19 +1743,19 @@ updateHistoryButtons();
 }
 function undo() {
 if (!history.undo.length) { toast('↩️ Нет действий для отмены'); return; }
-const current = snapshotPositions();
+const current = snapshotFullScene();
 const prev = history.undo.pop();
 history.redo.push(current);
-applySnapshot(prev);
+applyFullSceneSnapshot(prev);
 updateHistoryButtons();
 toast('↩️ Отменено');
 }
 function redo() {
 if (!history.redo.length) { toast('↪️ Нет действий для возврата'); return; }
-const current = snapshotPositions();
+const current = snapshotFullScene();
 const next = history.redo.pop();
 history.undo.push(current);
-applySnapshot(next);
+applyFullSceneSnapshot(next);
 updateHistoryButtons();
 toast('↪️ Возвращено');
 }
@@ -1746,7 +1856,7 @@ renderer.shadowMap.needsUpdate = true;
 Utils.markDirty();
 }
 function resetLayout() {
-CAT.items().slice().forEach(o => CAT.remove(o.id));   // очистка каталога
+CAT.items().slice().forEach(o => CAT.remove(o.id, true));   // очистка каталога
 try { localStorage.removeItem(CATALOG_KEY); } catch (e) {}
 CONFIG.objects.forEach(o => { const d = DEFAULT_LAYOUT[o.id]; if (d) { o.x = d.x; o.z = d.z; o.rot = d.rot || 0; o.w = d.w; o.d = d.d; o.h = d.h; o.radius = d.radius; } });
 syncPositionsToScene();
@@ -1815,7 +1925,7 @@ for (let z = hd; z <= CONFIG.plot.d - hd + 0.001; z += 0.5) {
 o.x = x; o.z = z;
 const s = Norms.setbacks(o);
 if (Math.min(s.south, s.north, s.west, s.east) < sbMin) continue;
-if (o.id !== 'car' && rectIntersect(Norms.bounds(o), DRIVEWAY)) continue;
+if (o.id !== 'car' && drivewayIntersects(o)) continue;
 let okAll = true;
 for (const t of CONFIG.objects) {
 if (t.id === o.id) continue;
@@ -1909,11 +2019,12 @@ renderer.shadowMap.needsUpdate = true;
 Utils.markDirty();
 }
 // ═══════════════════════════════════════════════════════════════
-// ВАРИАНТЫ ПЛАНИРОВКИ + СРАВНЕНИЕ (v2.1 — сохраняют и размеры)
+// ВАРИАНТЫ ПЛАНИРОВКИ + СРАВНЕНИЕ (v3 — полный снимок сцены)
 // ═══════════════════════════════════════════════════════════════
 function evaluateLayout(snapshot) {
 const saved = CONFIG.objects;
-CONFIG.objects = saved.map(full => {
+if (!Array.isArray(snapshot) && snapshot && Array.isArray(snapshot.objects)) CONFIG.objects = plainClone(snapshot.objects);
+else CONFIG.objects = saved.map(full => {
 const copy = Object.assign({}, full);
 const s = (snapshot || []).find(p => p.id === full.id);
 if (s && typeof s.x === 'number' && typeof s.z === 'number') { copy.x = s.x; copy.z = s.z; }
@@ -1927,8 +2038,9 @@ return copy;
 let hard = 0, gardenSun = 0, ghSun = 0;
 try { hard = Norms.checkAll().filter(c => c.ok === false && c.level === 'mandatory').length; } catch (e) {}
 try {
-gardenSun = zoneSunHours({ x: 2.5, z: 3.5, w: 5, d: 7, own: null }, 5);
-ghSun = zoneSunHours({ x: 1.5, z: 7, w: 3, d: 6, own: 'greenhouse' }, 5);
+const garden = Norms.obj('garden'), greenhouse = Norms.obj('greenhouse');
+if (garden) gardenSun = zoneSunHours({ x: garden.x, z: garden.z, w: garden.w, d: garden.d, own: null }, 5);
+if (greenhouse) ghSun = zoneSunHours({ x: greenhouse.x, z: greenhouse.z, w: greenhouse.w, d: greenhouse.d, own: greenhouse.id }, 5);
 } catch (e) {}
 CONFIG.objects = saved;
 return { hard, gardenSun, ghSun };
@@ -1936,12 +2048,13 @@ return { hard, gardenSun, ghSun };
 function openVariantsModal() {
 const variants = loadVariants();
 const names = Object.keys(variants);
-let html = '<table id="variants-table"><thead><tr><th>Вариант</th><th>Нарушения</th><th>🌱 Огород</th><th>🌿 Теплица</th><th>Действия</th></tr></thead><tbody>';
+let html = '<table id="variants-table"><thead><tr><th>Вариант</th><th>Объекты</th><th>Нарушения</th><th>🌱 Огород</th><th>🌿 Теплица</th><th>Действия</th></tr></thead><tbody>';
 const cur = evaluateLayout(CONFIG.objects);
-html += `<tr class="cur"><td><b>Текущая</b></td><td>${cur.hard ? '⚠ ' + cur.hard : '✅ 0'}</td><td>${Utils.fmt(cur.gardenSun)} ч</td><td>${Utils.fmt(cur.ghSun)} ч</td><td>—</td></tr>`;
+html += `<tr class="cur"><td><b>Текущая</b></td><td>${CONFIG.objects.length}</td><td>${cur.hard ? '⚠ ' + cur.hard : '✅ 0'}</td><td>${Utils.fmt(cur.gardenSun)} ч</td><td>${Utils.fmt(cur.ghSun)} ч</td><td>—</td></tr>`;
 names.forEach(n => {
 const m = evaluateLayout(variants[n]);
-html += `<tr><td>${n}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${n}">Загрузить</button><button class="v-del" data-v="${n}">🗑</button></td></tr>`;
+const full = !Array.isArray(variants[n]);
+html += `<tr><td>${n}<div class="norm-doc">${full ? 'полный снимок v3' : 'старый формат'}</div></td><td>${snapshotObjectList(variants[n]).length}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${n}">Загрузить</button><button class="v-del" data-v="${n}">🗑</button></td></tr>`;
 });
 html += '</tbody></table>';
 if (!names.length) html = '<p style="margin-top:10px;">Сохранённых вариантов пока нет. Расставьте объекты и нажмите «💾 Сохранить текущую как вариант».</p>' + html;
@@ -1956,17 +2069,17 @@ const variants = loadVariants();
 const def = 'Вариант ' + (Object.keys(variants).length + 1);
 const name = prompt('Название варианта:', def);
 if (!name) return;
-variants[name] = snapshotPositions();   // v2.1: снимок с размерами и объектами каталога
+variants[name] = snapshotFullScene();   // v3: полный снимок сцены, состава объектов, трасс и инфраструктуры
 saveVariants(variants);
 toast('💾 Сохранено как «' + name + '»');
 openVariantsModal();
 }
 function loadVariant(name) {
 const variants = loadVariants();
-const arr = variants[name];
-if (!arr) return;
-pushUndo(snapshotPositions());
-applySnapshot(arr);                     // v2.1: восстанавливает позиции, повороты И размеры
+const snapshot = variants[name];
+if (!snapshot) return;
+pushUndo(snapshotFullScene());
+applyFullSceneSnapshot(snapshot);        // поддерживает и старые v2.1-массивы
 DOM.variantsModal.style.display = 'none';
 document.body.style.overflow = 'auto';
 toast('📂 Загружен «' + name + '»');
@@ -2257,6 +2370,8 @@ playground: { x:[6, 12],   z:[14, 20] },
 car:        { x:[18, 23],  z:[1, 4]  }
 };
 const DRIVEWAY = { minX: 16, maxX: CONFIG.plot.w, minZ: 11.5, maxZ: 17.5 };
+const DRIVEWAY_SHAPE = { id: '__driveway__', x: (DRIVEWAY.minX+DRIVEWAY.maxX)/2, z: (DRIVEWAY.minZ+DRIVEWAY.maxZ)/2, w: DRIVEWAY.maxX-DRIVEWAY.minX, d: DRIVEWAY.maxZ-DRIVEWAY.minZ, rot: 0 };
+function drivewayIntersects(o) { return Norms.dist(o, DRIVEWAY_SHAPE) <= 0; }
 const SETBACK = { house: 3, bath: 1, shed: 1, septic: 1, well: 1, garden: 0.5, greenhouse: 0.5, playground: 0.5, firepit: 0.5, car: 0.5, gazebo: 1, garage: 1, grill: 0.5, pool: 1, fruit_tree: 1 };
 function pairOverlap(A, B) {
 const ba = Norms.bounds(A), bb = Norms.bounds(B);
@@ -2296,7 +2411,7 @@ return tot ? sun / tot : 0;
 function layoutFeasible(o, placed) {
 if (!inBounds(o)) return false;
 const b = Norms.bounds(o);
-if (o.id !== 'car' && rectIntersect(b, DRIVEWAY)) return false;
+if (o.id !== 'car' && drivewayIntersects(o)) return false;
 for (const p of placed) {
 if (p.id === o.id) continue;
 if (pairOverlap(o, p)) return false;
@@ -3182,7 +3297,7 @@ setTimeout(() => {
 if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v2.1: каталог объектов, исправление нарушений, undo с размерами — собран.');
+console.log('✅ Проект Берн v3.0: точная геометрия, живые коммуникации и полные варианты — собран.');
 </script>
 </body>
 </html>
