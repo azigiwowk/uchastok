@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v3.2 (ориентация Рассветной + корректная уличная граница)';
+const APP_VERSION = 'v3.3 (ориентация + трассы коммуникаций)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -452,7 +452,7 @@ streetSide: 'z=0'
 },
 center: { x: 12.5005, z: 20.001 },
 // angle — поворот локальной оси +Z относительно истинного севера.
-gps: { lat: 56.042291, lng: 38.417342, angle: 57.267, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
+gps: { lat: 56.042291, lng: 38.417342, angle: 57.263397, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
 infrastructure: {
 powerPole: { x: 21, z: -9, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, ориентировочно напротив хозблока; точное положение требует обмера' },
 entrance: { x: 14.5, z: 0, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд и калитка на короткой уличной стороне z=0; точное положение уточнить по месту' }
@@ -472,7 +472,7 @@ objects: [
 { id: 'well', type: 'well', label: '💧 Скважина', x: 16, z: 22, y: 2.0, radius: 0.15, rot: 0, color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
 ],
 utilities: [
-{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, route: [ { infrastructure: 'powerPole' }, { x: 25, z: 5 }, { obj: 'house', side: 'east', along: -0.2 } ] },
+{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 21, z: 0 }, { x: 21, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
 { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
 { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'shed', side: 'east', along: 0 } ] },
 { name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 22 }, { obj: 'house', side: 'south', along: 0 } ] },
@@ -480,8 +480,8 @@ utilities: [
 { name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 2.5, z: 29 }, { obj: 'garden', point: 'center' } ] },
 { name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', side: 'south', along: -0.35 }, { x: 3, z: 29 }, { obj: 'septic', point: 'center' } ] },
 { name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 3, z: 11 }, { obj: 'septic', point: 'center' } ] },
-{ name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
-{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false, route: [ { x: 24.5, z: 29 }, { obj: 'house', side: 'east', along: -0.2 } ] }
+{ name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Наличие и точное положение газовой магистрали в исходных данных не подтверждены. Линия показана только как сценарий возможного прохождения вдоль Рассветной улицы.', route: [ { x: 0, z: -0.8 }, { x: 25.001, z: -0.8 } ] },
+{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 21, z: 0 }, { x: 21, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
 ],
 // Репрезентативный день каждого месяца. Положение солнца, восход и закат
 // вычисляются по координатам участка, долготе и часовому поясу UTC+3.
@@ -1092,7 +1092,11 @@ return pts[0];
 }
 function createUndergroundLine(u, index) {
 const pts = utilityPoints(u);
-u._line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05)), new THREE.LineBasicMaterial({ color: u.color }));
+const mainMat = u.status === 'assumption'
+? new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.45, gapSize: 0.25, transparent: true, opacity: 0.9 })
+: new THREE.LineBasicMaterial({ color: u.color });
+u._line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05)), mainMat);
+if (u.status === 'assumption') u._line.computeLineDistances();
 u._line.userData.utilIndex = index; groups.comms.add(u._line); commLines.push(u._line);
 u._shadow = new THREE.Line(new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01)), new THREE.LineDashedMaterial({ color: u.color, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.3 }));
 u._shadow.computeLineDistances(); groups.comms.add(u._shadow);
@@ -1101,6 +1105,7 @@ if (u.name && u.label !== false) { const mid = routeMidPoint(pts); u._label = Ut
 function refreshUtility(u) {
 const pts = utilityPoints(u);
 u._line.geometry.dispose(); u._line.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, 0.05));
+if (u.status === 'assumption') u._line.computeLineDistances();
 u._shadow.geometry.dispose(); u._shadow.geometry = new THREE.BufferGeometry().setFromPoints(toVec3(pts, -0.01));
 u._shadow.computeLineDistances();
 if (u._label) { const mid = routeMidPoint(pts); u._label.position.set(mid[0], 0.5, mid[1]); }
@@ -1116,7 +1121,7 @@ pickRay.params.Line.threshold = 0.45;
 let commInfoTimer = null;
 function showCommInfo(u) {
 const len = utilityLength(u);
-DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span> ${statusChip(u.status)}<br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м <span class="close" id="comm-info-close">✕</span>`;
+DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span> ${statusChip(u.status)}<br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м${u.note ? `<br><span style="color:#ddd;font-size:11px;">${escapeHtml(u.note)}</span>` : ''} <span class="close" id="comm-info-close">✕</span>`;
 DOM.commInfo.classList.add('show');
 const pts = utilityPoints(u);
 commHighlight.geometry.dispose();
@@ -1529,10 +1534,11 @@ if (hard) { DOM.normBadge.textContent = `⚠ Обязательных наруш
 else { DOM.normBadge.textContent = `✓ Проверяемые нормы: без нарушений • уточнить: ${pending}`; DOM.normBadge.classList.remove('bad'); }
 }
 const ENGINEERING_HTML = `
-<h3>💧 Водоснабжение</h3><ul><li>Скважина: глубина 25 м, дебит 2 м³/ч. Насос погружной на глубине 20 м.</li><li>Труба от скважины до дома: ПНД Ø32 мм, глубина 1,5 м (ниже глубины промерзания Московской области – 1,4 м).</li><li>Разводка по дому: коллекторная, трубы PEX Ø16 мм.</li><li>Водопровод к бане: ПНД Ø25 мм, глубина 1,5 м, в одной траншее с электрической гофрой.</li><li>Линия полива огорода и теплицы: ПНД Ø20 мм, глубина 0,8 м (с возможностью консервации на зиму).</li><li>Давление 3 атм, реле давления, гидроаккумулятор 50 л.</li></ul>
-<h3>🚽 Канализация</h3><ul><li>Септик: трёхкамерный, 3 м³, глубина до верхней крышки 2,0 м.</li><li>Трубы ПВХ Ø110 мм, уклон 2 см/м.</li><li>Ревизионные колодцы на поворотах. Фановые трубы выше крыш дома и бани.</li></ul>
-<h3>⚡ Электроснабжение</h3><ul><li><strong>Существует:</strong> электрический столб со щитом за Рассветной улицей, напротив хозблока; положение на схеме ориентировочное.</li><li><strong>Предположение:</strong> ввод в дом ВВГнг 5×10 мм², глубина 0,8 м в защитной трубе — сечение и способ прокладки подтвердить проектом электроснабжения.</li><li><strong>Предположение:</strong> щиток 12 модулей, автоматы, УЗО, дифференциальные автоматы.</li><li><strong>Предположение:</strong> к бане ВВГнг 3×4 мм²; к хозблоку ВВГнг 3×2,5 мм².</li><li>Освещение участка: 4 светодиодных светильника с датчиком освещённости.</li></ul>
-<h3>🔥 Газоснабжение</h3><ul><li>Магистральный газ, полиэтиленовая труба Ø32 мм, глубина 1,2 м.</li><li>Ввод в дом через стену, отключающий кран, газовый счётчик. Котёл 24 кВт.</li></ul>`;
+<p><strong>Статус инженерной схемы:</strong> кроме существующего столба со щитом, показанные трассы и большинство параметров ниже являются предварительными проектными предположениями. Они нужны для планировки участка и не заменяют рабочие проекты сетей.</p>
+<h3>💧 Водоснабжение</h3><ul><li>Скважина, её глубина и дебит пока требуют подтверждения по бурению/паспорту скважины.</li><li>Трасса от скважины до дома и разводка к бане/поливу показаны как эскиз. Диаметры ПНД и глубины в модели — предварительные.</li><li>Перед строительством нужно увязать водопровод с фундаментами, септиком, дренажом и фактической глубиной промерзания.</li></ul>
+<h3>🚽 Канализация</h3><ul><li>Положение септика и трассы от дома/бани пока проектные.</li><li>Тип очистного сооружения, отметки, уклоны и точки ревизий определяются после выбора системы и высотной съёмки.</li></ul>
+<h3>⚡ Электроснабжение</h3><ul><li><strong>Подтверждено пользователем:</strong> электрический столб со щитом находится за ул. Рассветной, примерно напротив хозблока.</li><li><strong>Положение на 3D-сцене ориентировочное.</strong> Эскизный ввод теперь пересекает именно короткую уличную сторону z=0 и идёт к дому внутри участка.</li><li>Марка/сечение кабеля, глубина и способ прокладки должны быть подтверждены проектом электроснабжения и условиями сетевой организации.</li></ul>
+<h3>🔥 Газоснабжение</h3><ul><li><strong>Не подтверждено исходными данными:</strong> наличие, точная сторона и положение газовой магистрали.</li><li>Жёлтая пунктирная линия вдоль Рассветной и ввод к дому — только сценарий для резервирования коридора. До получения схемы газовых сетей её нельзя считать фактической трассой.</li></ul>`;
 function buildReportHTML() {
 const now = new Date().toLocaleDateString('ru-RU');
 const o = id => Norms.obj(id);
@@ -3583,7 +3589,7 @@ setTimeout(() => {
 if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v3.2: Рассветная по короткой стороне z=0, въезд и отступы перепривязаны.');
+console.log('✅ Проект Берн v3.3: фасад по z=0, коммуникации перепривязаны и помечены по степени достоверности.');
 </script>
 </body>
 </html>
