@@ -111,6 +111,22 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 #variants-table button { margin: 0 3px; padding: 4px 10px; border-radius: 6px; border: 1px solid #3498db; background: rgba(52,152,219,.15); color: #1e6fb0; cursor: pointer; font-size: 12px; }
 #variants-table button.v-del { border-color: #e74c3c; background: rgba(231,76,60,.12); color: #c0392b; }
 #variants-table tr.cur { background: #fff9e6; }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
+.status-existing { background:#e8f5e9; color:#1b5e20; border:1px solid #81c784; }
+.status-planned { background:#e3f2fd; color:#0d47a1; border:1px solid #64b5f6; }
+.status-assumption { background:#fff3e0; color:#9a4c00; border:1px solid #ffb74d; }
+.status-confirmed { background:#ede7f6; color:#4527a0; border:1px solid #9575cd; }
+#project-status-table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0 18px; }
+#project-status-table th { background:#f0f0f0; border-bottom:2px solid #ffaa00; padding:8px; text-align:left; }
+#project-status-table td { padding:7px 8px; border-bottom:1px solid #eee; vertical-align:middle; }
+#project-status-table select { max-width:170px; width:100%; padding:5px 7px; border:1px solid #bbb; border-radius:7px; background:#fff; }
+.backup-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.backup-toolbar button, .backup-actions button { border:1px solid #3498db; background:#eef7ff; color:#17649d; border-radius:7px; padding:7px 11px; cursor:pointer; font-weight:600; }
+.backup-actions { display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+.backup-actions button { padding:4px 8px; font-size:11px; }
+.backup-actions button.danger { border-color:#e74c3c; background:#fff1ef; color:#b33528; }
+.backup-row { display:grid; grid-template-columns:minmax(160px,1fr) auto; gap:10px; align-items:center; padding:9px 0; border-bottom:1px solid #eee; font-size:12px; }
+.backup-empty { color:#777; font-size:13px; padding:10px 0; }
 .norm-ok { color: #27ae60; font-weight: 700; white-space: nowrap; }
 .norm-bad { color: #c0392b; font-weight: 700; white-space: nowrap; }
 .norm-warn { color: #e67e22; font-weight: 700; white-space: nowrap; }
@@ -229,6 +245,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <button id="catalog-btn" class="edit-btn var-btn">📦 Каталог объектов</button>
 <button id="drawing-btn" class="edit-btn var-btn">📐 2D-чертёж строителям</button>
 <button id="smeta-btn" class="edit-btn var-btn">💰 Смета</button>
+<button id="project-data-btn" class="edit-btn var-btn">🗂 Проект и копии</button>
 <div class="edit-row">
 <button id="save-layout-btn" class="edit-btn">💾 Сохранить</button>
 <button id="reset-layout-btn" class="edit-btn danger">🔄 Сброс</button>
@@ -281,6 +298,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <button class="ctrl-btn" id="catalogMob">📦 Каталог</button>
 <button class="ctrl-btn" id="showDrawingMob">📐 2D-чертёж</button>
 <button class="ctrl-btn" id="showSmetaMob">💰 Смета</button>
+<button class="ctrl-btn" id="projectDataMob">🗂 Проект и копии</button>
 <button class="close-menu" id="closeMenu">✕ Закрыть меню</button>
 </div>
 <div id="report-modal" class="modal">
@@ -353,6 +371,25 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <div class="modal-footer"><button id="close-smeta-btn">Закрыть</button></div>
 </div>
 </div>
+<div id="project-data-modal" class="modal">
+<div class="modal-content" style="max-width:900px; height:auto; max-height:90vh; overflow-y:auto; display:block; padding:20px 30px;">
+<span class="modal-close" id="close-project-data-modal">&times;</span>
+<h2 style="margin-top:0; border-bottom:2px solid #ffaa00; padding-bottom:8px;">🗂 Данные проекта и резервные копии</h2>
+<p style="font-size:13px; color:#555;">Статус показывает, что уже существует, что только запланировано, а какие данные требуют проверки или уже подтверждены документами.</p>
+<div id="project-status-summary"></div>
+<div style="overflow-x:auto;"><table id="project-status-table"><thead><tr><th>Раздел</th><th>Элемент</th><th>Статус</th><th>Примечание</th></tr></thead><tbody id="project-status-tbody"></tbody></table></div>
+<h3 style="border-left:3px solid #ffaa00; padding-left:10px;">💾 Перенос и страховочные копии</h3>
+<div class="backup-toolbar">
+<button id="export-project-json">⬇ Скачать весь проект JSON</button>
+<button id="import-project-json">⬆ Загрузить проект JSON</button>
+<button id="create-local-backup">🛟 Создать локальную копию</button>
+</div>
+<input id="project-json-file" type="file" accept="application/json,.json" hidden>
+<p style="font-size:11px; color:#777; margin:4px 0 10px;">JSON включает текущую сцену, размеры и повороты, добавленные объекты, трассы коммуникаций, инфраструктуру, статусы и все сохранённые варианты.</p>
+<div id="backup-list"></div>
+<div class="modal-footer"><button id="close-project-data-btn">Закрыть</button></div>
+</div>
+</div>
 <div id="drawing-modal" class="modal">
 <div class="modal-content" style="max-width: 760px; height: auto; max-height: 90vh; overflow-y: auto; display: block; padding: 20px 30px;">
 <span class="modal-close" id="close-drawing-modal">&times;</span>
@@ -384,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v3.0 (точная геометрия + живые коммуникации + полные варианты)';
+const APP_VERSION = 'v3.1 (резервные копии + статусы данных)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -459,6 +496,25 @@ monthNames: ['Январь','Февраль','Март','Апрель','Май',
 const STORAGE_KEY = 'bern_layout_v1';
 const VARIANTS_KEY = 'bern_layout_variants';
 const CATALOG_KEY = 'bern_catalog_v1';
+const PROJECT_STATE_KEY = 'bern_project_state_v1';
+const BACKUPS_KEY = 'bern_project_backups_v1';
+const BACKUP_FORMAT = 'bern-project-backup';
+const BACKUP_SCHEMA = 1;
+const BACKUP_LIMIT = 5;
+const STATUS_DEFS = {
+existing: { label: 'Существует', icon: '●', className: 'status-existing' },
+planned: { label: 'Планируется', icon: '◷', className: 'status-planned' },
+assumption: { label: 'Предположение', icon: '?', className: 'status-assumption' },
+confirmed: { label: 'Подтверждено', icon: '✓', className: 'status-confirmed' }
+};
+const PROJECT_FACTS = [
+{ id: 'cadastral', label: 'Кадастровый номер 50:16:0202016:428', status: 'confirmed', note: 'По выписке ЕГРН' },
+{ id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
+{ id: 'roadSide', label: 'Улица Рассветная вдоль восточной границы', status: 'confirmed', note: 'По схеме ЕГРН, участок дороги 50:16:0202016:526' },
+{ id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' }
+];
+CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
+CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -475,7 +531,9 @@ if (s && typeof s.rot === 'number') o.rot = s.rot;
 if (s && typeof s.w === 'number') o.w = s.w;
 if (s && typeof s.d === 'number') o.d = s.d;
 if (s && typeof s.h === 'number') o.h = s.h;
-if (s && typeof s.radius === 'number') o.radius = s.radius;
+	if (s && typeof s.radius === 'number') o.radius = s.radius;
+	if (s && STATUS_DEFS[s.status]) o.status = s.status;
+	if (s && typeof s.note === 'string') o.note = s.note;
 if (s) hadSavedLayout = true;
 });
 }
@@ -485,23 +543,51 @@ loadSavedLayout();
 function saveLayout() {
 try {
 const objects = {};
-CONFIG.objects.forEach(o => { objects[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
-localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), objects }));
-if (window.CAT) window.CAT.save();
+	CONFIG.objects.forEach(o => { objects[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius, status: o.status, note: o.note }; });
+	localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 2, savedAt: Date.now(), objects }));
+	if (window.CAT) window.CAT.save();
+	saveProjectState();
 } catch (e) { console.warn('Не удалось сохранить планировку:', e); }
 }
 function loadVariants() { try { return JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch (e) { return {}; } }
 function saveVariants(v) { try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(v)); } catch (e) {} }
+function normalizeStatus(value, fallback) { return STATUS_DEFS[value] ? value : (fallback || 'assumption'); }
+function statusChip(value) {
+const key = normalizeStatus(value);
+const d = STATUS_DEFS[key];
+return `<span class="status-chip ${d.className}">${d.icon} ${d.label}</span>`;
+}
+function statusOptions(selected) {
+return Object.keys(STATUS_DEFS).map(key => `<option value="${key}"${key === normalizeStatus(selected) ? ' selected' : ''}>${STATUS_DEFS[key].label}</option>`).join('');
+}
+function loadProjectState() {
+try {
+const raw = localStorage.getItem(PROJECT_STATE_KEY); if (!raw) return;
+const data = JSON.parse(raw);
+(data.facts || []).forEach(s => { const f = PROJECT_FACTS.find(x => x.id === s.id); if (f) { f.status = normalizeStatus(s.status, f.status); if (typeof s.note === 'string') f.note = s.note; } });
+Object.keys(data.infrastructure || {}).forEach(k => { if (CONFIG.infrastructure[k]) Object.assign(CONFIG.infrastructure[k], { status: normalizeStatus(data.infrastructure[k].status, CONFIG.infrastructure[k].status), note: data.infrastructure[k].note || CONFIG.infrastructure[k].note }); });
+(data.utilities || []).forEach(s => { const u = CONFIG.utilities.find(x => x.name === s.name); if (u) { u.status = normalizeStatus(s.status, u.status); if (typeof s.note === 'string') u.note = s.note; } });
+} catch (e) { console.warn('Не удалось загрузить статусы проекта:', e); }
+}
+function saveProjectState() {
+try {
+const infrastructure = {};
+Object.keys(CONFIG.infrastructure).forEach(k => { infrastructure[k] = { status: CONFIG.infrastructure[k].status, note: CONFIG.infrastructure[k].note }; });
+localStorage.setItem(PROJECT_STATE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), facts: plainClone(PROJECT_FACTS), infrastructure, utilities: CONFIG.utilities.map(u => ({ name: u.name, status: u.status, note: u.note })) }));
+} catch (e) { console.warn('Не удалось сохранить статусы проекта:', e); }
+}
+loadProjectState();
 function plainClone(value) {
 return JSON.parse(JSON.stringify(value, (key, item) => key.startsWith('_') ? undefined : item));
 }
 function snapshotFullScene() {
 return {
-v: 3,
-savedAt: Date.now(),
-objects: plainClone(CONFIG.objects),
-utilities: plainClone(CONFIG.utilities),
-infrastructure: plainClone(CONFIG.infrastructure)
+	v: 4,
+	savedAt: Date.now(),
+	objects: plainClone(CONFIG.objects),
+	utilities: plainClone(CONFIG.utilities),
+	infrastructure: plainClone(CONFIG.infrastructure),
+	projectFacts: plainClone(PROJECT_FACTS)
 };
 }
 function snapshotObjectList(snapshot) {
@@ -537,9 +623,17 @@ variantsModal: document.getElementById('variants-modal'),
 variantsWrap: document.getElementById('variants-wrap'),
 saveVariantBtn: document.getElementById('save-variant-btn'),
 fixViolModalBtn: document.getElementById('fixviol-modal-btn'),
-catalogModal: document.getElementById('catalog-modal'),
-catalogGrid: document.getElementById('catalog-grid'),
-catalogPlaced: document.getElementById('catalog-placed'),
+	catalogModal: document.getElementById('catalog-modal'),
+	catalogGrid: document.getElementById('catalog-grid'),
+	catalogPlaced: document.getElementById('catalog-placed'),
+	projectDataModal: document.getElementById('project-data-modal'),
+	projectStatusSummary: document.getElementById('project-status-summary'),
+	projectStatusTbody: document.getElementById('project-status-tbody'),
+	backupList: document.getElementById('backup-list'),
+	exportProjectJson: document.getElementById('export-project-json'),
+	importProjectJson: document.getElementById('import-project-json'),
+	projectJsonFile: document.getElementById('project-json-file'),
+	createLocalBackup: document.getElementById('create-local-backup'),
 planContainer: document.getElementById('plan-container'),
 pdfCover: document.getElementById('pdf-cover-container'),
 pdfReport: document.getElementById('pdf-report-container'),
@@ -567,8 +661,9 @@ autofixBtn: document.getElementById('autofix-btn'),
 fixViolBtn: document.getElementById('fixviol-btn'),
 undoBtn: document.getElementById('undo-btn'),
 redoBtn: document.getElementById('redo-btn'),
-variantsBtn: document.getElementById('variants-btn'),
-catalogBtn: document.getElementById('catalog-btn'),
+	variantsBtn: document.getElementById('variants-btn'),
+	catalogBtn: document.getElementById('catalog-btn'),
+	projectDataBtn: document.getElementById('project-data-btn'),
 saveBtn: document.getElementById('save-layout-btn'),
 resetBtn: document.getElementById('reset-layout-btn'),
 status: document.getElementById('edit-status')
@@ -579,7 +674,7 @@ measure: document.getElementById('toggleMeasureMob'), area: document.getElementB
 norms: document.getElementById('showNormsBtnMob'), report: document.getElementById('showReportBtnMob'),
 plan: document.getElementById('showHousePlanBtnMob'), png: document.getElementById('exportPngBtnMob'),
 pdf: document.getElementById('exportPdfBtnMob'), gps: document.getElementById('showGpsBtnMob'),
-catalog: document.getElementById('catalogMob')
+	catalog: document.getElementById('catalogMob'), projectData: document.getElementById('projectDataMob')
 }
 };
 const Utils = {
@@ -862,7 +957,7 @@ const draggableGroups = draggables.map(d => d.group);
 // ═══════════════════════════════════════════════════════════════
 const CAT = {
 items() { return CONFIG.objects.filter(o => CATALOG[o.type]); },
-save() { try { localStorage.setItem(CATALOG_KEY, JSON.stringify(this.items().map(o => ({ id: o.id, type: o.type, x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius })))); } catch (e) {} },
+save() { try { localStorage.setItem(CATALOG_KEY, JSON.stringify(this.items().map(o => ({ id: o.id, type: o.type, x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius, status: o.status, note: o.note })))); } catch (e) {} },
 load() { try { const raw = localStorage.getItem(CATALOG_KEY); if (!raw) return; JSON.parse(raw).forEach(s => { if (CATALOG[s.type]) this.make(s.type, s, true); }); } catch (e) { console.warn('Каталог: ошибка загрузки', e); } },
 nextId(type) { let n = 1; while (CONFIG.objects.some(o => o.id === type + '_' + n)) n++; return type + '_' + n; },
 make(type, ov, silent) {
@@ -872,7 +967,7 @@ const id = ov.id || this.nextId(type);
 if (CONFIG.objects.some(o => o.id === id)) return CONFIG.objects.find(o => o.id === id);
 if (!silent && typeof snapshotFullScene === 'function' && typeof pushUndo === 'function') pushUndo(snapshotFullScene());
 const num = parseInt(id.split('_')[1]) || 1;
-const obj = Object.assign({ id, type, label: spec.label + (num > 1 ? ' ' + num : ''), x: 0, z: 0, y: (spec.h || 2) + 1.6, rot: 0, w: spec.w, d: spec.d, h: spec.h, radius: spec.radius, color: spec.color, labelColor: spec.labelColor, labelSize: spec.labelSize, group: 'site' }, ov);
+const obj = Object.assign({ id, type, label: spec.label + (num > 1 ? ' ' + num : ''), x: 0, z: 0, y: (spec.h || 2) + 1.6, rot: 0, w: spec.w, d: spec.d, h: spec.h, radius: spec.radius, color: spec.color, labelColor: spec.labelColor, labelSize: spec.labelSize, group: 'site', status: 'planned' }, ov);
 if (typeof ov.x !== 'number') {
 const extra = (type === 'grill') ? (o => CONFIG.objects.filter(b => ['house','bath','shed','garage','gazebo'].includes(b.type)).every(b => Norms.dist(o, b) >= 5)) : null;
 const p = this.findFreeSpot(obj, extra); obj.x = p.x; obj.z = p.z;
@@ -1020,7 +1115,7 @@ pickRay.params.Line.threshold = 0.45;
 let commInfoTimer = null;
 function showCommInfo(u) {
 const len = utilityLength(u);
-DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span><br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м <span class="close" id="comm-info-close">✕</span>`;
+DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span> ${statusChip(u.status)}<br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м <span class="close" id="comm-info-close">✕</span>`;
 DOM.commInfo.classList.add('show');
 const pts = utilityPoints(u);
 commHighlight.geometry.dispose();
@@ -1078,7 +1173,7 @@ const name = obj.label.replace(/^[^\s]+\s/, '');
 const b = Norms.bounds(obj);
 const area = obj.radius ? Math.PI * obj.radius * obj.radius : obj.w * obj.d;
 const gps = localToGPS(obj.x, obj.z);
-let html = `<div class="obj-header"><div class="obj-emoji">${emoji}</div><div><h2 class="obj-title">${name}</h2><div class="obj-subtitle">${CATALOG[o.type] ? 'Объект из каталога' : 'Объект на участке'}</div></div></div>`;
+let html = `<div class="obj-header"><div class="obj-emoji">${emoji}</div><div><h2 class="obj-title">${name}</h2><div class="obj-subtitle">${CATALOG[o.type] ? 'Объект из каталога' : 'Объект на участке'} · ${statusChip(o.status)}</div></div></div>`;
 html += `<h3>📐 Размеры и площадь</h3><table>
 <tr><td>Размеры</td><td>${obj.radius ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)} × ${Utils.fmt(obj.d)} м`}</td></tr>
 <tr><td>Площадь</td><td>${Utils.fmt(area)} м²</td></tr>
@@ -1116,6 +1211,7 @@ else if (o.type === 'pool') html += `<div class="obj-note"><strong>🏊 Басс
 else if (o.type === 'fruit_tree') html += `<div class="obj-note"><strong>🍎 Дерево:</strong> При посадке высокорослых сортов держите ≥4 м от забора (СП 53.13330).</div>`;
 // ── Редактор: поворот + размеры ──
 html += `<h3>🛠 Редактирование</h3>
+<div style="margin:6px 0 10px;">Статус: <select id="obj-status" style="padding:5px 7px; border:1px solid #bbb; border-radius:7px;">${statusOptions(o.status)}</select></div>
 <div style="margin:6px 0;">Поворот: <b id="obj-rot-val">${o.rot || 0}°</b></div>
 <input type="range" id="obj-rot" min="0" max="359" step="1" value="${o.rot || 0}">
 <div style="display:flex; gap:6px; margin:8px 0;">
@@ -1134,6 +1230,14 @@ if (delBtn) delBtn.onclick = () => { if (confirm('Удалить «' + name + '�
 DOM.objectModal.style.display = 'block';
 document.body.style.overflow = 'hidden';
 const grp = objectMeshes[objectId];
+const statusSelect = document.getElementById('obj-status');
+statusSelect.addEventListener('change', () => {
+pushUndo(snapshotFullScene());
+o.status = normalizeStatus(statusSelect.value, o.status);
+saveLayout();
+toast('🏷 Статус объекта: ' + STATUS_DEFS[o.status].label);
+showObjectCard(objectId);
+});
 const rotSlider = document.getElementById('obj-rot');
 const rotVal = document.getElementById('obj-rot-val');
 const applyRot = (v) => {
@@ -1706,6 +1810,8 @@ if (p.w !== undefined && p.w !== o.w) { o.w = p.w; rebuild = true; }
 if (p.d !== undefined && p.d !== o.d) { o.d = p.d; rebuild = true; }
 if (p.h !== undefined && p.h !== o.h) { o.h = p.h; rebuild = true; }
 if (p.radius !== undefined && p.radius !== o.radius) { o.radius = p.radius; rebuild = true; }
+if (p.status !== undefined) o.status = normalizeStatus(p.status, o.status);
+if (p.note !== undefined) o.note = p.note;
 o.x = p.x; o.z = p.z; o.rot = p.rot || 0;
 if (rebuild) rebuildObject(o.id);
 });
@@ -1728,12 +1834,17 @@ if (CONFIG.infrastructure[k]) Object.assign(CONFIG.infrastructure[k], plainClone
 if (Array.isArray(snapshot.utilities)) snapshot.utilities.forEach(saved => {
 const current = CONFIG.utilities.find(u => u.name === saved.name);
 if (!current) return;
-['route','pipe','depth','label'].forEach(key => { if (saved[key] !== undefined) current[key] = plainClone(saved[key]); });
+['route','pipe','depth','label','status','note'].forEach(key => { if (saved[key] !== undefined) current[key] = plainClone(saved[key]); });
+});
+if (Array.isArray(snapshot.projectFacts)) snapshot.projectFacts.forEach(saved => {
+const current = PROJECT_FACTS.find(f => f.id === saved.id);
+if (current) { current.status = normalizeStatus(saved.status, current.status); if (typeof saved.note === 'string') current.note = saved.note; }
 });
 }
 applySnapshot(list);
 CONFIG.utilities.forEach(refreshUtility);
 if (window.CAT) window.CAT.save();
+saveProjectState();
 }
 function pushUndo(snap) {
 history.undo.push(snap);
@@ -2054,13 +2165,14 @@ html += `<tr class="cur"><td><b>Текущая</b></td><td>${CONFIG.objects.leng
 names.forEach(n => {
 const m = evaluateLayout(variants[n]);
 const full = !Array.isArray(variants[n]);
-html += `<tr><td>${n}<div class="norm-doc">${full ? 'полный снимок v3' : 'старый формат'}</div></td><td>${snapshotObjectList(variants[n]).length}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${n}">Загрузить</button><button class="v-del" data-v="${n}">🗑</button></td></tr>`;
+const safeName = escapeHtml(n), encodedName = encodeURIComponent(n);
+html += `<tr><td>${safeName}<div class="norm-doc">${full ? `полный снимок v${variants[n].v || 3}` : 'старый формат'}</div></td><td>${snapshotObjectList(variants[n]).length}</td><td>${m.hard ? '⚠ ' + m.hard : '✅ 0'}</td><td>${Utils.fmt(m.gardenSun)} ч</td><td>${Utils.fmt(m.ghSun)} ч</td><td><button class="v-load" data-v="${encodedName}">Загрузить</button><button class="v-del" data-v="${encodedName}">🗑</button></td></tr>`;
 });
 html += '</tbody></table>';
 if (!names.length) html = '<p style="margin-top:10px;">Сохранённых вариантов пока нет. Расставьте объекты и нажмите «💾 Сохранить текущую как вариант».</p>' + html;
 DOM.variantsWrap.innerHTML = html;
-DOM.variantsWrap.querySelectorAll('.v-load').forEach(b => b.onclick = () => loadVariant(b.dataset.v));
-DOM.variantsWrap.querySelectorAll('.v-del').forEach(b => b.onclick = () => deleteVariant(b.dataset.v));
+DOM.variantsWrap.querySelectorAll('.v-load').forEach(b => b.onclick = () => loadVariant(decodeURIComponent(b.dataset.v)));
+DOM.variantsWrap.querySelectorAll('.v-del').forEach(b => b.onclick = () => deleteVariant(decodeURIComponent(b.dataset.v)));
 DOM.variantsModal.style.display = 'block';
 document.body.style.overflow = 'hidden';
 }
@@ -2069,7 +2181,7 @@ const variants = loadVariants();
 const def = 'Вариант ' + (Object.keys(variants).length + 1);
 const name = prompt('Название варианта:', def);
 if (!name) return;
-variants[name] = snapshotFullScene();   // v3: полный снимок сцены, состава объектов, трасс и инфраструктуры
+variants[name] = snapshotFullScene();   // v4: полный снимок сцены, состава объектов, трасс, инфраструктуры и статусов
 saveVariants(variants);
 toast('💾 Сохранено как «' + name + '»');
 openVariantsModal();
@@ -2090,6 +2202,149 @@ const variants = loadVariants();
 delete variants[name];
 saveVariants(variants);
 openVariantsModal();
+}
+// ═══════════════════════════════════════════════════════════════
+// СТАТУСЫ ДАННЫХ + ПОЛНЫЙ JSON + ЛОКАЛЬНЫЕ РЕЗЕРВНЫЕ КОПИИ
+// ═══════════════════════════════════════════════════════════════
+function escapeHtml(value) {
+return String(value == null ? '' : value).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[ch]);
+}
+function statusRecords() {
+const records = [];
+PROJECT_FACTS.forEach(item => records.push({ section: 'Исходные данные', id: item.id, label: item.label, target: item }));
+const infraLabels = { powerPole: 'Столб и электрощит', entrance: 'Въезд и калитка' };
+Object.keys(CONFIG.infrastructure).forEach(id => records.push({ section: 'Инфраструктура', id, label: infraLabels[id] || id, target: CONFIG.infrastructure[id] }));
+CONFIG.objects.forEach(item => records.push({ section: 'Объекты', id: item.id, label: item.label, target: item }));
+CONFIG.utilities.forEach((item, i) => records.push({ section: 'Коммуникации', id: String(i), label: `${item.icon} ${item.name}`, target: item }));
+return records;
+}
+function renderProjectStatuses() {
+const records = statusRecords();
+const counts = {};
+Object.keys(STATUS_DEFS).forEach(k => counts[k] = 0);
+records.forEach(r => counts[normalizeStatus(r.target.status)]++);
+DOM.projectStatusSummary.innerHTML = `<div style="display:flex; gap:7px; flex-wrap:wrap; margin:10px 0;">${Object.keys(STATUS_DEFS).map(k => `${statusChip(k)} <span style="font-size:12px; color:#555; margin-right:5px;">${counts[k]}</span>`).join('')}</div>`;
+DOM.projectStatusTbody.innerHTML = records.map((r, i) => `<tr><td>${escapeHtml(r.section)}</td><td><strong>${escapeHtml(r.label)}</strong></td><td><select data-status-index="${i}">${statusOptions(r.target.status)}</select></td><td class="norm-detail">${escapeHtml(r.target.note || '—')}</td></tr>`).join('');
+DOM.projectStatusTbody.querySelectorAll('[data-status-index]').forEach(select => {
+select.addEventListener('change', () => {
+const record = records[Number(select.dataset.statusIndex)]; if (!record) return;
+pushUndo(snapshotFullScene());
+record.target.status = normalizeStatus(select.value, record.target.status);
+saveLayout();
+renderProjectStatuses();
+toast('🏷 Статус обновлён: ' + STATUS_DEFS[record.target.status].label);
+});
+});
+}
+function projectSettingsSnapshot() {
+return { month: Number(DOM.monthSlider.value), hour: Number(DOM.hourSlider.value), view: DOM.viewSelect.value };
+}
+function buildProjectBackup(reason) {
+return {
+format: BACKUP_FORMAT,
+schemaVersion: BACKUP_SCHEMA,
+appVersion: APP_VERSION,
+exportedAt: new Date().toISOString(),
+reason: reason || 'Ручной экспорт',
+project: { title: 'Проект Берн', cadastral: '50:16:0202016:428', address: 'Московская обл., г.о. Черноголовка, ул. Рассветная, уч. 7' },
+scene: snapshotFullScene(),
+variants: plainClone(loadVariants()),
+settings: projectSettingsSnapshot()
+};
+}
+function validateProjectBackup(data) {
+if (!data || data.format !== BACKUP_FORMAT) throw new Error('Это не файл полного проекта «Берн».');
+if (!Number.isInteger(data.schemaVersion) || data.schemaVersion < 1 || data.schemaVersion > BACKUP_SCHEMA) throw new Error('Версия файла пока не поддерживается.');
+if (!data.scene || !Array.isArray(data.scene.objects)) throw new Error('В файле нет сцены и списка объектов.');
+if (data.scene.objects.length < 1 || data.scene.objects.length > 200) throw new Error('Некорректное количество объектов.');
+const ids = new Set();
+data.scene.objects.forEach(o => {
+if (!o || typeof o.id !== 'string' || !o.id || typeof o.type !== 'string') throw new Error('Повреждена запись объекта.');
+if (ids.has(o.id)) throw new Error('В файле повторяется ID объекта: ' + o.id);
+ids.add(o.id);
+if (![o.x, o.z].every(Number.isFinite)) throw new Error('Некорректные координаты объекта: ' + o.id);
+if (o.radius !== undefined && (!Number.isFinite(o.radius) || o.radius <= 0 || o.radius > 50)) throw new Error('Некорректный радиус объекта: ' + o.id);
+if (o.radius === undefined && (![o.w, o.d].every(Number.isFinite) || o.w <= 0 || o.d <= 0 || o.w > 100 || o.d > 100)) throw new Error('Некорректные размеры объекта: ' + o.id);
+});
+['house','bath','shed','garden','greenhouse','playground','firepit','car','septic','well'].forEach(id => { if (!ids.has(id)) throw new Error('В файле отсутствует основной объект: ' + id); });
+if (data.scene.utilities !== undefined && !Array.isArray(data.scene.utilities)) throw new Error('Повреждён список коммуникаций.');
+if (Array.isArray(data.scene.utilities)) data.scene.utilities.forEach(u => {
+if (!u || typeof u.name !== 'string' || !Array.isArray(u.route) || u.route.length < 2) throw new Error('Повреждена трасса коммуникаций.');
+u.route.forEach(a => { if (!a || (!a.obj && !a.infrastructure && ![a.x, a.z].every(Number.isFinite))) throw new Error('Некорректная точка трассы: ' + u.name); });
+});
+if (data.variants !== undefined && (!data.variants || typeof data.variants !== 'object' || Array.isArray(data.variants) || Object.keys(data.variants).length > 100)) throw new Error('Повреждён список вариантов.');
+return data;
+}
+function downloadJson(data, filename) {
+const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function backupFilename(prefix, iso) {
+const stamp = String(iso || new Date().toISOString()).replace(/[:.]/g, '-');
+return `${prefix || 'Проект_Берн'}_${stamp}.json`;
+}
+function loadLocalBackups() {
+try { const list = JSON.parse(localStorage.getItem(BACKUPS_KEY)); return Array.isArray(list) ? list : []; }
+catch (e) { return []; }
+}
+function saveLocalBackups(list) {
+localStorage.setItem(BACKUPS_KEY, JSON.stringify(list.slice(0, BACKUP_LIMIT)));
+}
+function createLocalBackup(reason, silent) {
+try {
+const payload = buildProjectBackup(reason || 'Ручная копия');
+const list = loadLocalBackups();
+list.unshift({ id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, createdAt: payload.exportedAt, reason: payload.reason, payload });
+saveLocalBackups(list);
+if (!silent) toast('🛟 Локальная копия создана');
+if (DOM.projectDataModal.style.display === 'block') renderBackupList();
+return true;
+} catch (e) { console.error('Не удалось создать резервную копию:', e); if (!silent) alert('Не удалось создать копию: ' + e.message); return false; }
+}
+function applyProjectSettings(settings) {
+if (!settings) return;
+if (Number.isFinite(settings.month) && settings.month >= 1 && settings.month <= 12) { DOM.monthSlider.value = settings.month; DOM.monthSlider.dispatchEvent(new Event('input')); }
+if (Number.isFinite(settings.hour) && settings.hour >= 0 && settings.hour <= 24) { DOM.hourSlider.value = settings.hour; DOM.hourSlider.dispatchEvent(new Event('input')); }
+if (['default','top','night','gate'].includes(settings.view)) { DOM.viewSelect.value = settings.view; DOM.viewSelect.dispatchEvent(new Event('change')); }
+}
+function applyProjectBackup(data) {
+validateProjectBackup(data);
+applyFullSceneSnapshot(data.scene);
+saveVariants(data.variants || {});
+applyProjectSettings(data.settings);
+saveLayout();
+history.undo = []; history.redo = []; updateHistoryButtons();
+updateNormBadge();
+if (showViolationRings) buildViolationRings();
+if (insolationOn) scheduleInsolation();
+if (solarOn) { buildSolarPanels(); showSolarInfo(); }
+renderProjectStatuses();
+Utils.markDirty(); renderer.shadowMap.needsUpdate = true;
+}
+function renderBackupList() {
+const list = loadLocalBackups();
+if (!list.length) { DOM.backupList.innerHTML = '<div class="backup-empty">Локальных копий пока нет. Они автоматически появятся перед импортом, восстановлением или сбросом.</div>'; return; }
+DOM.backupList.innerHTML = `<div style="font-weight:700; margin-top:12px;">Локальные копии (${list.length}/${BACKUP_LIMIT})</div>` + list.map(b => `<div class="backup-row"><div><strong>${escapeHtml(b.reason || 'Копия')}</strong><br><span style="color:#777;">${escapeHtml(new Date(b.createdAt).toLocaleString('ru-RU'))}</span></div><div class="backup-actions"><button data-backup-restore="${escapeHtml(b.id)}">Восстановить</button><button data-backup-download="${escapeHtml(b.id)}">JSON</button><button class="danger" data-backup-delete="${escapeHtml(b.id)}">Удалить</button></div></div>`).join('');
+DOM.backupList.querySelectorAll('[data-backup-restore]').forEach(btn => btn.onclick = () => {
+const selected = loadLocalBackups().find(b => b.id === btn.dataset.backupRestore); if (!selected) return;
+if (!confirm('Восстановить эту копию? Текущее состояние сначала будет сохранено автоматически.')) return;
+if (!createLocalBackup('Перед восстановлением', true)) { alert('Восстановление отменено: не удалось создать страховочную копию текущего состояния.'); return; }
+try { applyProjectBackup(selected.payload); toast('✅ Резервная копия восстановлена', 3500); renderBackupList(); }
+catch (e) { alert('Не удалось восстановить копию: ' + e.message); }
+});
+DOM.backupList.querySelectorAll('[data-backup-download]').forEach(btn => btn.onclick = () => {
+const selected = loadLocalBackups().find(b => b.id === btn.dataset.backupDownload); if (selected) downloadJson(selected.payload, backupFilename('Проект_Берн_копия', selected.createdAt));
+});
+DOM.backupList.querySelectorAll('[data-backup-delete]').forEach(btn => btn.onclick = () => {
+if (!confirm('Удалить эту локальную копию?')) return;
+saveLocalBackups(loadLocalBackups().filter(b => b.id !== btn.dataset.backupDelete)); renderBackupList();
+});
+}
+function openProjectDataModal() {
+renderProjectStatuses(); renderBackupList();
+DOM.projectDataModal.style.display = 'block'; document.body.style.overflow = 'hidden';
 }
 // ═══════════════════════════════════════════════════════════════
 // 💰 СМЕТА — считается автоматически из текущей планировки
@@ -3043,6 +3298,7 @@ document.getElementById('drawing-btn').addEventListener('click', openDrawingModa
 document.getElementById('showDrawingMob').addEventListener('click', () => { openDrawingModal(); closeMenu(); });
 document.getElementById('drawing-png-btn').addEventListener('click', downloadDrawingPNG);
 setupModal(DOM.catalogModal, ['close-catalog-modal', 'close-catalog-btn']);   // v2.1: окно каталога
+setupModal(DOM.projectDataModal, ['close-project-data-modal', 'close-project-data-btn']);
 DOM.openReport.addEventListener('click', openReportModal);
 DOM.normBadge.addEventListener('click', openNorms);
 setupModal(document.getElementById('smeta-modal'), ['close-smeta-modal', 'close-smeta-btn']);
@@ -3215,6 +3471,7 @@ DOM.mobile.png.addEventListener('click', () => { exportPNG(); closeMenu(); });
 DOM.mobile.pdf.addEventListener('click', () => { exportPDF(); closeMenu(); });
 DOM.mobile.gps.addEventListener('click', () => { showGPS(); closeMenu(); });
 DOM.mobile.catalog.addEventListener('click', () => { openCatalog(); closeMenu(); });
+DOM.mobile.projectData.addEventListener('click', () => { openProjectDataModal(); closeMenu(); });
 DOM.edit.modeBtn.addEventListener('click', () => setEditMode(!editMode));
 DOM.edit.violationsBtn.addEventListener('click', function() {
 showViolationRings = !showViolationRings;
@@ -3224,7 +3481,7 @@ groups.violRings.visible = showViolationRings;
 if (showViolationRings) buildViolationRings();
 });
 DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast('💾 Планировка сохранена'); });
-DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка и добавленные объекты каталога будут удалены.')) return; resetLayout(); });
+DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка и добавленные объекты каталога будут удалены. Перед сбросом создастся локальная копия.')) return; if (!createLocalBackup('Перед сбросом', true)) { alert('Сброс отменён: не удалось создать страховочную копию.'); return; } resetLayout(); });
 DOM.edit.autofixBtn.addEventListener('click', () => { if (confirm('Умная авторасстановка расставит объекты по нормам и солнцу. Продолжить?')) applyAutoFix(); });
 DOM.edit.fixViolBtn.addEventListener('click', fixViolations);          // 🩹 Исправить нарушения
 DOM.fixViolModalBtn.addEventListener('click', fixViolations);          // 🩹 из окна норм
@@ -3232,6 +3489,29 @@ DOM.edit.undoBtn.addEventListener('click', undo);
 DOM.edit.redoBtn.addEventListener('click', redo);
 DOM.edit.variantsBtn.addEventListener('click', openVariantsModal);
 DOM.saveVariantBtn.addEventListener('click', saveCurrentVariant);
+DOM.edit.projectDataBtn.addEventListener('click', openProjectDataModal);
+DOM.exportProjectJson.addEventListener('click', () => {
+saveLayout();
+const data = buildProjectBackup('Экспорт для переноса');
+downloadJson(data, backupFilename('Проект_Берн', data.exportedAt));
+toast('⬇ Полный проект скачан в JSON', 3500);
+});
+DOM.importProjectJson.addEventListener('click', () => { DOM.projectJsonFile.value = ''; DOM.projectJsonFile.click(); });
+DOM.projectJsonFile.addEventListener('change', async () => {
+const file = DOM.projectJsonFile.files && DOM.projectJsonFile.files[0]; if (!file) return;
+if (file.size > 10 * 1024 * 1024) { alert('Файл слишком большой. Максимум 10 МБ.'); return; }
+try {
+const data = validateProjectBackup(JSON.parse(await file.text()));
+const objectCount = data.scene.objects.length;
+const variantCount = Object.keys(data.variants || {}).length;
+if (!confirm(`Загрузить проект из файла?\nОбъектов: ${objectCount}\nВариантов: ${variantCount}\n\nТекущее состояние сначала будет сохранено автоматически.`)) return;
+if (!createLocalBackup('Перед импортом', true)) throw new Error('Не удалось создать страховочную копию перед импортом.');
+applyProjectBackup(data);
+toast('✅ Проект полностью загружен из JSON', 4000);
+renderBackupList();
+} catch (e) { console.error('Ошибка импорта проекта:', e); alert('Не удалось загрузить проект: ' + e.message); }
+});
+DOM.createLocalBackup.addEventListener('click', () => createLocalBackup('Ручная копия'));
 DOM.edit.toggle.addEventListener('click', () => { const collapsed = DOM.edit.panel.classList.toggle('collapsed'); DOM.edit.toggle.textContent = collapsed ? '+' : '–'; DOM.edit.fab.style.display = collapsed ? 'flex' : 'none'; });
 DOM.edit.fab.addEventListener('click', () => { DOM.edit.panel.classList.remove('collapsed'); DOM.edit.toggle.textContent = '–'; DOM.edit.fab.style.display = 'none'; });
 DOM.edit.reportErrorBtn = document.getElementById('report-error-btn');
@@ -3297,7 +3577,7 @@ setTimeout(() => {
 if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v3.0: точная геометрия, живые коммуникации и полные варианты — собран.');
+console.log('✅ Проект Берн v3.1: полные JSON-копии, перенос и статусы данных — собран.');
 </script>
 </body>
 </html>
