@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v3.1 (резервные копии + статусы данных)';
+const APP_VERSION = 'v3.2 (ориентация Рассветной + корректная уличная граница)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -448,17 +448,17 @@ boundary: [
 { n: 3, x: 500473.22, y: 2246020.27 },
 { n: 4, x: 500452.19, y: 2246006.75 }
 ],
-streetSide: 'east'
+streetSide: 'z=0'
 },
 center: { x: 12.5005, z: 20.001 },
 // angle — поворот локальной оси +Z относительно истинного севера.
 gps: { lat: 56.042291, lng: 38.417342, angle: 57.267, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
 infrastructure: {
-powerPole: { x: 33.5, z: 5, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, напротив хозблока' },
-entrance: { x: 25.001, z: 14.5, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд, немного смещён к хозблоку' }
+powerPole: { x: 21, z: -9, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, ориентировочно напротив хозблока; точное положение требует обмера' },
+entrance: { x: 14.5, z: 0, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд и калитка на короткой уличной стороне z=0; точное положение уточнить по месту' }
 },
 latitude: 56,
-camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [30, 2, 14.5] },
+camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [14.5, 2, -2] },
 objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
 { id: 'bath', type: 'bath', label: '🧖 Баня', x: 19, z: 11, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
@@ -510,7 +510,7 @@ confirmed: { label: 'Подтверждено', icon: '✓', className: 'status-
 const PROJECT_FACTS = [
 { id: 'cadastral', label: 'Кадастровый номер 50:16:0202016:428', status: 'confirmed', note: 'По выписке ЕГРН' },
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
-{ id: 'roadSide', label: 'Улица Рассветная вдоль восточной границы', status: 'confirmed', note: 'По схеме ЕГРН, участок дороги 50:16:0202016:526' },
+{ id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
@@ -920,17 +920,18 @@ grill(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.12, b.d, 0xbcaaa4, 
 const ground = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w, CONFIG.plot.d), new THREE.MeshStandardMaterial({ map: Textures.grass, roughness: 0.9 }));
 ground.rotation.x = -Math.PI/2; ground.position.set(CONFIG.center.x, 0, CONFIG.center.z); ground.receiveShadow = true;
 groups.site.add(ground);
-// По схеме ЕГРН участок примыкает к дорожному участку 50:16:0202016:526
-// восточной длинной границей. Въезд пока показан как планируемый, не как обмеренный факт.
-const road = new THREE.Mesh(GeoPool.plane(8, CONFIG.plot.d + 10), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
-road.rotation.x = -Math.PI/2; road.position.set(CONFIG.plot.w + 4, -0.1, CONFIG.center.z); road.receiveShadow = true;
+// Улица Рассветная примыкает к короткой стороне участка 25,001 м: локальная граница z=0, ребро М4–М3.
+// Ширина дорожного полотна на 3D-сцене условная; юридическая красная линия в проект не загружена.
+const road = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w + 5, 8), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
+road.rotation.x = -Math.PI/2; road.position.set(CONFIG.center.x, -0.1, -4); road.receiveShadow = true;
 groups.site.add(road);
 const markMat = MaterialPool.get(0xffffff);
-for (let z = -4; z <= CONFIG.plot.d + 4; z += 3) { const mark = new THREE.Mesh(GeoPool.plane(0.2, 1.5), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(CONFIG.plot.w + 4, 0.01, z); groups.site.add(mark); }
+for (let x = -2; x <= CONFIG.plot.w + 2; x += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(x, 0.01, -4); groups.site.add(mark); }
 const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
-roadLabel.position.set(CONFIG.plot.w + 4, 2.5, CONFIG.center.z); groups.labels.add(roadLabel);
-const path = new THREE.Mesh(GeoPool.plane(23, 2), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
-path.rotation.x = -Math.PI/2; path.position.set(13.5, 0.03, 14.5); path.receiveShadow = true;
+roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
+// Пешеходная дорожка от калитки внутрь участка.
+const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
+path.rotation.x = -Math.PI/2; path.position.set(12, 0.03, 11.5); path.receiveShadow = true;
 groups.site.add(path);
 const draggables = [];
 const labelSprites = {};
@@ -1182,10 +1183,10 @@ ${obj.h ? `<tr><td>Высота</td><td>${Utils.fmt(obj.h)} м</td></tr>` : ''}
 </table>`;
 html += `<h3>📍 Расположение на участке</h3><table>
 <tr><td>Центр (X, Z)</td><td>${Utils.fmt(obj.x)}, ${Utils.fmt(obj.z)} м</td></tr>
-<tr><td>Отступ с севера</td><td>${Utils.fmt(CONFIG.plot.d - b.maxZ)} м</td></tr>
-<tr><td>Отступ с юга</td><td>${Utils.fmt(b.minZ)} м</td></tr>
-<tr><td>Отступ с запада</td><td>${Utils.fmt(b.minX)} м</td></tr>
-<tr><td>Отступ с востока</td><td>${Utils.fmt(CONFIG.plot.w - b.maxX)} м</td></tr>
+<tr><td>До задней соседней границы (z=40)</td><td>${Utils.fmt(CONFIG.plot.d - b.maxZ)} м</td></tr>
+<tr><td>До Рассветной улицы / передней границы (z=0)</td><td>${Utils.fmt(b.minZ)} м</td></tr>
+<tr><td>До левой соседней границы (x=0)</td><td>${Utils.fmt(b.minX)} м</td></tr>
+<tr><td>До правой соседней границы (x=25)</td><td>${Utils.fmt(CONFIG.plot.w - b.maxX)} м</td></tr>
 </table>`;
 html += `<h3>🌍 GPS-координаты</h3><table>
 <tr><td>Широта</td><td>${gps.lat.toFixed(6)}°</td></tr>
@@ -1290,8 +1291,9 @@ while (cur) { if (cur.userData && cur.userData.objectId) { showObjectCard(cur.us
 // Ворота
 (() => {
 const gateGroup = new THREE.Group();
-gateGroup.position.set(CONFIG.plot.w, 0, 14.5);
-gateGroup.rotation.y = Math.PI / 2;
+const entrance = CONFIG.infrastructure.entrance;
+gateGroup.position.set(entrance.x, 0, entrance.z);
+gateGroup.rotation.y = 0;
 const pillarMat = MaterialPool.get(0x4a4a4a, { roughness: 0.4, metalness: 0.6 });
 const barMat = MaterialPool.get(0x6a6a6a, { roughness: 0.5, metalness: 0.3 });
 const gateMat = MaterialPool.get(0x3a3a3a, { roughness: 0.7, metalness: 0.2 });
@@ -1351,10 +1353,10 @@ rules: [
 { kind: 'dist', a: 'firepit', b: 'shed', min: 5, level: 'mandatory', doc: 'ПП РФ №1479, приложение №4; разъяснение МЧС: мангал ≥5 м от построек', condition: 'Для мангала или иной несгораемой ёмкости. Для открытого костра действуют иные расстояния.' },
 { kind: 'dist', a: 'firepit', b: 'house', min: 5, level: 'mandatory', doc: 'ПП РФ №1479, приложение №4; разъяснение МЧС: мангал ≥5 м от построек', condition: 'Для мангала или иной несгораемой ёмкости. Для открытого костра действуют иные расстояния.' },
 // Условные градостроительные проверки: окончательно сверяются с ГПЗУ, красными линиями и ПЗЗ Черноголовки.
-{ kind: 'setback', obj: 'house', min: 3, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительная проверка от соседних границ; подтвердить по ГПЗУ и местным ПЗЗ', condition: 'Не проверяет расстояния до зданий на соседних участках.' },
-{ kind: 'setback', obj: 'house', min: 5, sides: ['east'], level: 'conditional', doc: 'Предварительно от уличной границы; точная красная линия пока не загружена', condition: 'Применимо, только если восточная граница участка совпадает с красной линией улицы.' },
-{ kind: 'setback', obj: 'bath', min: 1, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Восточная сторона отдельно рассматривается как уличная.' },
-{ kind: 'setback', obj: 'shed', min: 1, sides: ['south','north','west'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Восточная сторона отдельно рассматривается как уличная.' },
+{ kind: 'setback', obj: 'house', min: 3, sides: ['north','west','east'], level: 'conditional', doc: 'Предварительная проверка от соседних границ; подтвердить по ГПЗУ и местным ПЗЗ', condition: 'Задняя и две длинные границы граничат с соседними участками; не проверяет расстояния до соседних зданий.' },
+{ kind: 'setback', obj: 'house', min: 5, sides: ['south'], level: 'conditional', doc: 'Предварительно от уличной границы z=0; точная красная линия пока не загружена', condition: 'Улица Рассветная находится у короткой стороны М4–М3. Юридическое положение красной линии нужно подтвердить по ГПЗУ.' },
+{ kind: 'setback', obj: 'bath', min: 1, sides: ['north','west','east'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Проверяются соседние границы; сторона z=0 относится к Рассветной улице.' },
+{ kind: 'setback', obj: 'shed', min: 1, sides: ['north','west','east'], level: 'conditional', doc: 'Предварительный отступ хозяйственной постройки; подтвердить по ГПЗУ и ПЗЗ', condition: 'Проверяются соседние границы; сторона z=0 относится к Рассветной улице.' },
 // Проектные буферы, не выдаваемые за универсальную норму закона.
 { kind: 'dist', a: 'septic', b: 'well', min: 15, level: 'recommendation', doc: 'Предварительный проектный буфер', condition: 'Фактическое расстояние определяется типом ЛОС, грунтами, направлением грунтовых вод и санитарным расчётом.' },
 { kind: 'dist', a: 'septic', b: 'house', min: 5, level: 'recommendation', doc: 'Предварительный эксплуатационный буфер', condition: 'Уточнить после выбора типа и паспорта ЛОС.' },
@@ -1441,7 +1443,7 @@ const O = this.obj(r.obj);
 const s = this.setbacks(O);
 const sides = r.sides || ['south','north','west','east'];
 const minVal = Math.min(...sides.map(side => s[side]));
-return { kind: 'setback', ids: [r.obj], title: `${this.name(r.obj)} — отступ до границы`, actual: minVal, min: r.min, ok: minVal >= r.min, level: r.level, soft: r.level !== 'mandatory', doc: r.doc, detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м. ${r.condition || ''}` };
+return { kind: 'setback', ids: [r.obj], title: `${this.name(r.obj)} — отступ до границы`, actual: minVal, min: r.min, ok: minVal >= r.min, level: r.level, soft: r.level !== 'mandatory', doc: r.doc, detail: `Улица ${Utils.fmt(s.south)} / задняя ${Utils.fmt(s.north)} / левая ${Utils.fmt(s.west)} / правая ${Utils.fmt(s.east)} м. ${r.condition || ''}` };
 });
 // ── КАТАЛОГ: мангал ≥5 м от построек (противопожарный режим) ──
 const BUILDINGS = ['house','bath','shed','garage','gazebo'];
@@ -1455,7 +1457,7 @@ res.push({ kind: 'dist', ids: [g.id, b.id], title: `${this.name(g.id)} → ${thi
 CONFIG.objects.filter(o => o.type === 'gazebo' || o.type === 'garage').forEach(o => {
 const s = this.setbacks(o);
 const minVal = Math.min(s.south, s.north, s.west, s.east);
-res.push({ kind: 'setback', ids: [o.id], title: `${this.name(o.id)} — отступ до границы`, actual: minVal, min: 1, ok: minVal >= 1, level: 'conditional', soft: true, doc: 'Предварительная проверка; подтвердить по ГПЗУ и местным ПЗЗ', detail: `С ${Utils.fmt(s.north)} / Ю ${Utils.fmt(s.south)} / З ${Utils.fmt(s.west)} / В ${Utils.fmt(s.east)} м` });
+res.push({ kind: 'setback', ids: [o.id], title: `${this.name(o.id)} — отступ до границы`, actual: minVal, min: 1, ok: minVal >= 1, level: 'conditional', soft: true, doc: 'Предварительная проверка; подтвердить по ГПЗУ и местным ПЗЗ', detail: `Улица ${Utils.fmt(s.south)} / задняя ${Utils.fmt(s.north)} / левая ${Utils.fmt(s.west)} / правая ${Utils.fmt(s.east)} м` });
 });
 this.manualChecks.forEach(c => res.push({ kind: 'manual', ids: [], min: null, actual: null, soft: true, ...c }));
 return res;
@@ -1535,7 +1537,7 @@ function buildReportHTML() {
 const now = new Date().toLocaleDateString('ru-RU');
 const o = id => Norms.obj(id);
 const dims = obj => obj.radius !== undefined ? `Ø${Utils.fmt(obj.radius * 2)} м` : `${Utils.fmt(obj.w)}×${Utils.fmt(obj.d)} м`;
-const sb = obj => { const s = Norms.setbacks(obj); return `север ${Utils.fmt(s.north)} м, юг ${Utils.fmt(s.south)} м, запад ${Utils.fmt(s.west)} м, восток ${Utils.fmt(s.east)} м`; };
+const sb = obj => { const s = Norms.setbacks(obj); return `улица/передняя ${Utils.fmt(s.south)} м, задняя ${Utils.fmt(s.north)} м, левая соседняя ${Utils.fmt(s.west)} м, правая соседняя ${Utils.fmt(s.east)} м`; };
 const dist = (a, b) => Utils.fmt(Norms.dist(o(a), o(b)));
 const checks = Norms.checkAll();
 const hard = checks.filter(c => c.ok === false && c.level === 'mandatory');
@@ -1555,7 +1557,7 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 </ul>`;
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
-html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Длинные стороны имеют азимуты около 122,733° / 302,733°, короткие — 32,737° / 212,737°. Дорожный участок 50:16:0202016:526 показан у восточной длинной границы по схеме ЕГРН. Положение ворот — планируемое и требует подтверждения на местности.</p>`;
+html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
 else { html += `<p><span class="norm">⚠ Выявлено обязательных нарушений: ${hard.length}</span></p><ul>`; hard.forEach(c => { html += `<li><span class="norm">${c.title}</span> — факт ${Utils.fmt(c.actual)} м при требовании ≥ ${c.min} м (${c.doc})</li>`; }); html += `</ul>`; }
@@ -1567,7 +1569,7 @@ const house = o('house'), bath = o('bath'), shed = o('shed');
 html += `<li><strong>Жилой дом «Берн»</strong> — ${dims(house)}, центр (X=${Utils.fmt(house.x)}, Z=${Utils.fmt(house.z)}). Отступы: ${sb(house)}.</li>`;
 html += `<li><strong>Баня</strong> — ${dims(bath)}, центр (X=${Utils.fmt(bath.x)}, Z=${Utils.fmt(bath.z)}). Отступы: ${sb(bath)}.</li>`;
 html += `<li><strong>Хозблок</strong> — ${dims(shed)}, центр (X=${Utils.fmt(shed.x)}, Z=${Utils.fmt(shed.z)}). Отступы: ${sb(shed)}.</li>`;
-html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, юго‑западный угол.</li>`;
+html += `<li><strong>Огород</strong> — ${dims(o('garden'))}, в передней левой части участка относительно локальной схемы.</li>`;
 html += `<li><strong>Теплица</strong> — ${dims(o('greenhouse'))}, арочная, за огородом.</li>`;
 html += `<li><strong>Детская площадка</strong> — ${dims(o('playground'))}. <strong>Зона мангала</strong> — ${dims(o('firepit'))}; режим открытого костра не выбран.</li>`;
 html += `<li><strong>Септик</strong> — ${dims(o('septic'))}. <strong>Скважина</strong> — ${dims(o('well'))}.</li>`;
@@ -2517,8 +2519,9 @@ _dimH(ctx, X(b.maxX), X(W), Z(b.maxZ) - 14, Utils.fmt(W - b.maxX));
 function drawBoundaryMarks(ctx, X, Z) {
 const W = CONFIG.plot.w, D = CONFIG.plot.d;
 const marks = [
-{ n:1, mx:0, mz:0, dx:-1, dy:1 }, { n:2, mx:W, mz:0, dx:1, dy:1 },
-{ n:3, mx:W, mz:D, dx:1, dy:-1 }, { n:4, mx:0, mz:D, dx:-1, dy:-1 }
+// Локальная привязка по акту: М4=(0,0), М3=(W,0), М2=(W,D), М1=(0,D).
+{ n:4, mx:0, mz:0, dx:-1, dy:1 }, { n:3, mx:W, mz:0, dx:1, dy:1 },
+{ n:2, mx:W, mz:D, dx:1, dy:-1 }, { n:1, mx:0, mz:D, dx:-1, dy:-1 }
 ];
 marks.forEach(m => {
 const px = X(m.mx), pz = Z(m.mz);
@@ -2624,7 +2627,7 @@ garden:     { x:[2.5, 5],  z:[3.5, 6] },
 playground: { x:[6, 12],   z:[14, 20] },
 car:        { x:[18, 23],  z:[1, 4]  }
 };
-const DRIVEWAY = { minX: 16, maxX: CONFIG.plot.w, minZ: 11.5, maxZ: 17.5 };
+const DRIVEWAY = { minX: 11.5, maxX: 17.5, minZ: 0, maxZ: 9 };
 const DRIVEWAY_SHAPE = { id: '__driveway__', x: (DRIVEWAY.minX+DRIVEWAY.maxX)/2, z: (DRIVEWAY.minZ+DRIVEWAY.maxZ)/2, w: DRIVEWAY.maxX-DRIVEWAY.minX, d: DRIVEWAY.maxZ-DRIVEWAY.minZ, rot: 0 };
 function drivewayIntersects(o) { return Norms.dist(o, DRIVEWAY_SHAPE) <= 0; }
 const SETBACK = { house: 3, bath: 1, shed: 1, septic: 1, well: 1, garden: 0.5, greenhouse: 0.5, playground: 0.5, firepit: 0.5, car: 0.5, gazebo: 1, garage: 1, grill: 0.5, pool: 1, fruit_tree: 1 };
@@ -2642,7 +2645,10 @@ return (ox > 0 && oz > 0);
 function inBounds(o) {
 const b = Norms.bounds(o);
 const sb = SETBACK[o.type] !== undefined ? SETBACK[o.type] : (SETBACK[o.id] !== undefined ? SETBACK[o.id] : 0.5);
-return b.minX >= sb && b.minZ >= sb && b.maxX <= CONFIG.plot.w - sb && b.maxZ <= CONFIG.plot.d - sb;
+if (!(b.minX >= sb && b.minZ >= sb && b.maxX <= CONFIG.plot.w - sb && b.maxZ <= CONFIG.plot.d - sb)) return false;
+// Для жилого дома отдельно учитываем предварительный 5-метровый отступ от уличной границы z=0.
+if (o.id === 'house' && b.minZ < 5) return false;
+return true;
 }
 function sunScore(o) {
 const proxies = ['house','bath','shed','greenhouse']
@@ -3577,7 +3583,7 @@ setTimeout(() => {
 if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v3.1: полные JSON-копии, перенос и статусы данных — собран.');
+console.log('✅ Проект Берн v3.2: Рассветная по короткой стороне z=0, въезд и отступы перепривязаны.');
 </script>
 </body>
 </html>
