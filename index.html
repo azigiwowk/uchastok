@@ -181,7 +181,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 </style>
 </head>
 <body>
-<div id="info">🏡 Участок 25×40 м <span style="color:#ffaa00; margin-left:6px;">⬆ Север (условный)</span></div>
+<div id="info">🏡 Участок 25,001×40,002 м <span style="color:#ffaa00; margin-left:6px;">🧭 Истинный север</span></div>
 <div id="norm-badge"></div>
 <div class="note">🖱 Вращать / Масштаб • 🖱 Клик по объекту — карточка и редактирование • ✏️ Редактирование — в панели слева</div>
 <div class="legend">
@@ -330,7 +330,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 <tbody id="gps-tbody"></tbody>
 </table>
 </div>
-<div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">* Привязка к центру участка (56.042291, 38.417342). Оси сцены повёрнуты на 57,3° относительно истинного севера (длинная сторона идёт СЗ–ЮВ, азимут 122,7°) — по данным акта выноса границ (МСК‑50, зона 2).</div>
+<div style="margin-top: 16px; font-size: 13px; color: #555; text-align: center;">* Привязка к центру участка (56.042291, 38.417342). Геометрия построена по четырём межевым знакам акта (МСК‑50, зона 2): 25,001×40,002 м. Локальная ось Z повёрнута на 57,267° относительно истинного севера.</div>
 <div class="modal-footer"><button id="close-gps-btn">Закрыть</button></div>
 </div>
 </div>
@@ -402,11 +402,22 @@ window.onerror = captureError;
 window.addEventListener('unhandledrejection', (e) => captureError('Promise: ' + e.reason, '', 0, 0, e.reason));
 window.addEventListener('error', (e) => captureError(e.message, e.filename, e.lineno, e.colno, e.error), true);
 const CONFIG = {
-plot: { w: 25, d: 40 },
-center: { x: 12.5, z: 20 },
-gps: { lat: 56.042291, lng: 38.417342, angle: 57.3, latPerM: 0.000009, lngPerM: 0.0000161, solarNoon: 12.44 },
+plot: {
+w: 25.001, d: 40.002,
+// Межевые знаки 1–4 из акта выноса границ, МСК-50 зона 2.
+boundary: [
+{ n: 1, x: 500473.82, y: 2245973.10 },
+{ n: 2, x: 500494.85, y: 2245986.62 },
+{ n: 3, x: 500473.22, y: 2246020.27 },
+{ n: 4, x: 500452.19, y: 2246006.75 }
+],
+streetSide: 'east'
+},
+center: { x: 12.5005, z: 20.001 },
+// angle — поворот локальной оси +Z относительно истинного севера.
+gps: { lat: 56.042291, lng: 38.417342, angle: 57.267, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
 latitude: 56,
-camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [12.5, 2, -2] },
+camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [30, 2, 14.5] },
 objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
 { id: 'bath', type: 'bath', label: '🧖 Баня', x: 19, z: 11, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
@@ -430,13 +441,13 @@ utilities: [
 { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, route: [ { x: 24.5, z: 0 }, { x: 24.5, z: 29 } ] },
 { name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм', depth: 1.2, label: false, route: [ { x: 24.5, z: 29 }, { obj: 'house', dx: 7.5, dz: -1 } ] }
 ],
+// Репрезентативный день каждого месяца. Положение солнца, восход и закат
+// вычисляются по координатам участка, долготе и часовому поясу UTC+3.
 months: [
-{ declination: -20.5, sunrise: 8.85, sunset: 16.10 }, { declination: -13.5, sunrise: 7.80, sunset: 17.30 },
-{ declination: -2.5, sunrise: 6.70, sunset: 18.50 }, { declination: 10.5, sunrise: 5.30, sunset: 19.80 },
-{ declination: 20.0, sunrise: 4.20, sunset: 20.50 }, { declination: 23.5, sunrise: 3.75, sunset: 21.20 },
-{ declination: 21.5, sunrise: 3.90, sunset: 21.00 }, { declination: 15.0, sunrise: 4.70, sunset: 20.20 },
-{ declination: 5.0, sunrise: 6.00, sunset: 19.00 }, { declination: -7.0, sunrise: 7.00, sunset: 17.70 },
-{ declination: -17.0, sunrise: 8.00, sunset: 16.40 }, { declination: -23.0, sunrise: 8.90, sunset: 15.90 }
+{ month: 1, day: 15 }, { month: 2, day: 15 }, { month: 3, day: 15 },
+{ month: 4, day: 15 }, { month: 5, day: 15 }, { month: 6, day: 21 },
+{ month: 7, day: 15 }, { month: 8, day: 15 }, { month: 9, day: 15 },
+{ month: 10, day: 15 }, { month: 11, day: 15 }, { month: 12, day: 21 }
 ],
 monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
@@ -793,15 +804,17 @@ grill(b) { const g = new THREE.Group(); g.add(makeBox(b.w, 0.12, b.d, 0xbcaaa4, 
 const ground = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w, CONFIG.plot.d), new THREE.MeshStandardMaterial({ map: Textures.grass, roughness: 0.9 }));
 ground.rotation.x = -Math.PI/2; ground.position.set(CONFIG.center.x, 0, CONFIG.center.z); ground.receiveShadow = true;
 groups.site.add(ground);
-const road = new THREE.Mesh(GeoPool.plane(30, 8), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
-road.rotation.x = -Math.PI/2; road.position.set(CONFIG.center.x, -0.1, -4); road.receiveShadow = true;
+// По схеме ЕГРН участок примыкает к дорожному участку 50:16:0202016:526
+// восточной длинной границей. Въезд пока показан как планируемый, не как обмеренный факт.
+const road = new THREE.Mesh(GeoPool.plane(8, CONFIG.plot.d + 10), new THREE.MeshStandardMaterial({ map: Textures.road, roughness: 0.8 }));
+road.rotation.x = -Math.PI/2; road.position.set(CONFIG.plot.w + 4, -0.1, CONFIG.center.z); road.receiveShadow = true;
 groups.site.add(road);
 const markMat = MaterialPool.get(0xffffff);
-for (let i = -10; i <= 10; i += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(CONFIG.center.x + i, 0.01, -4); groups.site.add(mark); }
+for (let z = -4; z <= CONFIG.plot.d + 4; z += 3) { const mark = new THREE.Mesh(GeoPool.plane(0.2, 1.5), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(CONFIG.plot.w + 4, 0.01, z); groups.site.add(mark); }
 const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
-roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
-const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
-path.rotation.x = -Math.PI/2; path.position.set(12, 0.03, 11.5); path.receiveShadow = true;
+roadLabel.position.set(CONFIG.plot.w + 4, 2.5, CONFIG.center.z); groups.labels.add(roadLabel);
+const path = new THREE.Mesh(GeoPool.plane(23, 2), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
+path.rotation.x = -Math.PI/2; path.position.set(13.5, 0.03, 14.5); path.receiveShadow = true;
 groups.site.add(path);
 const draggables = [];
 const labelSprites = {};
@@ -1122,27 +1135,40 @@ while (cur) { if (cur.userData && cur.userData.objectId) { showObjectCard(cur.us
 }
 // Ворота
 (() => {
+const gateGroup = new THREE.Group();
+gateGroup.position.set(CONFIG.plot.w, 0, 14.5);
+gateGroup.rotation.y = Math.PI / 2;
 const pillarMat = MaterialPool.get(0x4a4a4a, { roughness: 0.4, metalness: 0.6 });
 const barMat = MaterialPool.get(0x6a6a6a, { roughness: 0.5, metalness: 0.3 });
 const gateMat = MaterialPool.get(0x3a3a3a, { roughness: 0.7, metalness: 0.2 });
 const railMat = MaterialPool.get(0x888888, { roughness: 0.5, metalness: 0.4 });
 const lampMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 });
-[12.5, 16.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat); p.position.set(x, 1.25, 0); p.castShadow = p.receiveShadow = true; scene.add(p); const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat); lamp.position.set(x, 2.7, 0); scene.add(lamp); });
-const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat); beam.position.set(14.5, 2.5, 0); beam.castShadow = true; scene.add(beam);
-const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat); rail.position.set(16.5, 0.05, 0); scene.add(rail);
+[12.5, 16.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat); p.position.set(x - 14.5, 1.25, 0); p.castShadow = p.receiveShadow = true; gateGroup.add(p); const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat); lamp.position.set(x - 14.5, 2.7, 0); gateGroup.add(lamp); });
+const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat); beam.position.set(0, 2.5, 0); beam.castShadow = true; gateGroup.add(beam);
+const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat); rail.position.set(2, 0.05, 0); gateGroup.add(rail);
 const rollerMat = MaterialPool.get(0x222222, { roughness: 0.3, metalness: 0.8 });
-for (let x = 13; x <= 19; x += 2) { const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat); r.rotation.x = Math.PI/2; r.position.set(x, 0.08, 0); scene.add(r); }
-const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat); gateLeaf.position.set(18.5, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; scene.add(gateLeaf);
+for (let x = 13; x <= 19; x += 2) { const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat); r.rotation.x = Math.PI/2; r.position.set(x - 14.5, 0.08, 0); gateGroup.add(r); }
+const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat); gateLeaf.position.set(4, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; gateGroup.add(gateLeaf);
 const ribMat = MaterialPool.get(0x5a5a5a, { metalness: 0.3 });
-for (let x = 17; x <= 20; x += 1.5) { const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat); rib.position.set(x, 0.9, 0); scene.add(rib); }
-const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 })); drive.position.set(16, 0.4, 0.25); scene.add(drive);
-[11.5, 12.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat); p.position.set(x, 1.0, 0); p.castShadow = p.receiveShadow = true; scene.add(p); });
-const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat); pedBeam.position.set(12, 2.0, 0); scene.add(pedBeam);
-const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat); pedLeaf.position.set(12, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; scene.add(pedLeaf);
-const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00)); pedHandle.position.set(11.8, 0.85, 0.1); scene.add(pedHandle);
+for (let x = 17; x <= 20; x += 1.5) { const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat); rib.position.set(x - 14.5, 0.9, 0); gateGroup.add(rib); }
+const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 })); drive.position.set(1.5, 0.4, 0.25); gateGroup.add(drive);
+[11.5, 12.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat); p.position.set(x - 14.5, 1.0, 0); p.castShadow = p.receiveShadow = true; gateGroup.add(p); });
+const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat); pedBeam.position.set(-2.5, 2.0, 0); gateGroup.add(pedBeam);
+const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat); pedLeaf.position.set(-2.5, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; gateGroup.add(pedLeaf);
+const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00)); pedHandle.position.set(-2.7, 0.85, 0.1); gateGroup.add(pedHandle);
+scene.add(gateGroup);
 })();
-[ { text: '⬆ СЕВЕР', pos: [12.5, 3, 42], color: '#66ccff' }, { text: '⬇ ЮГ', pos: [12.5, 3, -6], color: '#ff9966' }, { text: '⬅ ЗАПАД', pos: [-4, 3, 20], color: '#99cc99' }, { text: '➡ ВОСТОК', pos: [29, 3, 20], color: '#99cc99' } ].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); scene.add(lbl); });
-[ { text: 'Ось X (Восток)', pos: [24, 1.5, 20], color: '#ff6666' }, { text: 'Ось Z (Север)', pos: [12.5, 1.5, 39], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
+(() => {
+const a = CONFIG.gps.angle * Math.PI / 180;
+const cx = CONFIG.center.x, cz = CONFIG.center.z, r = 27;
+[
+{ text: '↑ ИСТИННЫЙ СЕВЕР', pos: [cx + Math.sin(a)*r, 3, cz + Math.cos(a)*r], color: '#66ccff' },
+{ text: '↓ ЮГ', pos: [cx - Math.sin(a)*r, 3, cz - Math.cos(a)*r], color: '#ff9966' },
+{ text: '→ ВОСТОК', pos: [cx + Math.cos(a)*r, 3, cz - Math.sin(a)*r], color: '#99cc99' },
+{ text: '← ЗАПАД', pos: [cx - Math.cos(a)*r, 3, cz + Math.sin(a)*r], color: '#99cc99' }
+].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); scene.add(lbl); });
+})();
+[ { text: 'Локальная ось X (25,001 м)', pos: [24, 1.5, 20], color: '#ff6666' }, { text: 'Локальная ось Z (40,002 м)', pos: [12.5, 1.5, 39], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
 // ═══════════════════════════════════════════════════════════════
 // НОРМЫ (bounds учитывает поворот объекта) + ПРАВИЛА КАТАЛОГА
 // ═══════════════════════════════════════════════════════════════
@@ -1291,8 +1317,8 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 <li><strong>Ограничения и обременения:</strong> не зарегистрированы</li>
 </ul>`;
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
-html += `<p><strong>Оси сцены — условные.</strong> Подписи «СЕВЕР / ЮГ / ЗАПАД / ВОСТОК» означают стороны вдоль границ участка, а не истинные стороны света.</p>`;
-html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Длинная сторона (40 м) идёт с северо‑запада на юго‑восток (азимуты 302,7° / 122,7°), короткая вдоль ул. Рассветной — азимут 32,7°. Оси сцены повёрнуты на 57,3°. Зеркального перепутывания нет.</p>`;
+html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
+html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Длинные стороны имеют азимуты около 122,733° / 302,733°, короткие — 32,737° / 212,737°. Дорожный участок 50:16:0202016:526 показан у восточной длинной границы по схеме ЕГРН. Положение ворот — планируемое и требует подтверждения на местности.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length && !soft.length) html += `<p>✅ Все контролируемые нормы соблюдены.</p>`;
 else {
@@ -2187,7 +2213,7 @@ garden:     { x:[2.5, 5],  z:[3.5, 6] },
 playground: { x:[6, 12],   z:[14, 20] },
 car:        { x:[18, 23],  z:[1, 4]  }
 };
-const DRIVEWAY = { minX: 11.5, maxX: 17.5, minZ: 0, maxZ: 9 };
+const DRIVEWAY = { minX: 16, maxX: CONFIG.plot.w, minZ: 11.5, maxZ: 17.5 };
 const SETBACK = { house: 3, bath: 1, shed: 1, septic: 1, well: 1, garden: 0.5, greenhouse: 0.5, playground: 0.5, firepit: 0.5, car: 0.5, gazebo: 1, garage: 1, grill: 0.5, pool: 1, fruit_tree: 1 };
 function pairOverlap(A, B) {
 const ba = Norms.bounds(A), bb = Norms.bounds(B);
@@ -2298,15 +2324,37 @@ let insolationOn = false;
 let insolationMesh = null;
 let insolationTimer = null;
 function calcSunAt(hours, mi) {
-const month = CONFIG.months[mi];
+const month = solarParams(mi);
 const latRad = CONFIG.gps.lat * Math.PI / 180;
-const decRad = month.declination * Math.PI / 180;
-const hourAngle = (hours - CONFIG.gps.solarNoon) * 15 * Math.PI / 180;
+const decRad = month.declination;
+const solarMinutes = hours * 60 + month.timeOffset;
+const hourAngle = (solarMinutes / 4 - 180) * Math.PI / 180;
 const sinAlt = Math.sin(latRad)*Math.sin(decRad) + Math.cos(latRad)*Math.cos(decRad)*Math.cos(hourAngle);
 const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
 const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
 const sunNorth = Math.cos(latRad)*Math.sin(decRad) - Math.sin(latRad)*Math.cos(decRad)*Math.cos(hourAngle);
 return { altitude, sunEast, sunNorth, sinAlt };
+}
+const _solarParamsCache = new Map();
+function solarParams(mi) {
+if (_solarParamsCache.has(mi)) return _solarParamsCache.get(mi);
+const spec = CONFIG.months[mi];
+const date = new Date(Date.UTC(CONFIG.gps.referenceYear, spec.month - 1, spec.day));
+const start = new Date(Date.UTC(CONFIG.gps.referenceYear, 0, 0));
+const dayOfYear = Math.floor((date - start) / 86400000);
+// NOAA: уравнение времени и склонение для середины выбранного дня.
+const gamma = 2 * Math.PI / 365 * (dayOfYear - 1);
+const eqTime = 229.18 * (0.000075 + 0.001868*Math.cos(gamma) - 0.032077*Math.sin(gamma) - 0.014615*Math.cos(2*gamma) - 0.040849*Math.sin(2*gamma));
+const declination = 0.006918 - 0.399912*Math.cos(gamma) + 0.070257*Math.sin(gamma) - 0.006758*Math.cos(2*gamma) + 0.000907*Math.sin(2*gamma) - 0.002697*Math.cos(3*gamma) + 0.00148*Math.sin(3*gamma);
+const timeOffset = eqTime + 4 * CONFIG.gps.lng - 60 * CONFIG.gps.timezone;
+const latRad = CONFIG.gps.lat * Math.PI / 180;
+const zenith = 90.833 * Math.PI / 180; // стандартная рефракция и радиус диска Солнца
+const cosH = (Math.cos(zenith) / (Math.cos(latRad)*Math.cos(declination))) - Math.tan(latRad)*Math.tan(declination);
+const hourAngle = Math.acos(Math.max(-1, Math.min(1, cosH))) * 180 / Math.PI;
+const solarNoon = (720 - timeOffset) / 60;
+const result = { declination, eqTime, timeOffset, solarNoon, sunrise: solarNoon - hourAngle/15, sunset: solarNoon + hourAngle/15 };
+_solarParamsCache.set(mi, result);
+return result;
 }
 function SOLID_IDS() {
 return ['house','bath','shed','greenhouse'].concat(CAT.items().filter(o => (CAT_HEIGHT[o.type] || 0) > 0).map(o => o.id));
@@ -2346,7 +2394,7 @@ else if (_insRay.intersectSphere(p.sphere, _insHit)) return true;
 return false;
 }
 function computeInsolation(mi) {
-const month = CONFIG.months[mi];
+const month = solarParams(mi);
 const start = month.sunrise, end = month.sunset;
 const stepH = 0.5, cell = 0.5;
 const nx = Math.round(CONFIG.plot.w / cell), nz = Math.round(CONFIG.plot.d / cell);
@@ -2401,7 +2449,7 @@ scene.add(insolationMesh);
 Utils.markDirty();
 }
 function zoneSunHours(zn, mi) {
-const month = CONFIG.months[mi];
+const month = solarParams(mi);
 const stepH = 0.5, cell = 0.5;
 const proxies = buildOccluders().filter(p => p.ownId !== zn.own);
 const foots = SOLID_IDS().filter(id => id !== zn.own).map(id => Norms.bounds(Norms.obj(id)));
@@ -2430,11 +2478,12 @@ function showInsolation() {
 const mi = parseInt(DOM.monthSlider.value, 10) - 1;
 const res = computeInsolation(mi);
 rebuildHeatmap(res);
-const zones = [
-{ icon: '🌱', name: 'Огород',   x: 2.5, z: 3.5, w: 5, d: 7, own: null },
-{ icon: '🌿', name: 'Теплица',  x: 1.5, z: 7,   w: 3, d: 6, own: 'greenhouse' },
-{ icon: '🧸', name: 'Площадка', x: 8,   z: 16,  w: 2, d: 2, own: null }
-];
+const zones = ['garden','greenhouse','playground'].map(id => Norms.obj(id)).filter(Boolean).map(o => ({
+icon: o.type === 'garden' ? '🌱' : (o.type === 'greenhouse' ? '🌿' : '🧸'),
+name: o.type === 'garden' ? 'Огород' : (o.type === 'greenhouse' ? 'Теплица' : 'Площадка'),
+x: o.x, z: o.z, w: o.w || (o.radius || 1)*2, d: o.d || (o.radius || 1)*2,
+own: o.type === 'greenhouse' ? o.id : null
+}));
 const rows = zones.map(zn => {
 const hrs = zoneSunHours(zn, mi);
 const cls = hrs >= 8 ? 'ir-good' : (hrs >= 4 ? 'ir-mid' : 'ir-bad');
@@ -2462,7 +2511,12 @@ function houseRoofGeom() {
 const h = Norms.obj('house'); if (!h) return null;
 const rise = 2.5;
 const slopeLen = Math.sqrt((h.d/2)**2 + rise**2);
-return { h, rise, slopeLen, slopeArea: h.w * slopeLen, tilt: Math.atan2(rise, h.d/2) * 180/Math.PI };
+const sceneRot = (h.rot || 0) * Math.PI / 180;
+const axisAngle = CONFIG.gps.angle * Math.PI / 180;
+// Истинная северная компонента направления локального +Z после поворота дома.
+const northOfPlusZ = Math.sin(sceneRot)*Math.sin(axisAngle) + Math.cos(sceneRot)*Math.cos(axisAngle);
+const southSign = northOfPlusZ < 0 ? 1 : -1;
+return { h, rise, slopeLen, slopeArea: h.w * slopeLen, tilt: Math.atan2(rise, h.d/2) * 180/Math.PI, southSign, sceneRot };
 }
 function solarShadingFactor() {
 const g = houseRoofGeom(); if (!g) return 1;
@@ -2472,13 +2526,15 @@ const ang = CONFIG.gps.angle*Math.PI/180, cosA = Math.cos(ang), sinA = Math.sin(
 const dir = new THREE.Vector3(), ray = new THREE.Ray(), hit = new THREE.Vector3();
 let lit = 0, tot = 0;
 [2, 5, 8, 11].forEach(mi => {
-const m = CONFIG.months[mi];
+const m = solarParams(mi);
 for (let hh = m.sunrise + 1; hh <= m.sunset - 1; hh += 1) {
 const s = calcSunAt(hh, mi);
 if (s.altitude <= 5) continue;
 dir.set(s.sunEast*cosA + s.sunNorth*sinA, s.sinAlt, -s.sunEast*sinA + s.sunNorth*cosA).normalize();
 for (let t = 0.25; t <= 0.75; t += 0.25) for (let fx = 0.2; fx <= 0.8; fx += 0.3) {
-ray.origin.set(h.x - h.w/2 + fx*h.w, (h.h + g.rise) - g.rise*t + 0.05, h.z - (h.d/2)*t);
+const lx = -h.w/2 + fx*h.w;
+const lz = g.southSign * (h.d/2)*t;
+ray.origin.set(h.x + lx*Math.cos(g.sceneRot) + lz*Math.sin(g.sceneRot), (h.h + g.rise) - g.rise*t + 0.05, h.z - lx*Math.sin(g.sceneRot) + lz*Math.cos(g.sceneRot));
 ray.direction.copy(dir);
 let blocked = false;
 for (const p of proxies) { if (p.box ? ray.intersectBox(p.box, hit) : ray.intersectSphere(p.sphere, hit)) { blocked = true; break; } }
@@ -2503,20 +2559,23 @@ function buildSolarPanels() {
 if (solarGroup) { scene.remove(solarGroup); solarGroup = null; }
 solarGroup = new THREE.Group();
 const h = Norms.obj('house'); if (!h) { scene.add(solarGroup); return; }
-const rise = 2.5, tilt = Math.atan2(rise, h.d/2);
+const g = houseRoofGeom();
+const rise = g.rise, tilt = g.tilt * Math.PI / 180;
 const panelMat = new THREE.MeshStandardMaterial({ color: 0x12305e, metalness: 0.6, roughness: 0.25 });
 const cols = 8, rows = 3;
 for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
 const t = 0.2 + (r + 0.5) * (0.7/rows);
-const px = h.x - h.w/2 + ((c + 0.5)/cols) * h.w;
-const pz = h.z - (h.d/2)*t;
+const px = -h.w/2 + ((c + 0.5)/cols) * h.w;
+const pz = g.southSign * (h.d/2)*t;
 const py = (h.h + rise) - rise*t + 0.06;
 const panel = new THREE.Mesh(GeoPool.box(1.6, 0.05, 0.95), panelMat);
 panel.position.set(px, py, pz);
-panel.rotation.x = -tilt;
+panel.rotation.x = g.southSign * tilt;
 panel.castShadow = true;
 solarGroup.add(panel);
 }
+solarGroup.position.set(h.x, 0, h.z);
+solarGroup.rotation.y = g.sceneRot;
 scene.add(solarGroup);
 Utils.markDirty();
 }
@@ -2670,20 +2729,18 @@ link.click();
 }
 function updateSun(hoursOverride) {
 const mi = parseInt(DOM.monthSlider.value, 10) - 1;
-const month = CONFIG.months[mi];
+const month = solarParams(mi);
 const dayLength = month.sunset - month.sunrise;
 let hours = (hoursOverride !== undefined) ? hoursOverride : parseFloat(DOM.hourSlider.value);
 const minH = Math.max(0, month.sunrise - 0.5);
 const maxH = Math.min(24, month.sunset + 0.5);
 hours = Math.max(minH, Math.min(maxH, hours));
-const latRad = CONFIG.gps.lat * Math.PI / 180;
-const decRad = month.declination * Math.PI / 180;
-const hourAngle = (hours - CONFIG.gps.solarNoon) * 15 * Math.PI / 180;
-const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
-const altitude = Math.asin(Math.min(1, Math.max(-1, sinAlt))) * 180 / Math.PI;
+const sun = calcSunAt(hours, mi);
+const sinAlt = sun.sinAlt;
+const altitude = sun.altitude;
 const isNight = altitude < -2;
-const sunEast = -Math.cos(decRad) * Math.sin(hourAngle);
-const sunNorth = Math.cos(latRad) * Math.sin(decRad) - Math.sin(latRad) * Math.cos(decRad) * Math.cos(hourAngle);
+const sunEast = sun.sunEast;
+const sunNorth = sun.sunNorth;
 let x, y, z;
 const distance = 50;
 if (isNight) {
@@ -2740,7 +2797,7 @@ const sunPlayer = {
 playing: false, rafId: null, lastTs: 0, hour: 12, durationSec: 20,
 toggle() { if (this.playing) this.stop(); else this.start(); },
 start() {
-const m = CONFIG.months[parseInt(DOM.monthSlider.value, 10) - 1];
+const m = solarParams(parseInt(DOM.monthSlider.value, 10) - 1);
 this.hour = Math.max(0, m.sunrise - 0.5);
 this.playing = true;
 DOM.sun.playBtn.textContent = '⏸ Стоп';
@@ -2757,7 +2814,7 @@ let dt = (now - sp.lastTs) / 1000;
 sp.lastTs = now;
 if (dt > 0.1) dt = 0.1;
 if (dt < 0) dt = 0;
-const m = CONFIG.months[parseInt(DOM.monthSlider.value, 10) - 1];
+const m = solarParams(parseInt(DOM.monthSlider.value, 10) - 1);
 const start = Math.max(0, m.sunrise - 0.5);
 const end = Math.min(24, m.sunset + 0.5);
 const speed = (end - start) / sp.durationSec;
