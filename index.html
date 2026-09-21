@@ -2607,6 +2607,14 @@ ctx.strokeStyle = '#795548'; ctx.setLineDash([5,3]); ctx.stroke(); ctx.setLineDa
 ctx.beginPath(); ctx.arc(X(o.x), Z(o.z), (o.radius||0.5)*S, 0, Math.PI*2);
 ctx.fillStyle = col.fill; ctx.fill(); ctx.strokeStyle = col.stroke; ctx.lineWidth = 1.5; ctx.stroke();
 }
+if (o.id === 'shed' && o.entranceSide === 'south') {
+const a = (o.rot || 0) * Math.PI/180, cc = Math.cos(a), ss = Math.sin(a);
+const hwDoor = (o.entranceWidth || 1.2) / 2, lz = -o.d/2;
+const p1 = { x:o.x + (-hwDoor)*cc + lz*ss, z:o.z - (-hwDoor)*ss + lz*cc };
+const p2 = { x:o.x + ( hwDoor)*cc + lz*ss, z:o.z - ( hwDoor)*ss + lz*cc };
+ctx.strokeStyle = '#2f2f2f'; ctx.lineWidth = 4;
+ctx.beginPath(); ctx.moveTo(X(p1.x), Z(p1.z)); ctx.lineTo(X(p2.x), Z(p2.z)); ctx.stroke();
+}
 const name = o.label.replace(/^[^\s]+\s/, '');
 ctx.fillStyle = '#222'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center';
 ctx.fillText(name, X(o.x), Z(o.z) - 3);
