@@ -1211,7 +1211,7 @@ pickRay.params.Line.threshold = 0.45;
 let commInfoTimer = null;
 function showCommInfo(u) {
 const len = utilityLength(u);
-DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span> ${statusChip(u.status)}<br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • глубина ${Utils.fmt(u.depth)} м${u.note ? `<br><span style="color:#ddd;font-size:11px;">${escapeHtml(u.note)}</span>` : ''} <span class="close" id="comm-info-close">✕</span>`;
+DOM.commInfo.innerHTML = `<span class="title">${u.icon} ${u.name}</span> ${statusChip(u.status)}<br>Длина: <strong>${Utils.fmt(len)} м</strong> • ${u.pipe} • ${u.depth == null ? 'глубина уточняется' : 'глубина ' + Utils.fmt(u.depth) + ' м'}${u.note ? `<br><span style="color:#ddd;font-size:11px;">${escapeHtml(u.note)}</span>` : ''} <span class="close" id="comm-info-close">✕</span>`;
 DOM.commInfo.classList.add('show');
 const pts = utilityPoints(u);
 commHighlight.geometry.dispose();
@@ -1239,11 +1239,11 @@ else hideCommInfo();
 // 💧 ДРЕНАЖ И ЛИВНЁВКА — предварительное резервирование
 // ═══════════════════════════════════════════════════════════════
 const DRAINAGE_UTILS = [
-{ name: 'Резерв дренажа фундамента дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная линия — необходимость и параметры уточнить', depth: 0.9, status: 'assumption', note: 'Показан только коридор вокруг дома. Нужен ли дренаж вообще, его отметка, диаметр, фильтр и точка сброса определяются по типу фундамента, грунтам, УГВ и вертикальной планировке; фиксированный уклон в модели намеренно не задан.', route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
-{ name: 'Ливнёвка с крыши дома', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.5, status: 'assumption', note: 'Схематично объединяет водосточные точки дома и ведёт к резерву накопления дождевой воды. Реальные водосточные стояки, уклоны и отметки определяются после проекта кровли и вертикальной планировки.', route: [ {obj:'house',corner:'nw',outward:0.25},{obj:'house',corner:'sw',outward:0.25},{x:4.0,z:22.5},{x:7.5,z:12.5},{infrastructure:'rainCollector'} ] },
-{ name: 'Ливнёвка с крыши бани', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.5, status: 'assumption', note: 'Предварительная ветка от водостока бани к общей точке накопления. Точное положение водостока зависит от кровли и водосборной системы бани.', route: [ {obj:'bath',corner:'sw',outward:0.25},{x:16.8,z:8.2},{x:13.0,z:8.2},{infrastructure:'rainCollector'} ] },
-{ name: 'Ливнёвка с навеса', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.4, status: 'assumption', note: 'Резерв сбора воды с будущего навеса. Способ водосбора зависит от конструкции и уклона кровли навеса.', route: [ {obj:'canopy',corner:'nw',outward:0.2},{x:11.8,z:8.8},{infrastructure:'rainCollector'} ] },
-{ name: 'Линейный лоток у ворот (резерв)', icon: '🌧', color: 0x00bcd4, pipe: 'линейный водоотвод — по отметкам покрытия', depth: 0.2, status: 'assumption', note: 'Резерв поперечного лотка на въезде, если вертикальная планировка покажет приток воды с улицы или с площадки. Сейчас не считается обязательным элементом.', route: [ {x:11.7,z:0.7},{x:17.3,z:0.7},{x:10.2,z:0.7},{infrastructure:'rainCollector'} ] }
+{ name: 'Резерв дренажа фундамента дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная линия — необходимость и параметры уточнить', depth: null, status: 'assumption', note: 'Показан только коридор вокруг дома. Нужен ли дренаж вообще, его отметка, диаметр, фильтр и точка сброса определяются по типу фундамента, грунтам, УГВ и вертикальной планировке; фиксированный уклон в модели намеренно не задан.', route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
+{ name: 'Ливнёвка с крыши дома', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Схематично объединяет водосточные точки дома и ведёт к резерву накопления дождевой воды. Реальные водосточные стояки, уклоны и отметки определяются после проекта кровли и вертикальной планировки.', route: [ {obj:'house',corner:'nw',outward:0.25},{obj:'house',corner:'sw',outward:0.25},{x:4.0,z:22.5},{x:7.5,z:12.5},{infrastructure:'rainCollector'} ] },
+{ name: 'Ливнёвка с крыши бани', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Предварительная ветка от водостока бани к общей точке накопления. Точное положение водостока зависит от кровли и водосборной системы бани.', route: [ {obj:'bath',corner:'sw',outward:0.25},{x:16.8,z:9.3},{x:11.0,z:9.3},{infrastructure:'rainCollector'} ] },
+{ name: 'Ливнёвка с навеса', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Резерв сбора воды с будущего навеса. Способ водосбора зависит от конструкции и уклона кровли навеса.', route: [ {obj:'canopy',corner:'nw',outward:0.2},{x:11.8,z:8.8},{infrastructure:'rainCollector'} ] },
+{ name: 'Линейный лоток у ворот (резерв)', icon: '🌧', color: 0x00bcd4, pipe: 'линейный водоотвод — по отметкам покрытия', depth: null, status: 'assumption', note: 'Резерв поперечного лотка на въезде, если вертикальная планировка покажет приток воды с улицы или с площадки. Сейчас не считается обязательным элементом.', route: [ {x:11.7,z:0.7},{x:17.3,z:0.7},{x:17.3,z:1.2},{x:10.2,z:1.2},{infrastructure:'rainCollector'} ] }
 ];
 DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
 (() => {
@@ -1717,7 +1717,7 @@ html += `<li>${g.label.replace(/^[^\s]+\s/, '')} → ${Norms.name(bid)}: <strong
 });
 html += `</ul>`;
 html += `<h2>5. Длины коммуникаций (авторасчёт)</h2><ul>`;
-CONFIG.utilities.forEach(u => { html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, глубина ${Utils.fmt(u.depth)} м)</li>`; });
+CONFIG.utilities.forEach(u => { const depthText = u.depth == null ? 'глубина уточняется' : `глубина ${Utils.fmt(u.depth)} м`; html += `<li>${u.icon} <strong>${u.name}</strong> — ${Utils.fmt(utilityLength(u))} м (${u.pipe}, ${depthText})</li>`; });
 html += `</ul>`;
 html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
 html += `<h2>6.5. Предварительная смета</h2>` + buildSmetaHTML();
