@@ -1903,8 +1903,7 @@ html += `<h2>6.7. Озеленение v1</h2>
 LANDSCAPE_PLAN.planningRules.forEach(x => { html += `<li>${x}</li>`; });
 html += `</ul>`;
 html += `<h2>6.8. Контрольная ревизия MASTER v1</h2>`;
-<p><strong>${MASTER_REVIEW.note}</strong></p>
-<h3>Планировочно зафиксировано</h3><ul>`;
+html += `<p><strong>${MASTER_REVIEW.note}</strong></p><h3>Планировочно зафиксировано</h3><ul>`;
 MASTER_REVIEW.planningFrozen.forEach(x => { html += `<li>✓ ${x}</li>`; });
 html += `</ul><h3>Остаётся предварительным</h3><ul>`;
 MASTER_REVIEW.preliminary.forEach(x => { html += `<li>? ${x}</li>`; });
