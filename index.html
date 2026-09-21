@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v4.8 (инженерная схема v3: электрокоридор, навес/ворота и полив)';
+const APP_VERSION = 'v4.9 (инженерная схема v4: ливнёвка и резерв дренажа без вымышленных отметок)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -455,7 +455,8 @@ center: { x: 12.5005, z: 20.001 },
 gps: { lat: 56.042291, lng: 38.417342, angle: 57.263397, timezone: 3, referenceYear: 2026, latPerM: 0.00000899, lngPerM: 0.00001613 },
 infrastructure: {
 powerPole: { x: 20.5, z: -9, h: 8, status: 'existing', positionAccuracy: 'approximate', note: 'Существующий столб с электрощитом за Рассветной улицей, ориентировочно напротив начала переднего забора; точное положение требует обмера' },
-entrance: { x: 14.5, z: 0, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд и калитка на короткой уличной стороне z=0; точное положение уточнить по месту' }
+entrance: { x: 14.5, z: 0, status: 'planned', positionAccuracy: 'preliminary', note: 'Планируемый въезд и калитка на короткой уличной стороне z=0; точное положение уточнить по месту' },
+rainCollector: { x: 10.2, z: 9.0, status: 'assumption', positionAccuracy: 'preliminary', note: 'Резерв точки накопления дождевой воды/ливневого колодца между огородом и въездом. Фактическая отметка, объём, перелив и возможность повторного использования воды определяются после вертикальной планировки и расчёта стока.' }
 },
 latitude: 56,
 camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [14.5, 2, -2] },
@@ -535,15 +536,18 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Инженерная схема v3: к ранее выбранным зонам ЛОС и скважины добавлен единый правый электрический коридор с ветками к бане/хозблоку и резервами к навесу/воротам; полив разделён на магистраль, огород, теплицу и резерв газона.' },
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Инженерная схема v4: к электрике и поливу добавлен предварительный сбор дождевой воды с дома/бани/навеса в резерв X≈10,2/Z≈9,0; фиксированные уклоны и старые колодцы удалены, дренаж дома оставлен только как условный коридор до геологии и высотной съёмки.' },
 { id: 'wastewaterType', label: 'Тип ЛОС / накопительной системы', status: 'assumption', note: 'Не выбран. До выбора оборудования нельзя окончательно утверждать размеры, расстояния до дома, способ отвода очищенной воды и сервисный доступ.' },
 { id: 'hydrogeology', label: 'Гидрогеология / УГВ / направление грунтовых вод', status: 'assumption', note: 'Нет подтверждённых данных. Нужны для окончательного выбора места скважины и ЛОС и оценки санитарных рисков.' },
 { id: 'powerCorridor', label: 'Правый электрический коридор', status: 'assumption', note: 'Зарезервирован общий маршрут ввод → дом с ветками к бане и хозблоку; окончательная схема зависит от ТУ, мощности и электрощитов.' },
-{ id: 'irrigationPlan', label: 'Полив огорода / теплицы / газона', status: 'assumption', note: 'Показаны трассировочные резервы. Дождеватели, капельный полив, автоматика и диаметры выбираются после подтверждения дебита и давления.' }
+{ id: 'irrigationPlan', label: 'Полив огорода / теплицы / газона', status: 'assumption', note: 'Показаны трассировочные резервы. Дождеватели, капельный полив, автоматика и диаметры выбираются после подтверждения дебита и давления.' },
+{ id: 'stormwaterPlan', label: 'Ливнёвка с дома / бани / навеса', status: 'assumption', note: 'Вода сводится к резервной точке X≈10,2/Z≈9,0. Объём накопителя, отметки, перелив и фактические уклоны определяются после вертикальной планировки.' },
+{ id: 'foundationDrainage', label: 'Дренаж фундамента дома', status: 'assumption', note: 'Пока только резерв коридора. Необходимость подтверждается по фундаменту, грунтам и УГВ; без изысканий дренаж не считается обязательным.' },
+{ id: 'verticalLevels', label: 'Вертикальная планировка и высотные отметки', status: 'assumption', note: 'Нет высотной съёмки. До неё нельзя окончательно задавать самотёчные уклоны ливнёвки, дренажа и точку безопасного перелива.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -1232,26 +1236,24 @@ if (hits.length) showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex
 else hideCommInfo();
 }
 // ═══════════════════════════════════════════════════════════════
-// 💧 ДРЕНАЖ И ЛИВНЁВКА (кольцо вокруг дома + сбор с крыш)
+// 💧 ДРЕНАЖ И ЛИВНЁВКА — предварительное резервирование
 // ═══════════════════════════════════════════════════════════════
 const DRAINAGE_UTILS = [
-{ name: 'Кольцевой дренаж дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная Ø110 в геотекстиле, уклон 2 см/м', depth: 0.9, route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
-{ name: 'Дренаж → колодец', icon: '🕳', color: 0x0097a7, pipe: 'Ø110, уклон 3 см/м', depth: 1.1, route: [ {obj:'house',corner:'se',outward:1},{x:23,z:22} ] },
-{ name: 'Ливнёвка (дом)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'house',corner:'nw',outward:0.2},{obj:'house',corner:'sw',outward:0.2},{obj:'house',corner:'se',outward:0.2},{obj:'house',corner:'ne',outward:0.2},{obj:'house',corner:'se',outward:0.2},{x:23,z:25},{x:23,z:13} ] },
-{ name: 'Ливнёвка (баня)', icon: '🌧', color: 0x00bcd4, pipe: 'ПВХ Ø110, уклон 1 см/м', depth: 0.5, route: [ {obj:'bath',corner:'sw',outward:0.2},{obj:'bath',corner:'se',outward:0.2},{x:24.3,z:10} ] }
+{ name: 'Резерв дренажа фундамента дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная линия — необходимость и параметры уточнить', depth: 0.9, status: 'assumption', note: 'Показан только коридор вокруг дома. Нужен ли дренаж вообще, его отметка, диаметр, фильтр и точка сброса определяются по типу фундамента, грунтам, УГВ и вертикальной планировке; фиксированный уклон в модели намеренно не задан.', route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
+{ name: 'Ливнёвка с крыши дома', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.5, status: 'assumption', note: 'Схематично объединяет водосточные точки дома и ведёт к резерву накопления дождевой воды. Реальные водосточные стояки, уклоны и отметки определяются после проекта кровли и вертикальной планировки.', route: [ {obj:'house',corner:'nw',outward:0.25},{obj:'house',corner:'sw',outward:0.25},{x:4.0,z:22.5},{x:7.5,z:12.5},{infrastructure:'rainCollector'} ] },
+{ name: 'Ливнёвка с крыши бани', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.5, status: 'assumption', note: 'Предварительная ветка от водостока бани к общей точке накопления. Точное положение водостока зависит от кровли и водосборной системы бани.', route: [ {obj:'bath',corner:'sw',outward:0.25},{x:16.8,z:8.2},{x:13.0,z:8.2},{infrastructure:'rainCollector'} ] },
+{ name: 'Ливнёвка с навеса', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: 0.4, status: 'assumption', note: 'Резерв сбора воды с будущего навеса. Способ водосбора зависит от конструкции и уклона кровли навеса.', route: [ {obj:'canopy',corner:'nw',outward:0.2},{x:11.8,z:8.8},{infrastructure:'rainCollector'} ] },
+{ name: 'Линейный лоток у ворот (резерв)', icon: '🌧', color: 0x00bcd4, pipe: 'линейный водоотвод — по отметкам покрытия', depth: 0.2, status: 'assumption', note: 'Резерв поперечного лотка на въезде, если вертикальная планировка покажет приток воды с улицы или с площадки. Сейчас не считается обязательным элементом.', route: [ {x:11.7,z:0.7},{x:17.3,z:0.7},{x:10.2,z:0.7},{infrastructure:'rainCollector'} ] }
 ];
 DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
 (() => {
-const wellMat = new THREE.MeshStandardMaterial({ color: 0x00838f, roughness: 0.6 });
-const lidMat = new THREE.MeshStandardMaterial({ color: 0x004d56, roughness: 0.5 });
-[ [23, 22, '🕳 Дренажный колодец'], [24.3, 10, '🌧 Ливневый колодец'] ].forEach(w => {
-const body = new THREE.Mesh(GeoPool.cylinder(0.5, 0.55, 1.0, 12), wellMat);
-body.position.set(w[0], 0.1, w[1]); body.castShadow = true; groups.comms.add(body);
-const lid = new THREE.Mesh(GeoPool.cylinder(0.55, 0.55, 0.1, 12), lidMat);
-lid.position.set(w[0], 0.65, w[1]); groups.comms.add(lid);
-const lbl = Utils.createLabel(w[2], '#ffffff', 0.6);
-lbl.position.set(w[0], 1.2, w[1]); groups.labels.add(lbl);
-});
+const p = CONFIG.infrastructure.rainCollector;
+const body = new THREE.Mesh(GeoPool.cylinder(0.55, 0.6, 0.75, 12), new THREE.MeshStandardMaterial({ color: 0x00838f, transparent: true, opacity: 0.72, roughness: 0.7 }));
+body.position.set(p.x, 0.08, p.z); body.castShadow = true; groups.comms.add(body);
+const lid = new THREE.Mesh(GeoPool.cylinder(0.6, 0.6, 0.08, 12), new THREE.MeshStandardMaterial({ color: 0x004d56, roughness: 0.55 }));
+lid.position.set(p.x, 0.5, p.z); groups.comms.add(lid);
+const lbl = Utils.createLabel('🌧 Резерв дождевой воды', '#ffffff', 0.58, [7.5, 1.2], 760, 120, 28, 'rgba(0,80,88,0.72)');
+lbl.position.set(p.x, 1.15, p.z); groups.labels.add(lbl);
 })();
 // ═══════════════════════════════════════════════════════════════
 // КАРТОЧКА ОБЪЕКТА + РЕДАКТОР (поворот + размеры + удаление каталога)
@@ -1647,6 +1649,7 @@ const ENGINEERING_HTML = `
 <h3>🚽 Канализация</h3><ul><li><strong>Септик/ЛОС перенесён в предварительную точку X=2,5 / Z=17,5.</strong> Это увеличивает расстояние до дома и скважины и оставляет его ближе к фасаду для обслуживания, но окончательный тип и место зависят от выбранной системы.</li><li><strong>Инженерная схема v2:</strong> дом и баня сходятся к общему условному узлу около X=5,2 / Z=20,5 и далее идут к текущему месту септика.</li><li>Ветка бани уходит по переднему краю центральной зоны, в стороне от мангала, и один раз подземно пересекает пешеходный маршрут.</li><li>Тип ЛОС, отметки выпуска, фактический уклон, глубина и ревизии определяются только после выбора системы и высотной съёмки.</li></ul>
 <h3>⚡ Электроснабжение</h3><ul><li><strong>Подтверждено пользователем:</strong> электрический столб со щитом находится за ул. Рассветной, примерно напротив правой части фасада участка.</li><li><strong>Инженерная схема v3:</strong> после пересечения фасадной границы кабель уходит в единый правый инженерный коридор к дому; из этого же коридора зарезервированы ветки к бане и хозблоку.</li><li>Отдельно заложены предварительные резервы к будущему навесу и автоматике ворот/калитки. Это именно трассировочный резерв: кабели, мощности, автоматы, заземление, трубы и глубины должны быть рассчитаны по ТУ и рабочему проекту.</li><li>Коридор проходит рядом с предварительной зоной скважины; окончательное взаимное положение кабеля, кессона и сервисной площадки скважины нужно увязать до земляных работ.</li></ul>
 <h3>🌱 Полив</h3><ul><li>Старая длинная линия от дома через заднюю часть участка удалена. Новая сезонная магистраль идёт от южной стороны дома к передней части по левому краю центральной зоны, в стороне от мангала.</li><li>От неё сделаны отдельные резервы к огороду, теплице и центральному газону.</li><li>Для газона показана только распределительная ветка, а не готовая схема дождевателей: её рассчитывают после фактического давления/дебита скважины и выбора способа полива.</li><li>Глубины, слив на зиму, автоматика, фильтрация и капельный полив пока не утверждены.</li></ul>
+<h3>🌧 Ливнёвка и дренаж</h3><ul><li><strong>Инженерная схема v4:</strong> старые фиксированные уклоны дренажа/ливнёвки и два условных колодца удалены. Они создавали ложное ощущение готового рабочего проекта и конфликтовали с новой зоной скважины.</li><li>В проекте оставлен только <strong>резерв дренажного контура вокруг дома</strong>. Необходимость такого дренажа определяется типом фундамента, грунтами и уровнем грунтовых вод; без этих данных он не считается обязательным.</li><li>Дождевую воду условно собираем с дома, бани и будущего навеса в резервную точку X=10,2 / Z=9,0 между огородом и въездом. Там может быть накопительная ёмкость или ливневый колодец; объём, глубина и перелив пока не назначены.</li><li>У ворот показан условный линейный лоток, но он нужен только если высотная съёмка покажет приток воды с улицы/площадки.</li><li>Сброс дождевой или дренажной воды за границы участка сейчас <strong>не проектируется</strong>. Сначала нужна вертикальная планировка и понятная точка допустимого отвода/накопления.</li><li>Резервная накопительная точка расположена рядом с поливочным узлом, поэтому в будущем дождевую воду можно рассмотреть как дополнительный источник для полива после подбора ёмкости, фильтрации и насоса.</li></ul>
 <h3>🔥 Газоснабжение</h3><ul><li><strong>Не подтверждено исходными данными:</strong> наличие, точная сторона и положение газовой магистрали.</li><li>Жёлтая пунктирная линия вдоль Рассветной и ввод к дому — только сценарий для резервирования коридора. До получения схемы газовых сетей её нельзя считать фактической трассой.</li></ul>`;
 function buildReportHTML() {
 const now = new Date().toLocaleDateString('ru-RU');
@@ -2340,7 +2343,7 @@ return String(value == null ? '' : value).replace(/[&<>'"]/g, ch => ({ '&':'&amp
 function statusRecords() {
 const records = [];
 PROJECT_FACTS.forEach(item => records.push({ section: 'Исходные данные', id: item.id, label: item.label, target: item }));
-const infraLabels = { powerPole: 'Столб и электрощит', entrance: 'Въезд и калитка' };
+const infraLabels = { powerPole: 'Столб и электрощит', entrance: 'Въезд и калитка', rainCollector: 'Резерв накопления дождевой воды' };
 Object.keys(CONFIG.infrastructure).forEach(id => records.push({ section: 'Инфраструктура', id, label: infraLabels[id] || id, target: CONFIG.infrastructure[id] }));
 CONFIG.objects.forEach(item => records.push({ section: 'Объекты', id: item.id, label: item.label, target: item }));
 CONFIG.utilities.forEach((item, i) => records.push({ section: 'Коммуникации', id: String(i), label: `${item.icon} ${item.name}`, target: item }));
@@ -2776,6 +2779,10 @@ LAYOUT_PATHS.forEach(seg => {
 ctx.restore();
 ctx.fillStyle = '#7b5e3b'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'left';
 ctx.fillText('Калитка → дом', X(11.95)+5, Z(10));
+const rc = CONFIG.infrastructure.rainCollector;
+ctx.fillStyle = 'rgba(0,188,212,0.28)'; ctx.strokeStyle = '#00838f'; ctx.lineWidth = 2;
+ctx.beginPath(); ctx.arc(X(rc.x), Z(rc.z), 0.6*S, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+ctx.fillStyle = '#006a73'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'left'; ctx.fillText('Резерв дождевой воды', X(rc.x)+10, Z(rc.z)-8);
 ctx.fillStyle = '#555'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText('УЛ. РАССВЕТНАЯ • ФАСАД 25,001 м', X(W/2), Z(0)+17);
 ctx.font = '9px Segoe UI, Arial'; ctx.fillStyle = '#777'; ctx.fillText('Гостевая парковка предполагается снаружи; обочина и режим стоянки требуют проверки', X(W/2), Z(0)+31);
 CONFIG.objects.forEach(o => drawObject2D(ctx, o, X, Z, S));
@@ -3784,11 +3791,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🏗 Режим проверки: инженерная схема v3 — электрика и полив без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🏗 Режим проверки: инженерная схема v4 — ливнёвка и дренаж без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v4.8: инженерная схема v3 — правый электрокоридор и поливочные ветки.');
+console.log('✅ Проект Берн v4.9: инженерная схема v4 — сбор дождевой воды и условный резерв дренажа.');
 </script>
 </body>
 </html>
