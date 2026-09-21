@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v4.2 (layout v2.1: компактная банная зона, терраса в габаритах, парковочный узел)';
+const APP_VERSION = 'v4.3 (layout v2.2: огород к фасаду, увеличенный центральный газон)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -463,7 +463,7 @@ objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
 { id: 'bath', type: 'bath', label: '🧖 Баня', x: 20.75, z: 11.5, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
 { id: 'shed', type: 'shed', label: '🛠 Хозблок', x: 21, z: 5, y: 4.0, w: 6, d: 4, h: 3, rot: 0, color: 0x5d4037, roofColor: 0x333333, labelColor: '#cccccc', labelSize: 1.0, group: 'site' },
-{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 10, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
+{ id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 4, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
 { id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 2, z: 9, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
 { id: 'playground', type: 'playground', label: '🧸 Детская площадка', x: 14, z: 12.5, y: 2.5, w: 2, d: 2, rot: 0, color: 0xf1c40f, labelColor: '#ff66aa', labelSize: 0.9, group: 'site', status: 'planned', note: 'Площадка размещена у переднего края центрального газона с прямой видимостью от дома' },
 { id: 'firepit', type: 'firepit', label: '🔥 Мангальная / костровая зона', x: 10.5, z: 18, y: 1.5, radius: 1.25, rot: 0, color: 0x4a3a2a, labelColor: '#ff5500', labelSize: 0.9, group: 'site', fireMode: 'brazier', status: 'planned', note: 'Функционально относится к бане; в модели соблюдён запас не менее 5 м до дома, бани и хозблока для режима мангала' },
@@ -495,7 +495,7 @@ months: [
 monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
 const LAYOUT_ZONES = {
-  lawn: { x: 14.5, z: 17, w: 5.5, d: 9, label: 'Газон / свободная зона', status: 'planned' },
+  lawn: { x: 14.5, z: 15.5, w: 5.5, d: 12, label: 'Газон / свободная зона', status: 'planned' },
   driveway: { x: 14.5, z: 1.5, w: 4, d: 3, label: 'Въезд к навесу', status: 'planned' },
   parking: { x: 14.5, z: 6, w: 4, d: 6, label: 'Парковка / будущий навес', status: 'planned' },
   guestParking: { label: 'Гостевая парковка — снаружи вдоль улицы', status: 'assumption', note: 'Не является подтверждённой парковочной полосой; возможность стоянки проверить по фактической обочине и ПДД' }
@@ -519,7 +519,7 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.1: дом закреплён; баня подтянута к хозблоку, терраса включена в планировочный габарит; справа одно машиноместо с резервом навеса; слева солнечные теплица и огород; центр сохранён под газон и детскую площадку.' }
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.2: дом закреплён; баня и хозблок собраны справа; огород сдвинут к фасадной границе Рассветной, рядом с теплицей; центральный газон увеличен; парковочный узел и мангальная зона сохранены.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
@@ -1235,7 +1235,7 @@ html += `</table>`;
 }
 if (objectId === 'house') html += `<div class="obj-note"><strong>ℹ Пожарный разрыв:</strong> до бани ${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м. Внутри одного участка ИЖС расстояние дом—хозяйственная постройка по СП 4.13130 не нормируется; отдельно нужно проверить здания соседей и конструктивные решения.</div>`;
 else if (objectId === 'bath') html += `<div class="obj-note"><strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м со стороны дома (локальная +Z). В layout v2.1 терраса включена в планировочные габариты и расчёт расстояний, но не считается высокой стеной при расчёте теней.</div>`;
-else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Инсоляция:</strong> Расположен в юго-западном углу — самой солнечной части участка.</div>`;
+else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Огород:</strong> Сдвинут к фасадной границе Рассветной: передний край примерно в 0,5 м от границы участка, между теплицей и огородом оставлен проход около 0,5 м. Это освобождает центральную часть под газон.</div>`;
 else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Выбрана передняя левая открытая зона; июньская доступность прямого солнца сравнивается с альтернативами в отчёте.</div>`;
 else if (objectId === 'canopy') html += `<div class="obj-note"><strong>▱ Будущий навес:</strong> Планировочный резерв 4×6 м над одним машиноместом. Это не существующая постройка; конструкция и фундамент требуют отдельного решения.</div>`;
 else if (objectId === 'car') html += `<div class="obj-note"><strong>🚗 Парковка:</strong> Внутри участка предусмотрено одно место. Гостевые машины предполагаются снаружи вдоль улицы после проверки фактической обочины.</div>`;
@@ -1599,7 +1599,7 @@ const hard = checks.filter(c => c.ok === false && c.level === 'mandatory');
 const conditional = checks.filter(c => c.level === 'conditional' && c.ok !== true);
 const recommendations = checks.filter(c => c.level === 'recommendation' && c.ok === false);
 const greenhouseSun = juneSunGridAudit('greenhouse', { x:[1.5,4], z:[6,13] }, 0.5);
-const gardenSun = juneSunGridAudit('garden', { x:[3.5,9], z:[6,14] }, 0.5);
+const gardenSun = juneSunGridAudit('garden', { x:[4,9], z:[4,14] }, 0.5);
 const greenhouseChosen = greenhouseSun.find(p => p.x===o('greenhouse').x && p.z===o('greenhouse').z);
 const gardenChosen = gardenSun.find(p => p.x===o('garden').x && p.z===o('garden').z);
 const pct = v => Math.round(v * 100) + '%';
@@ -1618,7 +1618,7 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
-html += `<p><strong>Рабочая планировка v2.1.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; слева — теплица и огород; центр остаётся под газон и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Деревья не моделируются: участок фактически пустой.</p>`;
+html += `<p><strong>Рабочая планировка v2.2.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; теплица остаётся слева, а огород перенесён ближе к фасадной границе Рассветной с 0,5-метровым проектным отступом; центральный газон увеличен и остаётся под свободную семейную зону и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Деревья не моделируются: участок фактически пустой.</p>`;
 html += `<p><strong>Июньская проверка прямого солнца (21 июня):</strong> используется сеточный перебор практичной левой зоны с шагом 0,5 м, почасовой проверкой 08:00–18:00 и пятью точками внутри площади объекта. Текущая теплица X=${Utils.fmt(o('greenhouse').x)}, Z=${Utils.fmt(o('greenhouse').z)} получает ${pct(greenhouseChosen ? greenhouseChosen.score : sunScore(o('greenhouse')))}, лучший допустимый результат в проверенной зоне — ${greenhouseSun.length ? pct(greenhouseSun[0].score) + ' при X=' + Utils.fmt(greenhouseSun[0].x) + ', Z=' + Utils.fmt(greenhouseSun[0].z) : 'нет допустимых точек'}. Текущий огород — ${pct(gardenChosen ? gardenChosen.score : sunScore(o('garden')))}, лучший найденный — ${gardenSun.length ? pct(gardenSun[0].score) + ' при X=' + Utils.fmt(gardenSun[0].x) + ', Z=' + Utils.fmt(gardenSun[0].z) : 'нет допустимых точек'}. Это сравнительная модель затенения объектами проекта, а не агрономическая гарантия.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
@@ -2710,7 +2710,7 @@ bath:       { x:[20.5, 21], z:[11, 12] },
 shed:       { x:[19, 22],   z:[4, 6]   },
 firepit:    { x:[10, 11],   z:[17.5, 18.5] },
 greenhouse: { x:[1.5, 3],   z:[7, 10]  },
-garden:     { x:[5.5, 8],   z:[7, 11]  },
+garden:     { x:[5.5, 8],   z:[4, 7]   },
 playground: { x:[13, 15],   z:[12, 14] },
 car:        { x:[14, 15],   z:[4, 7]   },
 canopy:     { x:[14, 15],   z:[5, 7]   }
@@ -3694,7 +3694,7 @@ if (REVIEW_LAYOUT) toast('🏗 Режим проверки: layout v2.1 без �
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v4.2: layout v2.1 — компактная банная зона, терраса в расчётах, парковочный узел и сеточный аудит солнца.');
+console.log('✅ Проект Берн v4.3: layout v2.2 — огород у фасада, увеличенный центральный газон.');
 </script>
 </body>
 </html>
