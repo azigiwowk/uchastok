@@ -423,7 +423,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v5.2 (озеленение v1: безопасные посадочные точки без влияния на текущую инсоляцию)';
+const APP_VERSION = 'v5.3 (озеленение v2: декоративные зоны, банная группа и контейнерные акценты)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -587,9 +587,18 @@ const LANDSCAPE_PLAN = {
     { id:'tree-b', label:'Компактное плодовое дерево B', x:2.0, z:22.0, radius:1.1, h:3.5, type:'compact-fruit', note:'Левая часть перед домом. До ближайшей нанесённой инженерной трассы около 2 м; сохраняет центральный газон открытым.' }
   ],
   shrubZones: [
-    { id:'rear-hedge', label:'Невысокая полоса кустарников для приватности', x:12.5, z:38.5, w:17.0, d:0.8, h:1.6, note:'Только неглубокая/контролируемая корневая система. Полоса расположена за домом и оставляет резерв до условного дренажного коридора.' }
+    { id:'rear-hedge', label:'Невысокая полоса кустарников для приватности', x:12.5, z:38.5, w:17.0, d:0.8, h:1.6, note:'Только неглубокая/контролируемая корневая система. Полоса расположена за домом и оставляет резерв до условного дренажного коридора.' },
+    { id:'bath-border', label:'Декоративная группа у террасы бани', x:20.7, z:19.3, w:3.2, d:0.8, h:1.2, note:'Невысокая кустарниково-многолетняя группа севернее террасы. До ближайшей нанесённой инженерной трассы около 1,5 м; перед посадкой уточнить фактическую трассу воды и корневую зону выбранных растений.' }
+  ],
+  containers: [
+    { id:'wicket-planter', label:'Контейнерный акцент у калитки', x:10.7, z:0.8, w:0.65, d:0.65, h:0.65, note:'Съёмный контейнер, а не посадка в грунт: позволяет сохранить доступ к ливнёвке и инженерным резервам у фасада.' },
+    { id:'bath-planter', label:'Контейнер у террасы бани', x:22.7, z:18.0, w:0.7, d:0.7, h:0.7, note:'Контейнер на краю террасы для сезонного акцента; не создаёт постоянной корневой зоны над коммуникациями.' }
+  ],
+  screens: [
+    { id:'shed-green-screen', label:'Зелёный экран хозблока', x:17.85, z:5.2, w:0.18, d:2.2, h:1.8, note:'Узкий декоративный экран/решётка вдоль западной стены хозблока со стороны двора. Не перекрывает вход со стороны Рассветной и не требует широкой корневой зоны.' }
   ],
   planningRules: [
+    'Корневые кустарниковые группы добавлять только там, где есть понятный резерв до инженерных трасс; в сомнительных местах использовать контейнеры/решётки.',
     'Не размещать деревья в правом инженерном коридоре около скважины, воды и электрики.',
     'Не занимать деревьями центральный газон и подходы к бане/хозблоку.',
     'Не ставить крупные корневые системы над канализацией, водопроводом, слаботочкой, дренажом и ревизионными зонами.',
@@ -617,7 +626,7 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'MASTER v1 сохранён. Озеленение v1 добавлено как отдельный будущий слой: два компактных дерева слева и невысокая кустарниковая полоса за домом; существующие объекты и инженерный каркас не сдвигаются.' },
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'MASTER v1 сохранён. Озеленение v2 развивает будущий слой: добавлена декоративная группа у террасы бани, контейнер у калитки, контейнерный акцент на террасе и узкий зелёный экран хозблока; геометрия и инженерный каркас не меняются.' },
 { id: 'wastewaterType', label: 'Тип ЛОС / накопительной системы', status: 'assumption', note: 'Не выбран. До выбора оборудования нельзя окончательно утверждать размеры, расстояния до дома, способ отвода очищенной воды и сервисный доступ.' },
 { id: 'hydrogeology', label: 'Гидрогеология / УГВ / направление грунтовых вод', status: 'assumption', note: 'Нет подтверждённых данных. Нужны для окончательного выбора места скважины и ЛОС и оценки санитарных рисков.' },
 { id: 'powerCorridor', label: 'Правый электрический коридор', status: 'assumption', note: 'Зарезервирован общий маршрут ввод → дом с ветками к бане и хозблоку; окончательная схема зависит от ТУ, мощности и электрощитов.' },
@@ -629,11 +638,11 @@ const PROJECT_FACTS = [
 { id: 'lowVoltage', label: 'Домофон / камеры / слаботочка', status: 'assumption', note: 'Предусмотрена отдельная резервная трасса дом → калитка, камера ворот и камера на двор. Кабельная архитектура, PoE/питание и оборудование пока не выбраны.' },
 { id: 'networkCrossings', label: 'Ревизия пересечений инженерных трасс', status: 'assumption', note: 'В отчёт добавлен автоматический 2D-аудит пересечений разных систем. Найденное пересечение не является нарушением само по себе и требует проектной увязки по глубине и защите.' },
 { id: 'masterFreeze', label: 'MASTER v1 — функциональная планировка зафиксирована', status: 'planned', note: 'Дом, банно-хозяйственная группа, парковка/навес, огород/теплица, центральный газон и основные маршруты считаются планировочно зафиксированными. Это не юридическое или инженерное согласование.' },
-{ id: 'landscapePlan', label: 'Озеленение v1 — два компактных дерева + задние кустарники', status: 'assumption', note: 'Будущие посадки показаны отдельным слоем и не считаются существующими деревьями. Точные виды/сорта, корневые системы и окончательные точки уточняются после инженерных исходных данных и подготовки грунта.' }
+{ id: 'landscapePlan', label: 'Озеленение v2 — деревья, декоративные кустарники, контейнеры и зелёный экран', status: 'assumption', note: 'Будущие посадки показаны отдельным слоем и не считаются существующими деревьями. Корневые посадки ограничены безопасными карманами; у калитки и хозблока применены контейнерные/вертикальные решения из-за плотной инженерной схемы.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1','landscape-v1'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1','landscape-v1','landscape-v2'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -1153,6 +1162,24 @@ groups.site.add(landscapeGroup);
   });
 })();
 
+(() => {
+  const bedMat = new THREE.MeshStandardMaterial({ color:0x8bb66f, transparent:true, opacity:0.28, roughness:1, depthWrite:false });
+  (LANDSCAPE_PLAN.shrubZones || []).filter(z => z.id !== 'rear-hedge').forEach(z => {
+    const bed = new THREE.Mesh(GeoPool.box(z.w, z.h, z.d), bedMat);
+    bed.position.set(z.x, z.h/2, z.z); bed.castShadow=false; bed.receiveShadow=false; landscapeGroup.add(bed);
+    const lbl = Utils.createLabel('🌸 ' + z.label, '#efffe7', 0.42, [7.6,1.0], 800, 105, 22, 'rgba(55,92,45,0.58)');
+    lbl.position.set(z.x, z.h+0.4, z.z); groups.labels.add(lbl);
+  });
+  const planterMat = new THREE.MeshStandardMaterial({ color:0x8d6e63, transparent:true, opacity:0.60, roughness:0.9 });
+  (LANDSCAPE_PLAN.containers || []).forEach(p => {
+    const box = new THREE.Mesh(GeoPool.box(p.w,p.h,p.d), planterMat);
+    box.position.set(p.x,p.h/2,p.z); box.castShadow=false; box.receiveShadow=false; landscapeGroup.add(box);
+  });
+  (LANDSCAPE_PLAN.screens || []).forEach(s => {
+    const scr = new THREE.Mesh(GeoPool.box(s.w,s.h,s.d), new THREE.MeshStandardMaterial({ color:0x4f8b52, transparent:true, opacity:0.32, roughness:1, depthWrite:false }));
+    scr.position.set(s.x,s.h/2,s.z); scr.castShadow=false; scr.receiveShadow=false; landscapeGroup.add(scr);
+  });
+})();
 const draggableGroups = draggables.map(d => d.group);
 // ═══════════════════════════════════════════════════════════════
 // КАТАЛОГ: добавление / удаление / сохранение (ключ bern_catalog_v2)
@@ -1892,7 +1919,7 @@ else {
 }
 html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
 html += `<h2>6.5. Предварительная смета</h2>` + buildSmetaHTML();
-html += `<h2>6.7. Озеленение v1</h2>
+html += `<h2>6.7. Озеленение v1–v2</h2>`;
 <p><strong>${LANDSCAPE_PLAN.note}</strong></p>
 <ul>
 <li>🌳 Дерево A: X=${Utils.fmt(LANDSCAPE_PLAN.trees[0].x)}, Z=${Utils.fmt(LANDSCAPE_PLAN.trees[0].z)} — компактная форма за теплицей; не занимает газон и находится примерно в 3 м от ближайшей нанесённой инженерной трассы.</li>
@@ -1901,6 +1928,14 @@ html += `<h2>6.7. Озеленение v1</h2>
 </ul>
 <p><strong>Сценарная проверка тени от будущих двух деревьев:</strong> огород ${pct(baselineGardenSun)} → ${pct(landscapeGardenSun)}, теплица ${pct(baselineGreenhouseSun)} → ${pct(landscapeGreenhouseSun)} по июньской выборке. В текущей модели эти две посадки не уменьшают результат для огорода и теплицы. Это упрощённая модель зрелой кроны, а не прогноз урожайности.</p>
 <p><strong>Почему пока только два дерева:</strong> правая сторона занята скважиной и инженерным коридором, центр оставляем газоном, а передняя левая часть нужна теплице/огороду. Высокорослые деревья до уточнения местных отступов и реальных коммуникаций не закладываем.</p>
+<h3>Озеленение v2 — декоративные зоны</h3>
+<ul>
+<li>🌸 <strong>Терраса бани:</strong> узкая группа 3,2×0,8 м севернее террасы. Формат — невысокие кустарники + многолетники; ближайшая нанесённая инженерная трасса примерно в 1,5 м, поэтому окончательный ассортимент выбираем с умеренной корневой системой.</li>
+<li>🪴 <strong>Калитка:</strong> вместо посадки в грунт — съёмный контейнер. Передняя часть участка перегружена ливнёвкой, входной дорожкой и резервами коммуникаций.</li>
+<li>🪴 <strong>Терраса бани:</strong> второй контейнерный сезонный акцент на самой террасе.</li>
+<li>🌿 <strong>Хозблок:</strong> узкий зелёный экран/решётка вдоль западной стены со стороны двора. Южный вход со стороны Рассветной остаётся полностью свободным.</li>
+</ul>
+<p><strong>Палитра-кандидат:</strong> для зоны бани можно рассматривать метельчатую гортензию/компактную спирею и теневыносливые многолетники вроде хосты; это пока не спецификация сортов. Контейнеры у входов лучше заполнять сезонно, чтобы не создавать постоянную корневую зону над сетями.</p>
 <h3>Правила посадочного слоя</h3><ul>`;
 LANDSCAPE_PLAN.planningRules.forEach(x => { html += `<li>${x}</li>`; });
 html += `</ul>`;
@@ -2975,10 +3010,19 @@ ctx.restore();
 ctx.fillStyle = '#7b5e3b'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'left';
 ctx.fillText('Калитка → дом', X(11.95)+5, Z(10));
 LANDSCAPE_PLAN.shrubZones.forEach(z => {
-  ctx.fillStyle = 'rgba(78,143,84,0.12)'; ctx.strokeStyle = '#4e8f54'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+  ctx.fillStyle = z.id === 'bath-border' ? 'rgba(139,182,111,0.18)' : 'rgba(78,143,84,0.12)';
+  ctx.strokeStyle = z.id === 'bath-border' ? '#6f9b58' : '#4e8f54'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
   ctx.fillRect(X(z.x-z.w/2), Z(z.z+z.d/2), z.w*S, z.d*S);
   ctx.strokeRect(X(z.x-z.w/2), Z(z.z+z.d/2), z.w*S, z.d*S);
   ctx.setLineDash([]);
+});
+(LANDSCAPE_PLAN.containers || []).forEach(p => {
+  ctx.fillStyle='rgba(141,110,99,0.30)'; ctx.strokeStyle='#6d4c41'; ctx.lineWidth=1;
+  ctx.fillRect(X(p.x-p.w/2),Z(p.z+p.d/2),p.w*S,p.d*S); ctx.strokeRect(X(p.x-p.w/2),Z(p.z+p.d/2),p.w*S,p.d*S);
+});
+(LANDSCAPE_PLAN.screens || []).forEach(s => {
+  ctx.fillStyle='rgba(79,139,82,0.18)'; ctx.strokeStyle='#3f7843'; ctx.lineWidth=1.5;
+  ctx.fillRect(X(s.x-s.w/2),Z(s.z+s.d/2),Math.max(2,s.w*S),s.d*S); ctx.strokeRect(X(s.x-s.w/2),Z(s.z+s.d/2),Math.max(2,s.w*S),s.d*S);
 });
 LANDSCAPE_PLAN.trees.forEach(t => {
   ctx.fillStyle = 'rgba(102,168,92,0.22)'; ctx.strokeStyle = '#4b8b46'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
@@ -4015,11 +4059,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🌳 Озеленение v1: будущие посадки отдельным слоем без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🌿 Озеленение v2: декоративные зоны и контейнерные акценты без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v5.2: озеленение v1 — два компактных дерева, задние кустарники и сценарная проверка тени.');
+console.log('✅ Проект Берн v5.3: озеленение v2 — банная декоративная группа, контейнеры и зелёный экран хозблока.');
 </script>
 </body>
 </html>
