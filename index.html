@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v4.3 (layout v2.2: огород к фасаду, увеличенный центральный газон)';
+const APP_VERSION = 'v4.4 (маршруты v1: калитка→дом, баня и огород; раздельно с авто)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -500,6 +500,14 @@ const LAYOUT_ZONES = {
   parking: { x: 14.5, z: 6, w: 4, d: 6, label: 'Парковка / будущий навес', status: 'planned' },
   guestParking: { label: 'Гостевая парковка — снаружи вдоль улицы', status: 'assumption', note: 'Не является подтверждённой парковочной полосой; возможность стоянки проверить по фактической обочине и ПДД' }
 };
+const LAYOUT_PATHS = [
+  { id:'wicket-a', label:'Калитка → дом', a:[12.0,0.0], b:[11.8,9.0], width:1.2 },
+  { id:'wicket-b', label:'Калитка → дом', a:[11.8,9.0], b:[11.8,15.5], width:1.2 },
+  { id:'wicket-c', label:'Калитка → дом', a:[11.8,15.5], b:[13.2,16.5], width:1.2 },
+  { id:'wicket-d', label:'Калитка → дом', a:[13.2,16.5], b:[13.2,20.0], width:1.2 },
+  { id:'bath', label:'К бане', a:[13.2,17.0], b:[17.75,17.0], width:1.1 },
+  { id:'garden', label:'К огороду', a:[11.8,6.0], b:[9.2,6.0], width:0.9 }
+];
 const STORAGE_KEY = 'bern_layout_v2';
 const VARIANTS_KEY = 'bern_layout_variants_v2';
 const CATALOG_KEY = 'bern_catalog_v2';
@@ -519,11 +527,11 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.2: дом закреплён; баня и хозблок собраны справа; огород сдвинут к фасадной границе Рассветной, рядом с теплицей; центральный газон увеличен; парковочный узел и мангальная зона сохранены.' }
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.2 + маршруты v1: дом закреплён; огород у фасада; баня и хозблок справа; пешеходный маршрут от отдельной калитки X≈12 ведёт к дому с ответвлениями к бане и огороду; автомобильный въезд остаётся отдельным.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -941,10 +949,19 @@ const markMat = MaterialPool.get(0xffffff);
 for (let x = -2; x <= CONFIG.plot.w + 2; x += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(x, 0.01, -4); groups.site.add(mark); }
 const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
 roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
-// Пешеходная дорожка от калитки внутрь участка.
-const path = new THREE.Mesh(GeoPool.plane(2, 23), new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.7 }));
-path.rotation.x = -Math.PI/2; path.position.set(12, 0.03, 11.5); path.receiveShadow = true;
-groups.site.add(path);
+// Пешеходные маршруты: отдельны от автомобильного въезда и не требуют сплошного мощения центра.
+const pathMat = new THREE.MeshStandardMaterial({ map: Textures.path, roughness: 0.78 });
+function addPathSegment(seg) {
+  const dx = seg.b[0] - seg.a[0], dz = seg.b[1] - seg.a[1];
+  const len = Math.hypot(dx, dz), angle = Math.atan2(dx, dz);
+  const mesh = new THREE.Mesh(GeoPool.box(seg.width, 0.05, len), pathMat);
+  mesh.position.set((seg.a[0]+seg.b[0])/2, 0.025, (seg.a[1]+seg.b[1])/2);
+  mesh.rotation.y = angle;
+  mesh.receiveShadow = true;
+  mesh.userData.pathId = seg.id;
+  groups.site.add(mesh);
+}
+LAYOUT_PATHS.forEach(addPathSegment);
 // Прямой автомобильный въезд к единственному машиноместу и резерву будущего навеса.
 const access = LAYOUT_ZONES.driveway;
 const accessLane = new THREE.Mesh(GeoPool.plane(access.w, access.d), new THREE.MeshStandardMaterial({ color: 0x858b90, transparent: true, opacity: 0.58, roughness: 0.9 }));
@@ -1618,7 +1635,7 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
-html += `<p><strong>Рабочая планировка v2.2.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; теплица остаётся слева, а огород перенесён ближе к фасадной границе Рассветной с 0,5-метровым проектным отступом; центральный газон увеличен и остаётся под свободную семейную зону и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Деревья не моделируются: участок фактически пустой.</p>`;
+html += `<p><strong>Рабочая планировка v2.2 + маршруты v1.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; теплица остаётся слева, а огород перенесён ближе к фасадной границе Рассветной с 0,5-метровым проектным отступом; центральный газон увеличен и остаётся под свободную семейную зону и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Пешеходный маршрут начинается от отдельной калитки около X=12 и идёт к дому; короткие ответвления ведут к огороду и террасе бани. Автомобильный проезд к навесу остаётся отдельным. Детская площадка и костровая зона доступны с газона без лишнего мощения. Деревья не моделируются: участок фактически пустой.</p>`;
 html += `<p><strong>Июньская проверка прямого солнца (21 июня):</strong> используется сеточный перебор практичной левой зоны с шагом 0,5 м, почасовой проверкой 08:00–18:00 и пятью точками внутри площади объекта. Текущая теплица X=${Utils.fmt(o('greenhouse').x)}, Z=${Utils.fmt(o('greenhouse').z)} получает ${pct(greenhouseChosen ? greenhouseChosen.score : sunScore(o('greenhouse')))}, лучший допустимый результат в проверенной зоне — ${greenhouseSun.length ? pct(greenhouseSun[0].score) + ' при X=' + Utils.fmt(greenhouseSun[0].x) + ', Z=' + Utils.fmt(greenhouseSun[0].z) : 'нет допустимых точек'}. Текущий огород — ${pct(gardenChosen ? gardenChosen.score : sunScore(o('garden')))}, лучший найденный — ${gardenSun.length ? pct(gardenSun[0].score) + ' при X=' + Utils.fmt(gardenSun[0].x) + ', Z=' + Utils.fmt(gardenSun[0].z) : 'нет допустимых точек'}. Это сравнительная модель затенения объектами проекта, а не агрономическая гарантия.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
@@ -2454,8 +2471,10 @@ const fenceLen = 2 * (CONFIG.plot.w + CONFIG.plot.d) - 5;
 add(P.fence.name, fenceLen, 'пог. м', P.fence.perM);
 add(P.gate.name, 1, 'шт', P.gate.unit);
 add(P.wicket.name, 1, 'шт', P.wicket.unit);
-// Дорожки: дорожка 2×23 + площадка/парковка ~15 м²
-add(P.paving.name, 2 * 23 + 15, 'м²', P.paving.perM2);
+// Дорожки и площадки — из фактической схемы маршрутов v1 + автомобильный узел.
+const pedestrianArea = LAYOUT_PATHS.reduce((sum, seg) => sum + Math.hypot(seg.b[0]-seg.a[0], seg.b[1]-seg.a[1]) * seg.width, 0);
+const vehicleArea = LAYOUT_ZONES.driveway.w * LAYOUT_ZONES.driveway.d + LAYOUT_ZONES.parking.w * LAYOUT_ZONES.parking.d;
+add(P.paving.name, pedestrianArea + vehicleArea, 'м²', P.paving.perM2);
 // Постройки и объекты каталога (каждый присутствующий)
 CONFIG.objects.forEach(obj => {
 if (obj.type === 'house' || obj.type === 'car') return;
@@ -2682,6 +2701,15 @@ ctx.fillRect(X(pz.x-pz.w/2), Z(pz.z+pz.d/2), pz.w*S, pz.d*S);
 ctx.strokeRect(X(dz.x-dz.w/2), Z(dz.z+dz.d/2), dz.w*S, dz.d*S);
 ctx.strokeRect(X(pz.x-pz.w/2), Z(pz.z+pz.d/2), pz.w*S, pz.d*S); ctx.setLineDash([]);
 ctx.fillStyle = '#596267'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText('Въезд → навес', X(dz.x), Z(1.5));
+ctx.save();
+ctx.strokeStyle = 'rgba(173,141,103,0.85)'; ctx.lineCap = 'round';
+LAYOUT_PATHS.forEach(seg => {
+  ctx.lineWidth = Math.max(2, seg.width*S);
+  ctx.beginPath(); ctx.moveTo(X(seg.a[0]), Z(seg.a[1])); ctx.lineTo(X(seg.b[0]), Z(seg.b[1])); ctx.stroke();
+});
+ctx.restore();
+ctx.fillStyle = '#7b5e3b'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'left';
+ctx.fillText('Калитка → дом', X(11.95)+5, Z(10));
 ctx.fillStyle = '#555'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center'; ctx.fillText('УЛ. РАССВЕТНАЯ • ФАСАД 25,001 м', X(W/2), Z(0)+17);
 ctx.font = '9px Segoe UI, Arial'; ctx.fillStyle = '#777'; ctx.fillText('Гостевая парковка предполагается снаружи; обочина и режим стоянки требуют проверки', X(W/2), Z(0)+31);
 CONFIG.objects.forEach(o => drawObject2D(ctx, o, X, Z, S));
@@ -3690,11 +3718,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🏗 Режим проверки: layout v2.1 без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🏗 Режим проверки: layout v2.2 + маршруты v1 без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v4.3: layout v2.2 — огород у фасада, увеличенный центральный газон.');
+console.log('✅ Проект Берн v4.4: маршруты v1 — калитка→дом, ответвления к бане и огороду, отдельно от авто.');
 </script>
 </body>
 </html>
