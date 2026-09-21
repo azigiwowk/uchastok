@@ -423,7 +423,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v5.1 (MASTER v1: ревизия, планировочная фиксация и очередность строительства)';
+const APP_VERSION = 'v5.2 (озеленение v1: безопасные посадочные точки без влияния на текущую инсоляцию)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -579,6 +579,24 @@ const MASTER_REVIEW = {
     { n:7, title:'Газон, детская зона и озеленение', items:'Финишный рельеф, плодородный слой, газон, детская площадка и посадки. Деревья/крупные кусты не размещать над инженерными коридорами и сервисными зонами.' }
   ]
 };
+const LANDSCAPE_PLAN = {
+  status: 'assumption',
+  note: 'Озеленение v1 показано отдельным полупрозрачным слоем. Это будущие посадки, а не существующие деревья; по умолчанию они не участвуют в текущем расчёте теней пустого участка.',
+  trees: [
+    { id:'tree-a', label:'Компактное плодовое дерево A', x:2.5, z:14.5, radius:1.1, h:3.5, type:'compact-fruit', note:'Карман за теплицей. До ближайшей нанесённой инженерной трассы около 3 м; не занимает центральный газон.' },
+    { id:'tree-b', label:'Компактное плодовое дерево B', x:2.0, z:22.0, radius:1.1, h:3.5, type:'compact-fruit', note:'Левая часть перед домом. До ближайшей нанесённой инженерной трассы около 2 м; сохраняет центральный газон открытым.' }
+  ],
+  shrubZones: [
+    { id:'rear-hedge', label:'Невысокая полоса кустарников для приватности', x:12.5, z:38.5, w:17.0, d:0.8, h:1.6, note:'Только неглубокая/контролируемая корневая система. Полоса расположена за домом и оставляет резерв до условного дренажного коридора.' }
+  ],
+  planningRules: [
+    'Не размещать деревья в правом инженерном коридоре около скважины, воды и электрики.',
+    'Не занимать деревьями центральный газон и подходы к бане/хозблоку.',
+    'Не ставить крупные корневые системы над канализацией, водопроводом, слаботочкой, дренажом и ревизионными зонами.',
+    'Существующих деревьев на участке в модели нет; этот слой — только будущий сценарий.',
+    'Высокорослые деревья пока не закладываются: точные отступы от границ для ИЖС проверяем отдельно по местным требованиям/ГПЗУ.'
+  ]
+};
 const PLANNING_FROZEN_OBJECTS = new Set(['house','bath','shed','garden','greenhouse','playground','firepit','car','canopy']);
 const STORAGE_KEY = 'bern_layout_v2';
 const VARIANTS_KEY = 'bern_layout_variants_v2';
@@ -599,7 +617,7 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'MASTER v1: после общей ревизии функциональная планировка переводится в режим планировочной фиксации. Дальнейшие изменения основных объектов делаем только при появлении новых исходных данных или явной неудобности эксплуатации.' },
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'MASTER v1 сохранён. Озеленение v1 добавлено как отдельный будущий слой: два компактных дерева слева и невысокая кустарниковая полоса за домом; существующие объекты и инженерный каркас не сдвигаются.' },
 { id: 'wastewaterType', label: 'Тип ЛОС / накопительной системы', status: 'assumption', note: 'Не выбран. До выбора оборудования нельзя окончательно утверждать размеры, расстояния до дома, способ отвода очищенной воды и сервисный доступ.' },
 { id: 'hydrogeology', label: 'Гидрогеология / УГВ / направление грунтовых вод', status: 'assumption', note: 'Нет подтверждённых данных. Нужны для окончательного выбора места скважины и ЛОС и оценки санитарных рисков.' },
 { id: 'powerCorridor', label: 'Правый электрический коридор', status: 'assumption', note: 'Зарезервирован общий маршрут ввод → дом с ветками к бане и хозблоку; окончательная схема зависит от ТУ, мощности и электрощитов.' },
@@ -610,11 +628,12 @@ const PROJECT_FACTS = [
 { id: 'outdoorLighting', label: 'Наружное освещение участка', status: 'assumption', note: 'Зарезервированы световые точки у калитки, вдоль дорожки, у входа дома, бани, хозблока и навеса. Типы светильников, мощности, датчики и группы управления выбираются позже.' },
 { id: 'lowVoltage', label: 'Домофон / камеры / слаботочка', status: 'assumption', note: 'Предусмотрена отдельная резервная трасса дом → калитка, камера ворот и камера на двор. Кабельная архитектура, PoE/питание и оборудование пока не выбраны.' },
 { id: 'networkCrossings', label: 'Ревизия пересечений инженерных трасс', status: 'assumption', note: 'В отчёт добавлен автоматический 2D-аудит пересечений разных систем. Найденное пересечение не является нарушением само по себе и требует проектной увязки по глубине и защите.' },
-{ id: 'masterFreeze', label: 'MASTER v1 — функциональная планировка зафиксирована', status: 'planned', note: 'Дом, банно-хозяйственная группа, парковка/навес, огород/теплица, центральный газон и основные маршруты считаются планировочно зафиксированными. Это не юридическое или инженерное согласование.' }
+{ id: 'masterFreeze', label: 'MASTER v1 — функциональная планировка зафиксирована', status: 'planned', note: 'Дом, банно-хозяйственная группа, парковка/навес, огород/теплица, центральный газон и основные маршруты считаются планировочно зафиксированными. Это не юридическое или инженерное согласование.' },
+{ id: 'landscapePlan', label: 'Озеленение v1 — два компактных дерева + задние кустарники', status: 'assumption', note: 'Будущие посадки показаны отдельным слоем и не считаются существующими деревьями. Точные виды/сорта, корневые системы и окончательные точки уточняются после инженерных исходных данных и подготовки грунта.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1','landscape-v1'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -1110,6 +1129,30 @@ groups.objectLabels.add(label);
 labelSprites[obj.id] = label;
 }
 CONFIG.objects.forEach(registerObject);
+const landscapeGroup = new THREE.Group();
+landscapeGroup.userData.layer = 'planned-landscape';
+groups.site.add(landscapeGroup);
+(() => {
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x6d4c41, transparent: true, opacity: 0.52, roughness: 0.85, depthWrite: false });
+  const crownMat = new THREE.MeshStandardMaterial({ color: 0x66a85c, transparent: true, opacity: 0.32, roughness: 0.9, depthWrite: false });
+  LANDSCAPE_PLAN.trees.forEach(t => {
+    const trunk = new THREE.Mesh(GeoPool.cylinder(0.09, 0.12, Math.min(1.5,t.h*0.42), 8), trunkMat);
+    trunk.position.set(t.x, Math.min(1.5,t.h*0.42)/2, t.z);
+    trunk.castShadow = false; trunk.receiveShadow = false; landscapeGroup.add(trunk);
+    const crown = new THREE.Mesh(GeoPool.sphere(t.radius, 12), crownMat);
+    crown.position.set(t.x, Math.max(1.7,t.h*0.62), t.z);
+    crown.castShadow = false; crown.receiveShadow = false; landscapeGroup.add(crown);
+    const lbl = Utils.createLabel('🌳 ' + t.label, '#d9ffd7', 0.48, [7.2,1.05], 760, 110, 25, 'rgba(38,86,43,0.60)');
+    lbl.position.set(t.x, t.h + 0.55, t.z); groups.labels.add(lbl);
+  });
+  LANDSCAPE_PLAN.shrubZones.forEach(z => {
+    const hedge = new THREE.Mesh(GeoPool.box(z.w, z.h, z.d), new THREE.MeshStandardMaterial({ color: 0x4e8f54, transparent:true, opacity:0.24, roughness:1, depthWrite:false }));
+    hedge.position.set(z.x, z.h/2, z.z); hedge.castShadow=false; hedge.receiveShadow=false; landscapeGroup.add(hedge);
+    const lbl = Utils.createLabel('🌿 ' + z.label, '#d9ffd7', 0.42, [8.8,1.0], 900, 105, 23, 'rgba(38,86,43,0.55)');
+    lbl.position.set(z.x, z.h + 0.45, z.z); groups.labels.add(lbl);
+  });
+})();
+
 const draggableGroups = draggables.map(d => d.group);
 // ═══════════════════════════════════════════════════════════════
 // КАТАЛОГ: добавление / удаление / сохранение (ключ bern_catalog_v2)
@@ -1419,7 +1462,7 @@ else if (objectId === 'well') html += `<div class="obj-note"><strong>💧 Скв
 else if (o.type === 'grill') html += `<div class="obj-note"><strong>🍢 Мангал:</strong> Норма — не ближе 5 м от построек (противопожарный режим). Красное кольцо — если ближе.</div>`;
 else if (o.type === 'gazebo' || o.type === 'garage') html += `<div class="obj-note"><strong>${o.type === 'garage' ? '🚗 Гараж' : '⛱ Беседка'}:</strong> Отступ от границы участка — не менее 1 м (СП 42.13330 / СП 53.13330).</div>`;
 else if (o.type === 'pool') html += `<div class="obj-note"><strong>🏊 Бассейн:</strong> Стационарный каркасный. Рекомендуем ≥3 м от дома и не под деревьями.</div>`;
-else if (o.type === 'fruit_tree') html += `<div class="obj-note"><strong>🍎 Дерево:</strong> При посадке высокорослых сортов держите ≥4 м от забора (СП 53.13330).</div>`;
+else if (o.type === 'fruit_tree') html += `<div class="obj-note"><strong>🍎 Дерево:</strong> Для этого участка ИЖС не используем автоматически «4 м от забора» как универсальную норму из СП 53.13330 для садоводческих территорий. Вид, высоту и отступ проверять по местным требованиям/ГПЗУ; крупные корни не размещать над инженерными трассами.</div>`;
 // ── Редактор: поворот + размеры ──
 html += `<h3>🛠 Редактирование</h3>
 <div style="margin:6px 0 10px;">Статус: <select id="obj-status" style="padding:5px 7px; border:1px solid #bbb; border-radius:7px;">${statusOptions(o.status)}</select></div>
@@ -1782,6 +1825,8 @@ const greenhouseChosen = greenhouseSun.find(p => p.x===o('greenhouse').x && p.z=
 const gardenChosen = gardenSun.find(p => p.x===o('garden').x && p.z===o('garden').z);
 const pct = v => Math.round(v * 100) + '%';
 const networkCrossings = utilityCrossingAudit();
+const landscapeGardenSun = sunScore(o('garden'), null, true);
+const landscapeGreenhouseSun = sunScore(o('greenhouse'), null, true);
 let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
 html += `<p><strong>Адрес:</strong> Московская область, г.о. Черноголовка, ул. Рассветная, уч. 7<br><strong>Участок:</strong> ${CONFIG.plot.w}×${CONFIG.plot.d} м (${CONFIG.plot.w * CONFIG.plot.d} м²), кадастровый 50:16:0202016:428.<br><strong>Дата:</strong> ${now} • <em>сгенерировано автоматически из данных плана</em></p>`;
 html += `<h2>Паспорт участка (данные ЕГРН на 13.05.2026)</h2><ul>
@@ -1797,7 +1842,7 @@ html += `<h2>Паспорт участка (данные ЕГРН на 13.05.202
 html += `<h2>1. Ориентация участка и солнце — как читать сцену</h2>`;
 html += `<p><strong>Стороны света показаны в истинной ориентации.</strong> Локальные оси X/Z идут вдоль границ участка и не совпадают с направлениями восток/север.</p>`;
 html += `<p><strong>Реальная ориентация — по акту выноса границ (МСК‑50, зона 2).</strong> Размеры по межевым знакам: 25,001×40,002 м. Ось +X вдоль короткой стороны М4→М3 имеет азимут ≈32,737°, ось +Z вдоль длинной стороны М4→М1 — ≈302,733°. <strong>Улица Рассветная примыкает к короткой передней границе z=0 (ребро М4–М3).</strong> Задняя короткая и обе длинные границы соседние. Положение ворот планируемое; красная линия требует подтверждения по ГПЗУ.</p>`;
-html += `<p><strong>Рабочая планировка v2.2 + маршруты v1.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; теплица остаётся слева, а огород перенесён ближе к фасадной границе Рассветной с 0,5-метровым проектным отступом; центральный газон увеличен и остаётся под свободную семейную зону и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Пешеходный маршрут начинается от отдельной калитки около X=12 и идёт к дому; короткие ответвления ведут к огороду и террасе бани. Автомобильный проезд к навесу остаётся отдельным. От зоны ворот добавлен хозяйственный подход шириной около 1,4 м к хозблоку, а вход хозблока ориентирован на Рассветную; перед дверью предусмотрена небольшая площадка для садовой техники и инвентаря. Детская площадка и костровая зона доступны с газона без лишнего мощения. Деревья не моделируются: участок фактически пустой.</p>`;
+html += `<p><strong>Рабочая планировка v2.2 + маршруты v1.</strong> Дом сохранён без переноса. Баня подтянута к хозблоку: основной корпус отделён от хозблока примерно на 1,5 м, а терраса 6×4 м теперь входит в планировочный габарит и оставляет около 6,5 м до дома. Справа сохранены прямой въезд, одно машиноместо и резерв будущего навеса 4×6 м; теплица остаётся слева, а огород перенесён ближе к фасадной границе Рассветной с 0,5-метровым проектным отступом; центральный газон увеличен и остаётся под свободную семейную зону и детскую площадку. Мангальная зона сдвинута ближе к банной группе, но сохраняет проверяемый запас до построек. Пешеходный маршрут начинается от отдельной калитки около X=12 и идёт к дому; короткие ответвления ведут к огороду и террасе бани. Автомобильный проезд к навесу остаётся отдельным. От зоны ворот добавлен хозяйственный подход шириной около 1,4 м к хозблоку, а вход хозблока ориентирован на Рассветную; перед дверью предусмотрена небольшая площадка для садовой техники и инвентаря. Детская площадка и костровая зона доступны с газона без лишнего мощения. Существующих деревьев в модели нет: участок фактически пустой. Озеленение v1 показано отдельным полупрозрачным будущим слоем и не включается в текущую тепловую/инсоляционную карту.</p>`;
 html += `<p><strong>Июньская проверка прямого солнца (21 июня):</strong> используется сеточный перебор практичной левой зоны с шагом 0,5 м, почасовой проверкой 08:00–18:00 и пятью точками внутри площади объекта. Текущая теплица X=${Utils.fmt(o('greenhouse').x)}, Z=${Utils.fmt(o('greenhouse').z)} получает ${pct(greenhouseChosen ? greenhouseChosen.score : sunScore(o('greenhouse')))}, лучший допустимый результат в проверенной зоне — ${greenhouseSun.length ? pct(greenhouseSun[0].score) + ' при X=' + Utils.fmt(greenhouseSun[0].x) + ', Z=' + Utils.fmt(greenhouseSun[0].z) : 'нет допустимых точек'}. Текущий огород — ${pct(gardenChosen ? gardenChosen.score : sunScore(o('garden')))}, лучший найденный — ${gardenSun.length ? pct(gardenSun[0].score) + ' при X=' + Utils.fmt(gardenSun[0].x) + ', Z=' + Utils.fmt(gardenSun[0].z) : 'нет допустимых точек'}. Это сравнительная модель затенения объектами проекта, а не агрономическая гарантия.</p>`;
 html += `<h2>2. Автопроверка норм</h2>`;
 if (!hard.length) html += `<p>✅ По автоматически проверяемым обязательным требованиям нарушений не найдено.</p>`;
@@ -1845,7 +1890,19 @@ else {
 }
 html += `<h2>6. Инженерные системы</h2>` + ENGINEERING_HTML;
 html += `<h2>6.5. Предварительная смета</h2>` + buildSmetaHTML();
-html += `<h2>6.8. Контрольная ревизия MASTER v1</h2>
+html += `<h2>6.7. Озеленение v1</h2>
+<p><strong>${LANDSCAPE_PLAN.note}</strong></p>
+<ul>
+<li>🌳 Дерево A: X=${Utils.fmt(LANDSCAPE_PLAN.trees[0].x)}, Z=${Utils.fmt(LANDSCAPE_PLAN.trees[0].z)} — компактная форма за теплицей; не занимает газон и находится примерно в 3 м от ближайшей нанесённой инженерной трассы.</li>
+<li>🌳 Дерево B: X=${Utils.fmt(LANDSCAPE_PLAN.trees[1].x)}, Z=${Utils.fmt(LANDSCAPE_PLAN.trees[1].z)} — компактная форма слева перед домом; до ближайшей нанесённой трассы около 2 м.</li>
+<li>🌿 За домом зарезервирована невысокая полоса кустарников X≈${Utils.fmt(LANDSCAPE_PLAN.shrubZones[0].x)}, Z≈${Utils.fmt(LANDSCAPE_PLAN.shrubZones[0].z)} для приватности; это не место для крупного дерева.</li>
+</ul>
+<p><strong>Сценарная проверка тени от будущих двух деревьев:</strong> огород ≈${pct(landscapeGardenSun)} прямого солнца по июньской выборке, теплица ≈${pct(landscapeGreenhouseSun)}. Это упрощённая модель зрелой кроны, а не прогноз урожайности.</p>
+<p><strong>Почему пока только два дерева:</strong> правая сторона занята скважиной и инженерным коридором, центр оставляем газоном, а передняя левая часть нужна теплице/огороду. Высокорослые деревья до уточнения местных отступов и реальных коммуникаций не закладываем.</p>
+<h3>Правила посадочного слоя</h3><ul>`;
+LANDSCAPE_PLAN.planningRules.forEach(x => { html += `<li>${x}</li>`; });
+html += `</ul>`;
+html += `<h2>6.8. Контрольная ревизия MASTER v1</h2>`;
 <p><strong>${MASTER_REVIEW.note}</strong></p>
 <h3>Планировочно зафиксировано</h3><ul>`;
 MASTER_REVIEW.planningFrozen.forEach(x => { html += `<li>✓ ${x}</li>`; });
@@ -2916,6 +2973,17 @@ LAYOUT_PATHS.forEach(seg => {
 ctx.restore();
 ctx.fillStyle = '#7b5e3b'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign = 'left';
 ctx.fillText('Калитка → дом', X(11.95)+5, Z(10));
+LANDSCAPE_PLAN.shrubZones.forEach(z => {
+  ctx.fillStyle = 'rgba(78,143,84,0.12)'; ctx.strokeStyle = '#4e8f54'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+  ctx.fillRect(X(z.x-z.w/2), Z(z.z+z.d/2), z.w*S, z.d*S);
+  ctx.strokeRect(X(z.x-z.w/2), Z(z.z+z.d/2), z.w*S, z.d*S);
+  ctx.setLineDash([]);
+});
+LANDSCAPE_PLAN.trees.forEach(t => {
+  ctx.fillStyle = 'rgba(102,168,92,0.22)'; ctx.strokeStyle = '#4b8b46'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.arc(X(t.x), Z(t.z), t.radius*S, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#3d7a39'; ctx.font = 'bold 8px Segoe UI, Arial'; ctx.textAlign='left'; ctx.fillText('🌳 план', X(t.x)+5, Z(t.z)-5);
+});
 const rc = CONFIG.infrastructure.rainCollector;
 ctx.fillStyle = 'rgba(0,188,212,0.28)'; ctx.strokeStyle = '#00838f'; ctx.lineWidth = 2;
 ctx.beginPath(); ctx.arc(X(rc.x), Z(rc.z), 0.6*S, 0, Math.PI*2); ctx.fill(); ctx.stroke();
@@ -2996,7 +3064,7 @@ if (!(b.minX >= sb && b.minZ >= sb && b.maxX <= CONFIG.plot.w - sb && b.maxZ <= 
 if (o.id === 'house' && b.minZ < 5) return false;
 return true;
 }
-function sunScore(o, at) {
+function sunScore(o, at, includeLandscape = false) {
 const sampleX = at && Number.isFinite(at.x) ? at.x : o.x;
 const sampleZ = at && Number.isFinite(at.z) ? at.z : o.z;
 const proxies = ['house','bath','shed','greenhouse']
@@ -3006,6 +3074,9 @@ const q = Norms.obj(id); const b = Norms.bodyBounds(q);
 const hgt = id==='house' ? 7 : (id==='greenhouse' ? 2.5 : 4.3);
 return { box: new THREE.Box3(new THREE.Vector3(b.minX,0,b.minZ), new THREE.Vector3(b.maxX,hgt,b.maxZ)) };
 });
+if (includeLandscape) {
+  LANDSCAPE_PLAN.trees.forEach(t => proxies.push({ sphere: new THREE.Sphere(new THREE.Vector3(t.x, Math.max(1.7,t.h*0.62), t.z), t.radius*1.05) }));
+}
 const ang = CONFIG.gps.angle * Math.PI/180, cosA = Math.cos(ang), sinA = Math.sin(ang);
 const dir = new THREE.Vector3();
 let sun = 0, tot = 0;
@@ -3943,11 +4014,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('✅ MASTER v1: планировочная ревизия без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🌳 Озеленение v1: будущие посадки отдельным слоем без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v5.1: MASTER v1 — ревизия, планировочная фиксация и очередность строительства.');
+console.log('✅ Проект Берн v5.2: озеленение v1 — два компактных дерева, задние кустарники и сценарная проверка тени.');
 </script>
 </body>
 </html>
