@@ -1154,7 +1154,7 @@ groups.site.add(landscapeGroup);
     const lbl = Utils.createLabel('🌳 ' + t.label, '#d9ffd7', 0.48, [7.2,1.05], 760, 110, 25, 'rgba(38,86,43,0.60)');
     lbl.position.set(t.x, t.h + 0.55, t.z); groups.labels.add(lbl);
   });
-  LANDSCAPE_PLAN.shrubZones.forEach(z => {
+  LANDSCAPE_PLAN.shrubZones.filter(z => z.id === 'rear-hedge').forEach(z => {
     const hedge = new THREE.Mesh(GeoPool.box(z.w, z.h, z.d), new THREE.MeshStandardMaterial({ color: 0x4e8f54, transparent:true, opacity:0.24, roughness:1, depthWrite:false }));
     hedge.position.set(z.x, z.h/2, z.z); hedge.castShadow=false; hedge.receiveShadow=false; landscapeGroup.add(hedge);
     const lbl = Utils.createLabel('🌿 ' + z.label, '#d9ffd7', 0.42, [8.8,1.0], 900, 105, 23, 'rgba(38,86,43,0.55)');
