@@ -2631,8 +2631,8 @@ const len = utilityLength(u);
 if (u.color === 0x0097a7) dLen += len;
 else if (u.color === 0x00bcd4) rLen += len;
 });
-add('Кольцевой дренаж + дренажный колодец', dLen, 'пог. м', 950);
-add('Ливнёвка + ливневый колодец', rLen, 'пог. м', 700);
+add('Резерв дренажа дома (если потребуется)', dLen, 'пог. м', 950);
+add('Ливнёвка / сбор дождевой воды', rLen, 'пог. м', 700);
 return rows;
 }
 function buildSmetaHTML() {
