@@ -1825,6 +1825,8 @@ const greenhouseChosen = greenhouseSun.find(p => p.x===o('greenhouse').x && p.z=
 const gardenChosen = gardenSun.find(p => p.x===o('garden').x && p.z===o('garden').z);
 const pct = v => Math.round(v * 100) + '%';
 const networkCrossings = utilityCrossingAudit();
+const baselineGardenSun = sunScore(o('garden'), null, false);
+const baselineGreenhouseSun = sunScore(o('greenhouse'), null, false);
 const landscapeGardenSun = sunScore(o('garden'), null, true);
 const landscapeGreenhouseSun = sunScore(o('greenhouse'), null, true);
 let html = `<h1>📋 Доклад по планировке участка (${CONFIG.plot.w * CONFIG.plot.d / 100} соток)</h1>`;
@@ -1897,7 +1899,7 @@ html += `<h2>6.7. Озеленение v1</h2>
 <li>🌳 Дерево B: X=${Utils.fmt(LANDSCAPE_PLAN.trees[1].x)}, Z=${Utils.fmt(LANDSCAPE_PLAN.trees[1].z)} — компактная форма слева перед домом; до ближайшей нанесённой трассы около 2 м.</li>
 <li>🌿 За домом зарезервирована невысокая полоса кустарников X≈${Utils.fmt(LANDSCAPE_PLAN.shrubZones[0].x)}, Z≈${Utils.fmt(LANDSCAPE_PLAN.shrubZones[0].z)} для приватности; это не место для крупного дерева.</li>
 </ul>
-<p><strong>Сценарная проверка тени от будущих двух деревьев:</strong> огород ≈${pct(landscapeGardenSun)} прямого солнца по июньской выборке, теплица ≈${pct(landscapeGreenhouseSun)}. Это упрощённая модель зрелой кроны, а не прогноз урожайности.</p>
+<p><strong>Сценарная проверка тени от будущих двух деревьев:</strong> огород ${pct(baselineGardenSun)} → ${pct(landscapeGardenSun)}, теплица ${pct(baselineGreenhouseSun)} → ${pct(landscapeGreenhouseSun)} по июньской выборке. В текущей модели эти две посадки не уменьшают результат для огорода и теплицы. Это упрощённая модель зрелой кроны, а не прогноз урожайности.</p>
 <p><strong>Почему пока только два дерева:</strong> правая сторона занята скважиной и инженерным коридором, центр оставляем газоном, а передняя левая часть нужна теплице/огороду. Высокорослые деревья до уточнения местных отступов и реальных коммуникаций не закладываем.</p>
 <h3>Правила посадочного слоя</h3><ul>`;
 LANDSCAPE_PLAN.planningRules.forEach(x => { html += `<li>${x}</li>`; });
