@@ -421,7 +421,7 @@ body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Ver
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v4.5 (маршруты v1.1: хозяйственный подход к хозблоку и вход с Рассветной)';
+const APP_VERSION = 'v4.6 (инженерная схема v1: вход бани, вода и канализация)';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -461,7 +461,7 @@ latitude: 56,
 camera: { default: [35, 30, 60], top: [12.5, 60, 20], night: [35, 30, 60], gate: [14.5, 2, -2] },
 objects: [
 { id: 'house', type: 'house', label: '🏠 Дом "Берн"', x: 12.5, z: 30, y: 6.0, w: 16, d: 10, h: 4.5, rot: 0, color: 0xf5e6d3, roofColor: 0x6d4c41, terrace: { w: 9, d: 3, color: 0xbc8f8f }, labelColor: '#ffaa00', labelSize: 1.2, group: 'house' },
-{ id: 'bath', type: 'bath', label: '🧖 Баня', x: 20.75, z: 11.5, y: 5.5, w: 6, d: 6, h: 4, rot: 0, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
+{ id: 'bath', type: 'bath', label: '🧖 Баня', x: 20.75, z: 11.5, y: 5.5, w: 6, d: 6, h: 4, rot: 0, entranceSide: 'north', entranceWidth: 1.1, color: 0x8d6e63, roofColor: 0x4e342e, terrace: { w: 6, d: 4, color: 0x795548 }, labelColor: '#ff8844', labelSize: 1.0, group: 'site' },
 { id: 'shed', type: 'shed', label: '🛠 Хозблок', x: 21, z: 5, y: 4.0, w: 6, d: 4, h: 3, rot: 0, entranceSide: 'south', entranceWidth: 1.2, color: 0x5d4037, roofColor: 0x333333, labelColor: '#cccccc', labelSize: 1.0, group: 'site' },
 { id: 'garden', type: 'garden', label: '🌱 Огород', x: 6.5, z: 4, y: 2.0, w: 5, d: 7, rot: 0, color: 0x6b8e23, labelColor: '#66bb66', labelSize: 0.9, group: 'site' },
 { id: 'greenhouse', type: 'greenhouse', label: '🌿 Теплица', x: 2, z: 9, y: 3.5, w: 3, d: 6, h: 2.5, rot: 0, color: 0x88ccff, labelColor: '#88dd88', labelSize: 0.9, group: 'site' },
@@ -476,11 +476,11 @@ utilities: [
 { name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'кабель и защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Щит на существующем столбе подтверждён; положение столба на сцене ориентировочное, а трасса кабеля до дома — предварительная. Ввод показан через короткую уличную сторону z=0.', route: [ { infrastructure: 'powerPole' }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
 { name: 'Гофра к бане', icon: '⚡', color: 0xff6600, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
 { name: 'Гофра к хозблоку', icon: '⚡', color: 0xff9933, pipe: 'гофра Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24, z: 29 }, { obj: 'shed', side: 'east', along: 0 } ] },
-{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм', depth: 1.5, route: [ { obj: 'well', point: 'center' }, { x: 12.5, z: 23.5 }, { obj: 'house', side: 'south', along: 0 } ] },
-{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм', depth: 1.5, route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.5, z: 29 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Короткий эскизный ввод от скважины к юго-восточной части дома; точка ввода, глубина и узел автоматики уточняются проектом.', route: [ { obj: 'well', point: 'center' }, { x: 20.8, z: 22.5 }, { obj: 'house', side: 'south', along: 0.85 } ] },
+{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Правый инженерный коридор от зоны скважины к восточной стене бани. Фактическая точка разветвления зависит от кессона/гидроаккумулятора и схемы водоподготовки.', route: [ { obj: 'well', point: 'center' }, { x: 24.2, z: 18.5 }, { x: 24.2, z: 11.5 }, { obj: 'bath', side: 'east', along: 0 } ] },
 { name: 'Вода на полив', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø20 мм', depth: 0.8, route: [ { obj: 'house', side: 'south', along: 0 }, { x: 12.5, z: 23.5 }, { x: 2.5, z: 23.5 }, { obj: 'garden', point: 'center' } ] },
-{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.2, route: [ { obj: 'house', side: 'south', along: -0.35 }, { x: 9.7, z: 23.5 }, { x: 4, z: 22 }, { obj: 'septic', point: 'center' } ] },
-{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм', depth: 1.0, route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 16, z: 20.5 }, { x: 5, z: 21 }, { obj: 'septic', point: 'center' } ] },
+{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.2, status: 'assumption', note: 'Самотечный коридор к условному узлу объединения у септика; отметки, уклон, ревизии и глубина выпуска требуют высотной съёмки и рабочего проекта.', route: [ { obj: 'house', side: 'south', along: -0.65 }, { x: 7.2, z: 23.5 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
+{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.0, status: 'assumption', note: 'Эскизная самотечная ветка от западной стены бани к общему узлу перед септиком. Трасса держится ниже зоны мангала; пересечение с пешеходной дорожкой — подземное и требует конструктивной увязки.', route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 15.2, z: 12.5 }, { x: 10.0, z: 15.5 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
 { name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Наличие и точное положение газовой магистрали в исходных данных не подтверждены. Линия показана только как сценарий возможного прохождения вдоль Рассветной улицы.', route: [ { x: 0, z: -0.8 }, { x: 25.001, z: -0.8 } ] },
 { name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
 ],
@@ -530,11 +530,11 @@ const PROJECT_FACTS = [
 { id: 'boundary', label: 'Границы 25,001 × 40,002 м', status: 'confirmed', note: 'По четырём межевым знакам акта, МСК-50 зона 2' },
 { id: 'roadSide', label: 'Улица Рассветная вдоль короткой стороны 25,001 м (z=0, ребро М4–М3)', status: 'confirmed', note: 'Подтверждённая ориентация участка: фасад по Рассветной — короткая сторона; дорожный участок 50:16:0202016:526' },
 { id: 'gpsCenter', label: 'GPS центра 56.042291, 38.417342', status: 'assumption', note: 'Привязка для визуализации; не заменяет геодезический вынос' },
-{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.2 + маршруты v1.1: добавлен хозяйственный маршрут от зоны ворот к хозблоку; вход хозблока ориентирован к Рассветной, перед дверью предусмотрена площадка для заноса и выкатки техники.' }
+{ id: 'workingLayout', label: 'Рабочая планировка v2', status: 'assumption', note: 'Layout v2.2 + маршруты v1.1 + инженерная схема v1: вход бани ориентирован на дом через террасу; водоснабжение собрано в правом инженерном коридоре; канализация дома и бани сведена к общему узлу перед септиком.' }
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -911,7 +911,19 @@ return group;
 }
 const Builders = {
 house(b) { const g = new THREE.Group(); g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); const roofRise = 2.5; const shape = new THREE.Shape(); shape.moveTo(-b.d/2, b.h); shape.lineTo(0, b.h + roofRise); shape.lineTo(b.d/2, b.h); shape.lineTo(-b.d/2, b.h); const gableGeo = new THREE.ExtrudeGeometry(shape, { depth: b.w, bevelEnabled: false }); gableGeo.translate(0, 0, -b.w/2); gableGeo.computeVertexNormals(); const roof = new THREE.Mesh(gableGeo, new THREE.MeshStandardMaterial({ map: Textures.roof, roughness: 0.8 })); roof.rotation.y = Math.PI/2; roof.castShadow = roof.receiveShadow = true; g.add(roof); if (b.terrace) g.add(makeBox(b.terrace.w, 0.3, b.terrace.d, b.terrace.color, [0, 0.15, -b.d/2 - b.terrace.d/2])); g.position.set(b.x, 0, b.z); return g; },
-bath(b) { const g = new THREE.Group(); g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); g.add(makeBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0])); if (b.terrace) g.add(makeBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2])); g.position.set(b.x, 0, b.z); return g; },
+bath(b) {
+  const g = new THREE.Group();
+  g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0]));
+  g.add(makeBox(b.w + 0.6, 0.3, b.d + 0.6, b.roofColor, [0, b.h + 0.15, 0]));
+  if (b.terrace) g.add(makeBox(b.terrace.w, 0.2, b.terrace.d, b.terrace.color, [0, 0.1, b.d/2 + b.terrace.d/2]));
+  if (b.entranceSide === 'north') {
+    const door = makeBox(b.entranceWidth || 1.1, 2.15, 0.08, 0x3b2a22, [0, 1.075, b.d/2 + 0.045]);
+    door.castShadow = true; g.add(door);
+    const step = makeBox((b.entranceWidth || 1.1) + 0.35, 0.08, 0.5, 0x6d5548, [0, 0.04, b.d/2 + 0.25]);
+    step.receiveShadow = true; g.add(step);
+  }
+  g.position.set(b.x, 0, b.z); return g;
+},
 shed(b) { 
   const g = new THREE.Group(); 
   g.add(makeBox(b.w, b.h, b.d, b.color, [0, b.h/2, 0])); 
@@ -1271,7 +1283,7 @@ distances.slice(0, 5).forEach(d => { html += `<tr><td>${d.name}</td><td>${Utils.
 html += `</table>`;
 }
 if (objectId === 'house') html += `<div class="obj-note"><strong>ℹ Пожарный разрыв:</strong> до бани ${Utils.fmt(Norms.dist(obj, Norms.obj('bath')))} м. Внутри одного участка ИЖС расстояние дом—хозяйственная постройка по СП 4.13130 не нормируется; отдельно нужно проверить здания соседей и конструктивные решения.</div>`;
-else if (objectId === 'bath') html += `<div class="obj-note"><strong>💡 Терраса:</strong> ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м со стороны дома (локальная +Z). В layout v2.1 терраса включена в планировочные габариты и расчёт расстояний, но не считается высокой стеной при расчёте теней.</div>`;
+else if (objectId === 'bath') html += `<div class="obj-note"><strong>🚪 Вход в баню:</strong> Запланирован по центру стены, обращённой к дому (+Z), прямо с террасы ${Utils.fmt(obj.terrace.w)} × ${Utils.fmt(obj.terrace.d)} м. Дорожка приходит на внешний край террасы, дальше вход осуществляется по настилу. Терраса участвует в планировочных расстояниях, но не моделируется как высокая стена для теней.</div>`;
 else if (objectId === 'garden') html += `<div class="obj-note"><strong>☀️ Огород:</strong> Сдвинут к фасадной границе Рассветной: передний край примерно в 0,5 м от границы участка, между теплицей и огородом оставлен проход около 0,5 м. Это освобождает центральную часть под газон.</div>`;
 else if (objectId === 'greenhouse') html += `<div class="obj-note"><strong>🌿 Теплица:</strong> Выбрана передняя левая открытая зона; июньская доступность прямого солнца сравнивается с альтернативами в отчёте.</div>`;
 else if (objectId === 'canopy') html += `<div class="obj-note"><strong>▱ Будущий навес:</strong> Планировочный резерв 4×6 м над одним машиноместом. Это не существующая постройка; конструкция и фундамент требуют отдельного решения.</div>`;
@@ -1622,8 +1634,8 @@ else { DOM.normBadge.textContent = `✓ Проверяемые нормы: бе�
 }
 const ENGINEERING_HTML = `
 <p><strong>Статус инженерной схемы:</strong> кроме существующего столба со щитом, показанные трассы и большинство параметров ниже являются предварительными проектными предположениями. Они нужны для планировки участка и не заменяют рабочие проекты сетей.</p>
-<h3>💧 Водоснабжение</h3><ul><li>Скважина, её глубина и дебит пока требуют подтверждения по бурению/паспорту скважины.</li><li>Трасса от скважины до дома и разводка к бане/поливу показаны как эскиз. Диаметры ПНД и глубины в модели — предварительные.</li><li>Перед строительством нужно увязать водопровод с фундаментами, септиком, дренажом и фактической глубиной промерзания.</li></ul>
-<h3>🚽 Канализация</h3><ul><li>Положение септика и трассы от дома/бани пока проектные.</li><li>Тип очистного сооружения, отметки, уклоны и точки ревизий определяются после выбора системы и высотной съёмки.</li></ul>
+<h3>💧 Водоснабжение</h3><ul><li>Скважина, её глубина и дебит пока требуют подтверждения по бурению/паспорту скважины.</li><li><strong>Инженерная схема v1:</strong> ввод в дом сокращён до юго-восточной части дома; отдельная ветка к бане идёт по правому краю участка, не пересекая центральный газон.</li><li>Точка разветвления, кессон/гидроаккумулятор, водоподготовка, диаметры и глубины остаются предварительными до рабочего проекта.</li></ul>
+<h3>🚽 Канализация</h3><ul><li><strong>Инженерная схема v1:</strong> дом и баня сходятся к общему условному узлу около X=5,2 / Z=20,5 и далее идут к текущему месту септика.</li><li>Ветка бани проходит ниже мангальной зоны и только один раз подземно пересекает пешеходный маршрут.</li><li>Тип ЛОС, отметки выпуска, фактический уклон, глубина и ревизии определяются только после выбора системы и высотной съёмки.</li></ul>
 <h3>⚡ Электроснабжение</h3><ul><li><strong>Подтверждено пользователем:</strong> электрический столб со щитом находится за ул. Рассветной, примерно напротив хозблока.</li><li><strong>Положение на 3D-сцене ориентировочное.</strong> Эскизный ввод теперь пересекает именно короткую уличную сторону z=0 и идёт к дому внутри участка.</li><li>Марка/сечение кабеля, глубина и способ прокладки должны быть подтверждены проектом электроснабжения и условиями сетевой организации.</li></ul>
 <h3>🔥 Газоснабжение</h3><ul><li><strong>Не подтверждено исходными данными:</strong> наличие, точная сторона и положение газовой магистрали.</li><li>Жёлтая пунктирная линия вдоль Рассветной и ввод к дому — только сценарий для резервирования коридора. До получения схемы газовых сетей её нельзя считать фактической трассой.</li></ul>`;
 function buildReportHTML() {
@@ -2613,6 +2625,14 @@ const hwDoor = (o.entranceWidth || 1.2) / 2, lz = -o.d/2;
 const p1 = { x:o.x + (-hwDoor)*cc + lz*ss, z:o.z - (-hwDoor)*ss + lz*cc };
 const p2 = { x:o.x + ( hwDoor)*cc + lz*ss, z:o.z - ( hwDoor)*ss + lz*cc };
 ctx.strokeStyle = '#2f2f2f'; ctx.lineWidth = 4;
+ctx.beginPath(); ctx.moveTo(X(p1.x), Z(p1.z)); ctx.lineTo(X(p2.x), Z(p2.z)); ctx.stroke();
+}
+if (o.id === 'bath' && o.entranceSide === 'north') {
+const a = (o.rot || 0) * Math.PI/180, cc = Math.cos(a), ss = Math.sin(a);
+const hwDoor = (o.entranceWidth || 1.1) / 2, lz = o.d/2;
+const p1 = { x:o.x + (-hwDoor)*cc + lz*ss, z:o.z - (-hwDoor)*ss + lz*cc };
+const p2 = { x:o.x + ( hwDoor)*cc + lz*ss, z:o.z - ( hwDoor)*ss + lz*cc };
+ctx.strokeStyle = '#3b2a22'; ctx.lineWidth = 4;
 ctx.beginPath(); ctx.moveTo(X(p1.x), Z(p1.z)); ctx.lineTo(X(p2.x), Z(p2.z)); ctx.stroke();
 }
 const name = o.label.replace(/^[^\s]+\s/, '');
@@ -3753,11 +3773,11 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🏗 Режим проверки: layout v2.2 + маршруты v1.1 без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('🏗 Режим проверки: инженерная схема v1 + вход бани без старых локальных сохранений', 5000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
-console.log('✅ Проект Берн v4.5: маршруты v1.1 — хозяйственный подход к хозблоку и вход с Рассветной.');
+console.log('✅ Проект Берн v4.6: инженерная схема v1 — вход бани со стороны дома, вода и канализация.');
 </script>
 </body>
 </html>
