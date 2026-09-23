@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // ГЛОБАЛЬНЫЙ ЛОВЕЦ ОШИБОК (для кнопки «Отчёт об ошибке»)
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = 'v5.3 (озеленение v2: декоративные зоны, банная группа и контейнерные акценты)';
+const APP_VERSION = 'v6 MASTER UI/FACADE • review';
 const errorLog = [];
 function captureError(msg, src, line, col, err) {
 const entry = {
@@ -54,23 +54,23 @@ objects: [
 { id: 'well', type: 'well', label: '💧 Скважина (предварительно)', x: 23, z: 23, y: 2.0, radius: 0.15, rot: 0, status: 'assumption', note: 'Предварительная зона водозабора. Место окончательно выбирается по гидрогеологии и направлению грунтовых вод; бурение желательно выполнить до строительства и благоустройства с сохранением сервисного доступа.', color: 0x7f8c8d, labelColor: '#33aaff', labelSize: 0.8, group: 'site' }
 ],
 utilities: [
-{ name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'силовой кабель / защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Основной правый электрический коридор: от существующего столба пересечение фасадной границы около X=20,5, затем уход к правой стороне участка и к восточному вводу дома. Положение столба ориентировочное; кабель, сечение, глубина, защита и узел учета уточняются по ТУ и проекту.', route: [ { infrastructure: 'powerPole' }, { x: 20.5, z: 0 }, { x: 24.4, z: 0.8 }, { x: 24.4, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
-{ name: 'Электричество к бане', icon: '⚡', color: 0xff7a00, pipe: 'силовой кабель / защитная труба — уточнить', depth: 0.8, status: 'assumption', note: 'Ветка использует тот же правый инженерный коридор, что и ввод к дому; отдельный автомат, кабель и способ защиты выбираются рабочим проектом.', route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.4, z: 24 }, { x: 24.4, z: 11.5 }, { obj: 'bath', side: 'east', along: 0 } ] },
-{ name: 'Электричество к хозблоку', icon: '⚡', color: 0xff9800, pipe: 'силовой кабель / защитная труба — уточнить', depth: 0.8, status: 'assumption', note: 'Ветка идёт по правому техническому коридору и подходит к хозблоку со стороны соседней границы, не пересекая центральный газон.', route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.4, z: 24 }, { x: 24.4, z: 5 }, { obj: 'shed', side: 'east', along: 0 } ] },
-{ name: 'Резерв электрики к навесу', icon: '⚡', color: 0xffb300, pipe: 'резервная труба / кабель — уточнить', depth: 0.7, status: 'assumption', note: 'Резерв для освещения навеса, розетки и возможной зарядной точки. Маршрут начинается от условного фронтального распределительного узла и проходит вне пятна хозблока.', route: [ { x: 20.5, z: 0.8 }, { x: 17, z: 0.8 }, { x: 17, z: 6 }, { obj: 'canopy', side: 'east', along: 0 } ] },
-{ name: 'Автоматика ворот / калитки', icon: '⚡', color: 0xffd54f, pipe: 'резервная труба / кабель управления — уточнить', depth: 0.6, status: 'assumption', note: 'Короткий резерв от фронтального электрического узла к зоне ворот. Состав автоматики, домофона и слаботочных линий будет определён позже.', route: [ { x: 20.5, z: 0.8 }, { x: 17.0, z: 0.8 }, { infrastructure: 'entrance' } ] },
-{ name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Короткий эскизный ввод от скважины к юго-восточной части дома; точка ввода, глубина и узел автоматики уточняются проектом.', route: [ { obj: 'well', point: 'center' }, { x: 20.8, z: 22.5 }, { obj: 'house', side: 'south', along: 0.85 } ] },
-{ name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Правый инженерный коридор от зоны скважины к восточной стене бани. Фактическая точка разветвления зависит от кессона/гидроаккумулятора и схемы водоподготовки.', route: [ { obj: 'well', point: 'center' }, { x: 24.2, z: 18.5 }, { x: 24.2, z: 11.5 }, { obj: 'bath', side: 'east', along: 0 } ] },
-{ name: 'Поливочная магистраль', icon: '💧', color: 0x42a5f5, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Предварительная сезонная магистраль от дома к передней части участка. Трасса уведена по левому краю центральной зоны, в стороне от мангала. Глубина условна для визуализации; зимняя консервация, слив и автоматика определяются позже.', route: [ { obj: 'house', side: 'south', along: -0.2 }, { x: 8.0, z: 22 }, { x: 8.0, z: 14 }, { x: 10, z: 8 } ] },
-{ name: 'Полив огорода', icon: '💧', color: 0x29b6f6, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Ответвление к правому краю огорода; точку крана/коллектора выбрать после окончательной разбивки грядок.', route: [ { x: 10, z: 8 }, { x: 9.5, z: 6 }, { obj: 'garden', side: 'east', along: 0 } ] },
-{ name: 'Полив теплицы', icon: '💧', color: 0x26c6da, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Отдельное ответвление к теплице с резервом под кран или капельный полив.', route: [ { x: 10, z: 8 }, { x: 4.2, z: 8 }, { obj: 'greenhouse', side: 'east', along: 0 } ] },
-{ name: 'Полив газона (резерв)', icon: '💧', color: 0x00acc1, pipe: 'поливочная линия — схема уточняется', depth: 0.4, status: 'assumption', note: 'Только резерв распределительной линии по центральной зоне. Количество и расположение дождевателей нужно рассчитывать после выбора газона, давления и расхода воды.', route: [ { x: 10.5, z: 14 }, { x: 15.5, z: 14 }, { x: 15.5, z: 20.5 } ] },
-{ name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.2, status: 'assumption', note: 'Самотечный коридор к условному узлу объединения у септика; отметки, уклон, ревизии и глубина выпуска требуют высотной съёмки и рабочего проекта.', route: [ { obj: 'house', side: 'south', along: -0.65 }, { x: 7.2, z: 23.5 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
-{ name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.0, status: 'assumption', note: 'Эскизная самотечная ветка от западной стены бани к общему узлу перед септиком. Трасса уходит по переднему краю центральной зоны, в стороне от мангала; пересечение с пешеходной дорожкой — подземное и требует конструктивной увязки.', route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 14.5, z: 10.5 }, { x: 9.5, z: 10.5 }, { x: 6.0, z: 14.0 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
-{ name: 'Наружное освещение — пешеходный маршрут', icon: '💡', color: 0xfff176, pipe: 'резерв линии наружного освещения — параметры уточнить', depth: null, status: 'assumption', note: 'Линия следует вдоль основного пешеходного маршрута от дома к калитке. Реальные группы, кабель, защита, управление и глубина определяются электропроектом.', route: [ { obj: 'house', side: 'south', along: 0.1 }, { x: 13.2, z: 20.0 }, { x: 13.2, z: 16.5 }, { x: 11.8, z: 15.5 }, { x: 11.8, z: 9.0 }, { x: 12.0, z: 0.8 } ] },
-{ name: 'Слаботочка дом → калитка', icon: '📡', color: 0x7e57c2, pipe: 'отдельная резервная труба под связь/PoE — параметры уточнить', depth: null, status: 'assumption', note: 'Резервная слаботочная трасса вдоль пешеходного маршрута: домофон, камера ворот и будущие датчики. Совместную траншею с силовыми линиями допускается рассматривать только после проектной увязки разделения и защиты.', route: [ { obj: 'house', side: 'south', along: 0.25 }, { x: 13.2, z: 20.0 }, { x: 13.2, z: 16.5 }, { x: 11.8, z: 15.5 }, { x: 11.8, z: 9.0 }, { x: 12.0, z: 0.4 } ] },
-{ name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Наличие и точное положение газовой магистрали в исходных данных не подтверждены. Линия показана только как сценарий возможного прохождения вдоль Рассветной улицы.', route: [ { x: 0, z: -0.8 }, { x: 25.001, z: -0.8 } ] },
-{ name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
+{ system: 'electric', name: 'Ввод электричества от существующего щита', icon: '⚡', color: 0xffcc33, pipe: 'силовой кабель / защитная труба — уточнить проектом', depth: 0.8, status: 'assumption', note: 'Основной правый электрический коридор: от существующего столба пересечение фасадной границы около X=20,5, затем уход к правой стороне участка и к восточному вводу дома. Положение столба ориентировочное; кабель, сечение, глубина, защита и узел учета уточняются по ТУ и проекту.', route: [ { infrastructure: 'powerPole' }, { x: 20.5, z: 0 }, { x: 24.4, z: 0.8 }, { x: 24.4, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] },
+{ system: 'electric', name: 'Электричество к бане', icon: '⚡', color: 0xff7a00, pipe: 'силовой кабель / защитная труба — уточнить', depth: 0.8, status: 'assumption', note: 'Ветка использует тот же правый инженерный коридор, что и ввод к дому; отдельный автомат, кабель и способ защиты выбираются рабочим проектом.', route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.4, z: 24 }, { x: 24.4, z: 11.5 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ system: 'electric', name: 'Электричество к хозблоку', icon: '⚡', color: 0xff9800, pipe: 'силовой кабель / защитная труба — уточнить', depth: 0.8, status: 'assumption', note: 'Ветка идёт по правому техническому коридору и подходит к хозблоку со стороны соседней границы, не пересекая центральный газон.', route: [ { obj: 'house', side: 'east', along: -0.2 }, { x: 24.4, z: 24 }, { x: 24.4, z: 5 }, { obj: 'shed', side: 'east', along: 0 } ] },
+{ system: 'electric', name: 'Резерв электрики к навесу', icon: '⚡', color: 0xffb300, pipe: 'резервная труба / кабель — уточнить', depth: 0.7, status: 'assumption', note: 'Резерв для освещения навеса, розетки и возможной зарядной точки. Маршрут начинается от условного фронтального распределительного узла и проходит вне пятна хозблока.', route: [ { x: 20.5, z: 0.8 }, { x: 17, z: 0.8 }, { x: 17, z: 6 }, { obj: 'canopy', side: 'east', along: 0 } ] },
+{ system: 'electric', name: 'Автоматика ворот / калитки', icon: '⚡', color: 0xffd54f, pipe: 'резервная труба / кабель управления — уточнить', depth: 0.6, status: 'assumption', note: 'Короткий резерв от фронтального электрического узла к зоне ворот. Состав автоматики, домофона и слаботочных линий будет определён позже.', route: [ { x: 20.5, z: 0.8 }, { x: 17.0, z: 0.8 }, { infrastructure: 'entrance' } ] },
+{ system: 'water', name: 'Вода от скважины', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø32 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Короткий эскизный ввод от скважины к юго-восточной части дома; точка ввода, глубина и узел автоматики уточняются проектом.', route: [ { obj: 'well', point: 'center' }, { x: 20.8, z: 22.5 }, { obj: 'house', side: 'south', along: 0.85 } ] },
+{ system: 'water', name: 'Вода к бане', icon: '💧', color: 0x3366ff, pipe: 'ПНД Ø25 мм — предварительно', depth: 1.5, status: 'assumption', note: 'Правый инженерный коридор от зоны скважины к восточной стене бани. Фактическая точка разветвления зависит от кессона/гидроаккумулятора и схемы водоподготовки.', route: [ { obj: 'well', point: 'center' }, { x: 24.2, z: 18.5 }, { x: 24.2, z: 11.5 }, { obj: 'bath', side: 'east', along: 0 } ] },
+{ system: 'irrigation', name: 'Поливочная магистраль', icon: '💧', color: 0x42a5f5, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Предварительная сезонная магистраль от дома к передней части участка. Трасса уведена по левому краю центральной зоны, в стороне от мангала. Глубина условна для визуализации; зимняя консервация, слив и автоматика определяются позже.', route: [ { obj: 'house', side: 'south', along: -0.2 }, { x: 8.0, z: 22 }, { x: 8.0, z: 14 }, { x: 10, z: 8 } ] },
+{ system: 'irrigation', name: 'Полив огорода', icon: '💧', color: 0x29b6f6, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Ответвление к правому краю огорода; точку крана/коллектора выбрать после окончательной разбивки грядок.', route: [ { x: 10, z: 8 }, { x: 9.5, z: 6 }, { obj: 'garden', side: 'east', along: 0 } ] },
+{ system: 'irrigation', name: 'Полив теплицы', icon: '💧', color: 0x26c6da, pipe: 'ПНД / ПЭ — диаметр уточнить', depth: 0.5, status: 'assumption', note: 'Отдельное ответвление к теплице с резервом под кран или капельный полив.', route: [ { x: 10, z: 8 }, { x: 4.2, z: 8 }, { obj: 'greenhouse', side: 'east', along: 0 } ] },
+{ system: 'gas', name: 'Полив газона (резерв)', icon: '💧', color: 0x00acc1, pipe: 'поливочная линия — схема уточняется', depth: 0.4, status: 'assumption', note: 'Только резерв распределительной линии по центральной зоне. Количество и расположение дождевателей нужно рассчитывать после выбора газона, давления и расхода воды.', route: [ { x: 10.5, z: 14 }, { x: 15.5, z: 14 }, { x: 15.5, z: 20.5 } ] },
+{ system: 'sewer', name: 'Канализация (дом)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.2, status: 'assumption', note: 'Самотечный коридор к условному узлу объединения у септика; отметки, уклон, ревизии и глубина выпуска требуют высотной съёмки и рабочего проекта.', route: [ { obj: 'house', side: 'south', along: -0.65 }, { x: 7.2, z: 23.5 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
+{ system: 'sewer', name: 'Канализация (баня)', icon: '🚽', color: 0x9900cc, pipe: 'ПВХ Ø110 мм — схема предварительная', depth: 1.0, status: 'assumption', note: 'Эскизная самотечная ветка от западной стены бани к общему узлу перед септиком. Трасса уходит по переднему краю центральной зоны, в стороне от мангала; пересечение с пешеходной дорожкой — подземное и требует конструктивной увязки.', route: [ { obj: 'bath', side: 'west', along: 0 }, { x: 14.5, z: 10.5 }, { x: 9.5, z: 10.5 }, { x: 6.0, z: 14.0 }, { x: 5.2, z: 20.5 }, { obj: 'septic', point: 'center' } ] },
+{ system: 'lighting', name: 'Наружное освещение — пешеходный маршрут', icon: '💡', color: 0xfff176, pipe: 'резерв линии наружного освещения — параметры уточнить', depth: null, status: 'assumption', note: 'Линия следует вдоль основного пешеходного маршрута от дома к калитке. Реальные группы, кабель, защита, управление и глубина определяются электропроектом.', route: [ { obj: 'house', side: 'south', along: 0.1 }, { x: 13.2, z: 20.0 }, { x: 13.2, z: 16.5 }, { x: 11.8, z: 15.5 }, { x: 11.8, z: 9.0 }, { x: 12.0, z: 0.8 } ] },
+{ system: 'lowvoltage', name: 'Слаботочка дом → калитка', icon: '📡', color: 0x7e57c2, pipe: 'отдельная резервная труба под связь/PoE — параметры уточнить', depth: null, status: 'assumption', note: 'Резервная слаботочная трасса вдоль пешеходного маршрута: домофон, камера ворот и будущие датчики. Совместную траншею с силовыми линиями допускается рассматривать только после проектной увязки разделения и защиты.', route: [ { obj: 'house', side: 'south', along: 0.25 }, { x: 13.2, z: 20.0 }, { x: 13.2, z: 16.5 }, { x: 11.8, z: 15.5 }, { x: 11.8, z: 9.0 }, { x: 12.0, z: 0.4 } ] },
+{ system: 'gas', name: 'Магистральный газ', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Наличие и точное положение газовой магистрали в исходных данных не подтверждены. Линия показана только как сценарий возможного прохождения вдоль Рассветной улицы.', route: [ { x: 0, z: -0.8 }, { x: 25.001, z: -0.8 } ] },
+{ system: 'gas', name: 'Газ к дому', icon: '🔥', color: 0xffcc00, pipe: 'ПЭ Ø32 мм — параметр предварительный', depth: 1.2, status: 'assumption', note: 'Эскиз возможного ввода от уличной стороны; точку подключения и трассу должен определить проект газоснабжения.', label: false, route: [ { x: 21, z: -0.8 }, { x: 24.5, z: 0 }, { x: 24.5, z: 24 }, { obj: 'house', side: 'east', along: -0.2 } ] }
 ],
 // Репрезентативный день каждого месяца. Положение солнца, восход и закат
 // вычисляются по координатам участка, долготе и часовому поясу UTC+3.
@@ -220,7 +220,7 @@ const PROJECT_FACTS = [
 ];
 CONFIG.objects.forEach(o => { if (!o.status) o.status = o.id === 'car' ? 'assumption' : 'planned'; });
 CONFIG.utilities.forEach(u => { if (!u.status) { u.status = 'assumption'; u.note = 'Предварительная трасса; уточнить рабочим проектом'; } });
-const REVIEW_LAYOUT = ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1','landscape-v1','landscape-v2'].includes(new URLSearchParams(window.location.search).get('review'));
+const REVIEW_LAYOUT = V6_REVIEW || ['layout-v2','layout-v2-1','layout-v2-2','routes-v1','routes-v1-1','engineering-v1','engineering-v2','engineering-v3','engineering-v4','engineering-v5','master-v1','landscape-v1','landscape-v2'].includes(new URLSearchParams(window.location.search).get('review'));
 const DEFAULT_LAYOUT = {};
 CONFIG.objects.forEach(o => { DEFAULT_LAYOUT[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius }; });
 let hadSavedLayout = false;
@@ -248,6 +248,7 @@ if (s) hadSavedLayout = true;
 }
 loadSavedLayout();
 function saveLayout() {
+if (BernV6.readOnly) return;
 try {
 const objects = {};
 	CONFIG.objects.forEach(o => { objects[o.id] = { x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius, status: o.status, note: o.note }; });
@@ -257,7 +258,7 @@ const objects = {};
 } catch (e) { console.warn('Не удалось сохранить планировку:', e); }
 }
 function loadVariants() { try { return JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch (e) { return {}; } }
-function saveVariants(v) { try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(v)); } catch (e) {} }
+function saveVariants(v) { if (BernV6.readOnly) return; try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(v)); } catch (e) {} }
 function normalizeStatus(value, fallback) { return STATUS_DEFS[value] ? value : (fallback || 'assumption'); }
 function statusChip(value) {
 const key = normalizeStatus(value);
@@ -268,6 +269,7 @@ function statusOptions(selected) {
 return Object.keys(STATUS_DEFS).map(key => `<option value="${key}"${key === normalizeStatus(selected) ? ' selected' : ''}>${STATUS_DEFS[key].label}</option>`).join('');
 }
 function loadProjectState() {
+if (REVIEW_LAYOUT) return;
 try {
 const raw = localStorage.getItem(PROJECT_STATE_KEY); if (!raw) return;
 const data = JSON.parse(raw);
@@ -277,6 +279,7 @@ Object.keys(data.infrastructure || {}).forEach(k => { if (CONFIG.infrastructure[
 } catch (e) { console.warn('Не удалось загрузить статусы проекта:', e); }
 }
 function saveProjectState() {
+if (BernV6.readOnly) return;
 try {
 const infrastructure = {};
 Object.keys(CONFIG.infrastructure).forEach(k => { infrastructure[k] = { status: CONFIG.infrastructure[k].status, note: CONFIG.infrastructure[k].note }; });
@@ -412,6 +415,7 @@ ctx.fillText(text, canvas.width/2, canvas.height/2 + 5);
 const texture = new THREE.CanvasTexture(canvas);
 const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
 const sprite = new THREE.Sprite(material);
+sprite.userData.labelText = text;
 sprite.scale.set(scale[0] * size, scale[1] * size, 1);
 return sprite;
 },
@@ -659,7 +663,7 @@ const road = new THREE.Mesh(GeoPool.plane(CONFIG.plot.w + 5, 8), new THREE.MeshS
 road.rotation.x = -Math.PI/2; road.position.set(CONFIG.center.x, -0.1, -4); road.receiveShadow = true;
 groups.site.add(road);
 const markMat = MaterialPool.get(0xffffff);
-for (let x = -2; x <= CONFIG.plot.w + 2; x += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(x, 0.01, -4); groups.site.add(mark); }
+for (let x = -2; x <= CONFIG.plot.w + 2; x += 3) { const mark = new THREE.Mesh(GeoPool.plane(1.5, 0.2), markMat); mark.rotation.x = -Math.PI/2; mark.position.set(x, 0.01, -4); mark.userData.layer="reference"; groups.site.add(mark); }
 const roadLabel = Utils.createLabel('🛣️ Улица Рассветная', '#ffffff', 0.8);
 roadLabel.position.set(CONFIG.center.x, 2.5, -4); groups.labels.add(roadLabel);
 // Пешеходные маршруты: отдельны от автомобильного въезда и не требуют сплошного мощения центра.
@@ -671,7 +675,7 @@ function addPathSegment(seg) {
   mesh.position.set((seg.a[0]+seg.b[0])/2, 0.025, (seg.a[1]+seg.b[1])/2);
   mesh.rotation.y = angle;
   mesh.receiveShadow = true;
-  mesh.userData.pathId = seg.id;
+  mesh.userData.pathId = seg.id; mesh.userData.layer="paths";
   groups.site.add(mesh);
 }
 LAYOUT_PATHS.forEach(addPathSegment);
@@ -730,13 +734,13 @@ groups.site.add(landscapeGroup);
     crown.position.set(t.x, Math.max(1.7,t.h*0.62), t.z);
     crown.castShadow = false; crown.receiveShadow = false; landscapeGroup.add(crown);
     const lbl = Utils.createLabel('🌳 ' + t.label, '#d9ffd7', 0.48, [7.2,1.05], 760, 110, 25, 'rgba(38,86,43,0.60)');
-    lbl.position.set(t.x, t.h + 0.55, t.z); groups.labels.add(lbl);
+    lbl.position.set(t.x, t.h + 0.55, t.z); lbl.userData.layer="landscapeLabels"; groups.labels.add(lbl);
   });
   LANDSCAPE_PLAN.shrubZones.filter(z => z.id === 'rear-hedge').forEach(z => {
     const hedge = new THREE.Mesh(GeoPool.box(z.w, z.h, z.d), new THREE.MeshStandardMaterial({ color: 0x4e8f54, transparent:true, opacity:0.24, roughness:1, depthWrite:false }));
     hedge.position.set(z.x, z.h/2, z.z); hedge.castShadow=false; hedge.receiveShadow=false; landscapeGroup.add(hedge);
     const lbl = Utils.createLabel('🌿 ' + z.label, '#d9ffd7', 0.42, [8.8,1.0], 900, 105, 23, 'rgba(38,86,43,0.55)');
-    lbl.position.set(z.x, z.h + 0.45, z.z); groups.labels.add(lbl);
+    lbl.position.set(z.x, z.h + 0.45, z.z); lbl.userData.layer="landscapeLabels"; groups.labels.add(lbl);
   });
 })();
 
@@ -746,7 +750,7 @@ groups.site.add(landscapeGroup);
     const bed = new THREE.Mesh(GeoPool.box(z.w, z.h, z.d), bedMat);
     bed.position.set(z.x, z.h/2, z.z); bed.castShadow=false; bed.receiveShadow=false; landscapeGroup.add(bed);
     const lbl = Utils.createLabel('🌸 ' + z.label, '#efffe7', 0.42, [7.6,1.0], 800, 105, 22, 'rgba(55,92,45,0.58)');
-    lbl.position.set(z.x, z.h+0.4, z.z); groups.labels.add(lbl);
+    lbl.position.set(z.x, z.h+0.4, z.z); lbl.userData.layer="landscapeLabels"; groups.labels.add(lbl);
   });
   const planterMat = new THREE.MeshStandardMaterial({ color:0x8d6e63, transparent:true, opacity:0.60, roughness:0.9 });
   (LANDSCAPE_PLAN.containers || []).forEach(p => {
@@ -764,7 +768,7 @@ const draggableGroups = draggables.map(d => d.group);
 // ═══════════════════════════════════════════════════════════════
 const CAT = {
 items() { return CONFIG.objects.filter(o => CATALOG[o.type]); },
-save() { try { localStorage.setItem(CATALOG_KEY, JSON.stringify(this.items().map(o => ({ id: o.id, type: o.type, x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius, status: o.status, note: o.note })))); } catch (e) {} },
+save() { if (BernV6.readOnly) return; try { localStorage.setItem(CATALOG_KEY, JSON.stringify(this.items().map(o => ({ id: o.id, type: o.type, x: o.x, z: o.z, rot: o.rot || 0, w: o.w, d: o.d, h: o.h, radius: o.radius, status: o.status, note: o.note })))); } catch (e) {} },
 load() { try { const raw = localStorage.getItem(CATALOG_KEY); if (!raw) return; JSON.parse(raw).forEach(s => { if (CATALOG[s.type]) this.make(s.type, s, true); }); } catch (e) { console.warn('Каталог: ошибка загрузки', e); } },
 nextId(type) { let n = 1; while (CONFIG.objects.some(o => o.id === type + '_' + n)) n++; return type + '_' + n; },
 make(type, ov, silent) {
@@ -836,17 +840,6 @@ if (typeof renderCatalogModal === 'function' && DOM.catalogModal.style.display =
 };
 window.CAT = CAT;
 // Участок фактически пустой: не добавляем вымышленные деревья и не учитываем их в тенях.
-(() => {
-const postGeo = GeoPool.cylinder(0.08, 0.08, 0.6, 8);
-const postMat = MaterialPool.get(0xaaaaaa);
-const count = Math.ceil(CONFIG.plot.w / 2) * 2 + Math.ceil(CONFIG.plot.d / 2) * 2 + 4;
-const posts = new THREE.InstancedMesh(postGeo, postMat, count);
-const dummy = new THREE.Object3D();
-let idx = 0;
-for (let i = 0; i <= CONFIG.plot.w; i += 2) { dummy.position.set(i, 0.3, 0); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); dummy.position.set(i, 0.3, CONFIG.plot.d); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); }
-for (let i = 0; i <= CONFIG.plot.d; i += 2) { dummy.position.set(0, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); dummy.position.set(CONFIG.plot.w, 0.3, i); dummy.updateMatrix(); posts.setMatrixAt(idx++, dummy.matrix); }
-posts.count = idx; posts.instanceMatrix.needsUpdate = true; scene.add(posts);
-})();
 // ═══════════════════════════════════════════════════════════════
 // КОММУНИКАЦИИ (живые трассы с якорями)
 // ═══════════════════════════════════════════════════════════════
@@ -946,7 +939,7 @@ function pickUtility(e) {
 const rect = renderer.domElement.getBoundingClientRect();
 const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
 pickRay.setFromCamera(mouse, camera);
-const hits = pickRay.intersectObjects(commLines, false);
+const hits = pickRay.intersectObjects(commLines.filter(chainVisible), false);
 if (hits.length) showCommInfo(CONFIG.utilities[hits[0].object.userData.utilIndex]);
 else hideCommInfo();
 }
@@ -954,11 +947,11 @@ else hideCommInfo();
 // 💧 ДРЕНАЖ И ЛИВНЁВКА — предварительное резервирование
 // ═══════════════════════════════════════════════════════════════
 const DRAINAGE_UTILS = [
-{ name: 'Резерв дренажа фундамента дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная линия — необходимость и параметры уточнить', depth: null, status: 'assumption', note: 'Показан только коридор вокруг дома. Нужен ли дренаж вообще, его отметка, диаметр, фильтр и точка сброса определяются по типу фундамента, грунтам, УГВ и вертикальной планировке; фиксированный уклон в модели намеренно не задан.', route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
-{ name: 'Ливнёвка с крыши дома', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Схематично объединяет водосточные точки дома и ведёт к резерву накопления дождевой воды. Реальные водосточные стояки, уклоны и отметки определяются после проекта кровли и вертикальной планировки.', route: [ {obj:'house',corner:'nw',outward:0.25},{obj:'house',corner:'sw',outward:0.25},{x:4.0,z:22.5},{x:7.5,z:12.5},{infrastructure:'rainCollector'} ] },
-{ name: 'Ливнёвка с крыши бани', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Предварительная ветка от водостока бани к общей точке накопления. Точное положение водостока зависит от кровли и водосборной системы бани.', route: [ {obj:'bath',corner:'sw',outward:0.25},{x:16.8,z:9.3},{x:11.0,z:9.3},{infrastructure:'rainCollector'} ] },
-{ name: 'Ливнёвка с навеса', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Резерв сбора воды с будущего навеса. Способ водосбора зависит от конструкции и уклона кровли навеса.', route: [ {obj:'canopy',corner:'nw',outward:0.2},{x:11.8,z:8.8},{infrastructure:'rainCollector'} ] },
-{ name: 'Линейный лоток у ворот (резерв)', icon: '🌧', color: 0x00bcd4, pipe: 'линейный водоотвод — по отметкам покрытия', depth: null, status: 'assumption', note: 'Резерв поперечного лотка на въезде, если вертикальная планировка покажет приток воды с улицы или с площадки. Сейчас не считается обязательным элементом.', route: [ {x:11.7,z:0.7},{x:17.3,z:0.7},{x:17.3,z:1.2},{x:10.2,z:1.2},{infrastructure:'rainCollector'} ] }
+{ system: 'drainage', name: 'Резерв дренажа фундамента дома', icon: '🕳', color: 0x0097a7, pipe: 'дренажная линия — необходимость и параметры уточнить', depth: null, status: 'assumption', note: 'Показан только коридор вокруг дома. Нужен ли дренаж вообще, его отметка, диаметр, фильтр и точка сброса определяются по типу фундамента, грунтам, УГВ и вертикальной планировке; фиксированный уклон в модели намеренно не задан.', route: [ {obj:'house',corner:'sw',outward:1},{obj:'house',corner:'se',outward:1},{obj:'house',corner:'ne',outward:1},{obj:'house',corner:'nw',outward:1},{obj:'house',corner:'sw',outward:1} ] },
+{ system: 'stormwater', name: 'Ливнёвка с крыши дома', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Схематично объединяет водосточные точки дома и ведёт к резерву накопления дождевой воды. Реальные водосточные стояки, уклоны и отметки определяются после проекта кровли и вертикальной планировки.', route: [ {obj:'house',corner:'nw',outward:0.25},{obj:'house',corner:'sw',outward:0.25},{x:4.0,z:22.5},{x:7.5,z:12.5},{infrastructure:'rainCollector'} ] },
+{ system: 'stormwater', name: 'Ливнёвка с крыши бани', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Предварительная ветка от водостока бани к общей точке накопления. Точное положение водостока зависит от кровли и водосборной системы бани.', route: [ {obj:'bath',corner:'sw',outward:0.25},{x:16.8,z:9.3},{x:11.0,z:9.3},{infrastructure:'rainCollector'} ] },
+{ system: 'stormwater', name: 'Ливнёвка с навеса', icon: '🌧', color: 0x00bcd4, pipe: 'ливневая труба — диаметр/уклон уточнить', depth: null, status: 'assumption', note: 'Резерв сбора воды с будущего навеса. Способ водосбора зависит от конструкции и уклона кровли навеса.', route: [ {obj:'canopy',corner:'nw',outward:0.2},{x:11.8,z:8.8},{infrastructure:'rainCollector'} ] },
+{ system: 'stormwater', name: 'Линейный лоток у ворот (резерв)', icon: '🌧', color: 0x00bcd4, pipe: 'линейный водоотвод — по отметкам покрытия', depth: null, status: 'assumption', note: 'Резерв поперечного лотка на въезде, если вертикальная планировка покажет приток воды с улицы или с площадки. Сейчас не считается обязательным элементом.', route: [ {x:11.7,z:0.7},{x:17.3,z:0.7},{x:17.3,z:1.2},{x:10.2,z:1.2},{infrastructure:'rainCollector'} ] }
 ];
 DRAINAGE_UTILS.forEach(u => { CONFIG.utilities.push(u); createUndergroundLine(u, CONFIG.utilities.length - 1); });
 (() => {
@@ -968,7 +961,7 @@ body.position.set(p.x, 0.08, p.z); body.castShadow = true; groups.comms.add(body
 const lid = new THREE.Mesh(GeoPool.cylinder(0.6, 0.6, 0.08, 12), new THREE.MeshStandardMaterial({ color: 0x004d56, roughness: 0.55 }));
 lid.position.set(p.x, 0.5, p.z); groups.comms.add(lid);
 const lbl = Utils.createLabel('🌧 Резерв дождевой воды', '#ffffff', 0.58, [7.5, 1.2], 760, 120, 28, 'rgba(0,80,88,0.72)');
-lbl.position.set(p.x, 1.15, p.z); groups.labels.add(lbl);
+lbl.position.set(p.x, 1.15, p.z); lbl.userData.layer="engineeringLabels"; groups.labels.add(lbl);
 })();
 // ═══════════════════════════════════════════════════════════════
 // Наружное освещение и точки слаботочки — планировочные маркеры, не рабочий электропроект.
@@ -978,14 +971,14 @@ const glowMat = new THREE.MeshStandardMaterial({ color: 0xfff59d, emissive: 0xff
 SITE_LIGHT_POINTS.forEach(p => {
   if (p.kind === 'bollard' || p.kind === 'post') {
     const pole = new THREE.Mesh(GeoPool.cylinder(0.06, 0.08, p.h, 8), poleMat);
-    pole.position.set(p.x, p.h/2, p.z); groups.comms.add(pole);
+    pole.position.set(p.x, p.h/2, p.z); pole.userData.system="lighting"; groups.comms.add(pole);
   }
   const head = new THREE.Mesh(new THREE.SphereGeometry(p.kind === 'bollard' ? 0.11 : 0.14, 10, 8), glowMat);
-  head.position.set(p.x, p.h, p.z); groups.comms.add(head);
+  head.position.set(p.x, p.h, p.z); head.userData.system="lighting"; groups.comms.add(head);
 });
 SECURITY_POINTS.forEach(p => {
   const marker = new THREE.Mesh(GeoPool.box(0.22, 0.16, 0.18), new THREE.MeshStandardMaterial({ color: 0x7e57c2, emissive: 0x311b92, emissiveIntensity: 0.35, roughness: 0.55 }));
-  marker.position.set(p.x, p.kind === 'camera' ? 2.4 : 1.45, p.z); groups.comms.add(marker);
+  marker.position.set(p.x, p.kind === 'camera' ? 2.4 : 1.45, p.z); marker.userData.system="lowvoltage"; groups.comms.add(marker);
 });
 })();
 
@@ -1140,38 +1133,13 @@ const rect = renderer.domElement.getBoundingClientRect();
 const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
 const ray = new THREE.Raycaster();
 ray.setFromCamera(mouse, camera);
-const hits = ray.intersectObjects(draggableGroups, true);
+const hits = ray.intersectObjects(draggableGroups.filter(chainVisible), true);
 if (hits.length > 0) {
 let cur = hits[0].object;
 while (cur) { if (cur.userData && cur.userData.objectId) { showObjectCard(cur.userData.objectId); return; } cur = cur.parent; }
 }
 }
-// Ворота
-(() => {
-const gateGroup = new THREE.Group();
-const entrance = CONFIG.infrastructure.entrance;
-gateGroup.position.set(entrance.x, 0, entrance.z);
-gateGroup.rotation.y = 0;
-const pillarMat = MaterialPool.get(0x4a4a4a, { roughness: 0.4, metalness: 0.6 });
-const barMat = MaterialPool.get(0x6a6a6a, { roughness: 0.5, metalness: 0.3 });
-const gateMat = MaterialPool.get(0x3a3a3a, { roughness: 0.7, metalness: 0.2 });
-const railMat = MaterialPool.get(0x888888, { roughness: 0.5, metalness: 0.4 });
-const lampMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 0.2 });
-[12.5, 16.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.3, 2.5, 0.3), pillarMat); p.position.set(x - 14.5, 1.25, 0); p.castShadow = p.receiveShadow = true; gateGroup.add(p); const lamp = new THREE.Mesh(GeoPool.sphere(0.2, 8), lampMat); lamp.position.set(x - 14.5, 2.7, 0); gateGroup.add(lamp); });
-const beam = new THREE.Mesh(GeoPool.box(4, 0.15, 0.15), barMat); beam.position.set(0, 2.5, 0); beam.castShadow = true; gateGroup.add(beam);
-const rail = new THREE.Mesh(GeoPool.box(7, 0.1, 0.1), railMat); rail.position.set(2, 0.05, 0); gateGroup.add(rail);
-const rollerMat = MaterialPool.get(0x222222, { roughness: 0.3, metalness: 0.8 });
-for (let x = 13; x <= 19; x += 2) { const r = new THREE.Mesh(GeoPool.cylinder(0.1, 0.1, 0.05, 6), rollerMat); r.rotation.x = Math.PI/2; r.position.set(x - 14.5, 0.08, 0); gateGroup.add(r); }
-const gateLeaf = new THREE.Mesh(GeoPool.box(4, 1.8, 0.05), gateMat); gateLeaf.position.set(4, 0.9, 0); gateLeaf.castShadow = gateLeaf.receiveShadow = true; gateGroup.add(gateLeaf);
-const ribMat = MaterialPool.get(0x5a5a5a, { metalness: 0.3 });
-for (let x = 17; x <= 20; x += 1.5) { const rib = new THREE.Mesh(GeoPool.box(0.05, 1.6, 0.05), ribMat); rib.position.set(x - 14.5, 0.9, 0); gateGroup.add(rib); }
-const drive = new THREE.Mesh(GeoPool.box(0.3, 0.4, 0.2), MaterialPool.get(0x666666, { metalness: 0.5 })); drive.position.set(1.5, 0.4, 0.25); gateGroup.add(drive);
-[11.5, 12.5].forEach(x => { const p = new THREE.Mesh(GeoPool.box(0.2, 2.0, 0.2), pillarMat); p.position.set(x - 14.5, 1.0, 0); p.castShadow = p.receiveShadow = true; gateGroup.add(p); });
-const pedBeam = new THREE.Mesh(GeoPool.box(1, 0.1, 0.1), barMat); pedBeam.position.set(-2.5, 2.0, 0); gateGroup.add(pedBeam);
-const pedLeaf = new THREE.Mesh(GeoPool.box(0.8, 1.5, 0.05), gateMat); pedLeaf.position.set(-2.5, 0.85, 0); pedLeaf.rotation.y = -0.3; pedLeaf.castShadow = true; gateGroup.add(pedLeaf);
-const pedHandle = new THREE.Mesh(GeoPool.sphere(0.06, 6), MaterialPool.get(0xffaa00)); pedHandle.position.set(-2.7, 0.85, 0.1); gateGroup.add(pedHandle);
-scene.add(gateGroup);
-})();
+// Воротная группа создаётся из FRONT_SERVICE_PLAN в scene-v6.js.
 // Существующая опора электросети и электрощит — фиксированная исходная точка.
 (() => {
 const p = CONFIG.infrastructure.powerPole;
@@ -1198,9 +1166,9 @@ const cx = CONFIG.center.x, cz = CONFIG.center.z, r = 27;
 { text: '↓ ЮГ', pos: [cx - Math.sin(a)*r, 3, cz - Math.cos(a)*r], color: '#ff9966' },
 { text: '→ ВОСТОК', pos: [cx + Math.cos(a)*r, 3, cz - Math.sin(a)*r], color: '#99cc99' },
 { text: '← ЗАПАД', pos: [cx - Math.cos(a)*r, 3, cz + Math.sin(a)*r], color: '#99cc99' }
-].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); scene.add(lbl); });
+].forEach(d => { const lbl = Utils.createLabel(d.text, d.color, 1.0, [5, 2.5], 256, 128, 48); lbl.position.set(...d.pos); lbl.userData.layer="reference"; scene.add(lbl); });
 })();
-[ { text: 'Фасад вдоль улицы (25,001 м)', pos: [12.5, 1.5, 0.8], color: '#ff6666' }, { text: 'Глубина участка (40,002 м)', pos: [1.2, 1.5, 37.5], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); scene.add(lbl); });
+[ { text: 'Фасад вдоль улицы (25,001 м)', pos: [12.5, 1.5, 0.8], color: '#ff6666' }, { text: 'Глубина участка (40,002 м)', pos: [1.2, 1.5, 37.5], color: '#66aaff' } ].forEach(a => { const lbl = Utils.createLabel(a.text, a.color, 0.9, [4, 2], 160, 80, 36, 'rgba(0,0,0,0.6)', 10); lbl.position.set(...a.pos); lbl.userData.layer="reference"; scene.add(lbl); });
 // ═══════════════════════════════════════════════════════════════
 // НОРМЫ (bounds учитывает поворот объекта) + ПРАВИЛА КАТАЛОГА
 // ═══════════════════════════════════════════════════════════════
@@ -3447,8 +3415,8 @@ DOM.openPlan.addEventListener('click', () => { DOM.planModal.style.display = 'bl
 setupModal(DOM.planModal, ['close-plan-modal', 'close-plan-modal-btn']);
 window.addEventListener('resize', () => { if (DOM.planModal.style.display === 'block' && planState.renderer) { planState.renderer.setSize(DOM.planContainer.clientWidth, DOM.planContainer.clientHeight); planState.camera.aspect = DOM.planContainer.clientWidth / DOM.planContainer.clientHeight; planState.camera.updateProjectionMatrix(); } });
 let showCommsOnly = false;
-DOM.toggleComm.addEventListener('click', function() { showCommsOnly = !showCommsOnly; groups.site.visible = !showCommsOnly; groups.house.visible = !showCommsOnly; this.textContent = showCommsOnly ? '🔽 Показать всё' : '🔽 Коммуникации'; });
-DOM.toggleLabels.addEventListener('click', function() { groups.objectLabels.visible = !groups.objectLabels.visible; this.textContent = groups.objectLabels.visible ? '🏷️ Скрыть названия' : '🏷️ Показать названия'; });
+DOM.toggleComm.addEventListener('click', () => setSceneMode(appState.sceneMode==='comms-only'?'normal':'comms-only'));
+DOM.toggleLabels.addEventListener('click', () => setLayer('objectLabels',!appState.layers.objectLabels));
 DOM.exportPng.addEventListener('click', exportPNG);
 document.getElementById('toggle-measure').addEventListener('click', () => setMeasureMode('dist'));
 document.getElementById('toggle-area').addEventListener('click', () => setMeasureMode('area'));
@@ -3637,7 +3605,7 @@ if (!REVIEW_LAYOUT) CAT.load();   // восстановление добавле
 updateNormBadge();
 updateHistoryButtons();
 setTimeout(() => {
-if (REVIEW_LAYOUT) toast('🌿 Озеленение v2: декоративные зоны и контейнерные акценты без старых локальных сохранений', 5000);
+if (REVIEW_LAYOUT) toast('MASTER UI/FACADE v6 • review без изменения ваших сохранений', 4000);
 else if (hadSavedLayout) toast('📂 Загружена сохранённая планировка', 3500);
 else toast('💡 Кликните по объекту для карточки. «📦 Каталог» — добавить беседку, бассейн, гараж, мангал', 5500);
 }, 1200);
