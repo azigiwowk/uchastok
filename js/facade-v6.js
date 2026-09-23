@@ -2,15 +2,16 @@
 // An elevation and symbolic section driven by the same facade data as the 3D scene.
 // No profile pitch, fixing or structural dimension is a construction specification.
 function drawFacadeSheet() {
+  const content = document.querySelector("#drawing-modal .modal-content");
+  content.style.maxWidth = "1000px";
   const modal = document.getElementById("drawing-modal");
   let sheet = document.getElementById("v6-facade-sheet");
   if (!sheet) {
     sheet = document.createElement("canvas");
     sheet.id = "v6-facade-sheet";
     sheet.style.cssText =
-      "display:block;width:970px;max-width:none;margin:18px auto;border:1px solid #d4dacf;border-radius:8px";
-    modal.querySelector(".modal-body")?.prepend(sheet) ||
-      modal.querySelector(".modal-content")?.append(sheet);
+      "display:block;width:100%;max-width:970px;margin:18px auto;border:1px solid #d4dacf;border-radius:8px";
+    modal.querySelector("#drawing-canvas").parentElement.before(sheet);
   }
   const dpr = Math.min(devicePixelRatio || 1, 2),
     W = 970,

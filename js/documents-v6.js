@@ -510,6 +510,7 @@ BernV6.drawPlan = drawScenePlan;
 function openDrawingPreset(id) {
   const elevation = document.getElementById("v6-facade-sheet");
   if (elevation) elevation.remove();
+  document.querySelector("#drawing-modal .modal-content").style.maxWidth = "760px";
   appState.drawingPreset = id;
   const p = DRAWING_PRESETS[id];
   if (p.layers) {
