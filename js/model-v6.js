@@ -5,7 +5,7 @@ const FRONT_SERVICE_PLAN = {
  status:'planned',gate:{type:'sliding',direction:'right',start:12.5,opening:4,tail:1.6,status:'assumption',tailStatus:'assumption',leafFilling:'один облегчённый слой; конструкцию и массу согласовать',manualRelease:true,ups:'optional',driveModel:null},
  wicket:{start:11.15,width:1,status:'assumption',independentAccess:true},
  pillar:{x:12.3,z:0,w:.3,d:.34,modules:['номер участка 7','почта','домофон','мягкий свет','слаботочка'],status:'planned'},
- trash:{x:23.45,z:.75,w:1.3,d:1.2,containers:2,status:'assumption',rollout:'street'},
+ trash:{x:23.45,z:.75,w:1.3,d:1.2,containers:2,status:'assumption',rollout:'street',streetDoor:true},
  snowMain:{x:2,z:2.5,w:3,d:4,status:'planned'},snowRight:{x:23.9,z:2.35,w:.65,d:.7,status:'assumption'},
  frontDrainageStatus:'needs-levels',foundations:{front:null,neighbors:null,gate:null,pillar:null,status:'assumption'},
  facadeNote:'Два смещённых продуваемых слоя Z-ламелей. Индивидуальная схема, не штатная комплектация Optima. Ветровую нагрузку, основание, крепления и массу согласовать с изготовителем.',

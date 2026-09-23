@@ -17,7 +17,7 @@ const SCENE_PRESETS = {
  privacy:{...BASE_LAYERS,privacy:true,objectLabels:false},
  'night-facade':{...BASE_LAYERS,lighting:true,servicePoints:true,objectLabels:false}
 };
-const appState = {sceneMode:'normal',activeView:'default',openDrawer:null,layers:{...BASE_LAYERS},selectedObjectId:null,constructionPhase:7,futureVisible:true,xray:false,gateOpen:false,fenceShadows:false,heightPreview:null,pdfScope:'current',drawingPreset:'current',search:'',previousScene:null};
+const appState = {sceneMode:'normal',activeView:'default',openDrawer:null,layers:{...BASE_LAYERS},selectedObjectId:null,constructionPhase:7,futureVisible:true,xray:false,gateOpen:false,trashOpen:false,fenceShadows:false,heightPreview:null,pdfScope:'current',drawingPreset:'current',search:'',previousScene:null};
 const UI_ACTIONS = [];
 const BernV6 = {ready:false,readOnly:V6_REVIEW,storageError:null,emit(){document.dispatchEvent(new CustomEvent('bern:state'));},saveUI(){if(V6_REVIEW)return;try{localStorage.setItem('bern_ui_v6',JSON.stringify({layers:appState.previousScene?.layers||appState.layers,openDrawer:appState.openDrawer,activeView:appState.activeView}));}catch(e){this.storageError=e.message;}},registerAction(a){if(UI_ACTIONS.some(x=>x.id===a.id))throw Error('Duplicate action '+a.id);UI_ACTIONS.push(a);},run(id){const a=UI_ACTIONS.find(a=>a.id===id);if(a)a.run();}};
 window.BernV6=BernV6;

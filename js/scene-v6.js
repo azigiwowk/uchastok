@@ -18,12 +18,12 @@ function v6Zone(group,zone,color){const p=v6Box(group,zone.w,.018,zone.d,zone.x,
 function clearV6(group){const mats=new Set(),geos=new Set();group.traverse(o=>{if(o.geometry)geos.add(o.geometry);if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>mats.add(m));});group.clear();geos.forEach(g=>g.dispose());mats.forEach(m=>{if(m.map)m.map.dispose();m.dispose();});}
 v6Line(v6Groups.reference,[[0,0],[CONFIG.plot.w,0],[CONFIG.plot.w,CONFIG.plot.d],[0,CONFIG.plot.d],[0,0]],0x647c79,.06);
 const fenceMaterials={front:new THREE.MeshStandardMaterial({color:MATERIAL_PALETTE.facade.color,roughness:.94,metalness:.16,side:THREE.DoubleSide}),neighbor:new THREE.MeshStandardMaterial({color:MATERIAL_PALETTE.neighbors.color,roughness:.85})};
-let gateLeafV6=null,lastFenceKey='';
+let gateLeafV6=null,trashDoorV6=null,lastFenceKey='';
 function currentFenceDimensions(){return appState.heightPreview||FENCE_DIMENSIONS;}
 function louverGeometry(){const positions=[];const profile=[[.044,.065],[.038,.035],[-.038,-.035],[-.044,-.065]];for(let i=1;i<profile.length;i++){const [a,b]=[profile[i-1],profile[i]];positions.push(-.5,a[0],a[1],.5,a[0],a[1],.5,b[0],b[1],-.5,a[0],a[1],.5,b[0],b[1],-.5,b[0],b[1]);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.computeVertexNormals();return geo;}
 function addLouvers(group,runs,height,double=true){const rows=Math.floor((height-.14)/.11),layers=double?2:1;const mesh=new THREE.InstancedMesh(louverGeometry(),fenceMaterials.front.clone(),runs.length*rows*layers);const d=new THREE.Object3D();let i=0;for(const run of runs)for(let layer=0;layer<layers;layer++)for(let r=0;r<rows;r++){d.position.set((run[0]+run[1])/2,.10+r*.11+layer*.048,layer*.17);d.scale.set(run[1]-run[0],1,1);d.updateMatrix();mesh.setMatrixAt(i++,d.matrix);}mesh.instanceMatrix.needsUpdate=true;mesh.userData.fenceSurface=true;mesh.castShadow=appState.fenceShadows;mesh.receiveShadow=false;group.add(mesh);return mesh;}
 function buildFence(){const g=v6Groups.fence;clearV6(g);clearV6(v6Groups.fenceLabels);const H=currentFenceDimensions(),f=FRONT_SERVICE_PLAN,gate=gateGeometry();
- const frontRuns=[[0,f.wicket.start-.08],[gate.end+.15,CONFIG.plot.w]];
+ const frontRuns=[[0,f.wicket.start-.08],[gate.end+.15,f.trash.x-f.trash.w/2],[f.trash.x+f.trash.w/2,CONFIG.plot.w]];
  addLouvers(g,frontRuns,H.frontHeight,true);
  const posts=[];for(const [a,b] of frontRuns)for(let x=a;x<=b+.01;x+=Math.max(.1,(b-a)/Math.ceil((b-a)/2.5)))posts.push([x,H.frontHeight/2,0,.08,H.frontHeight,.08]);
  for(const [x,z] of [[f.wicket.start-.04,0],[gate.start-.08,0],[gate.end+.08,0]])posts.push([x,H.frontHeight/2,z,.10,H.frontHeight,.12]);
@@ -33,7 +33,7 @@ function buildFence(){const g=v6Groups.fence;clearV6(g);clearV6(v6Groups.fenceLa
  const verts=[];const point=(side,t,y)=>{const bend=(y>.26&&y<.47)||(y>H.neighborHeight-.5&&y<H.neighborHeight-.28)?.055:0;return side==='left'?[bend,y,t]:side==='right'?[CONFIG.plot.w-bend,y,t]:[t,y,CONFIG.plot.d-bend];};
  for(const side of ['left','right','rear']){const len=side==='rear'?CONFIG.plot.w:CONFIG.plot.d;for(let t=0;t<=len;t+=.15){const levels=[.04,.26,.36,.47,H.neighborHeight-.5,H.neighborHeight-.39,H.neighborHeight-.28,H.neighborHeight];for(let i=1;i<levels.length;i++)verts.push(...point(side,t,levels[i-1]),...point(side,t,levels[i]));}for(let y=.04;y<=H.neighborHeight;y+=.2)verts.push(...point(side,0,y),...point(side,len,y));}
  const gridGeo=new THREE.BufferGeometry();gridGeo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));g.add(new THREE.LineSegments(gridGeo,new THREE.LineBasicMaterial({color:MATERIAL_PALETTE.neighbors.color,transparent:true,opacity:.8})));
- gateLeafV6=new THREE.Group();g.add(gateLeafV6);addLouvers(gateLeafV6,[[gate.start,gate.end]],H.frontHeight,false);
+ gateLeafV6=new THREE.Group();gateLeafV6.position.z=.35;g.add(gateLeafV6);addLouvers(gateLeafV6,[[gate.start,gate.end]],H.frontHeight,false);
  v6Box(gateLeafV6,f.gate.opening,.075,.075,(gate.start+gate.end)/2,.04,.15,MATERIAL_PALETTE.facade.color);
  v6Box(gateLeafV6,f.gate.opening,.06,.075,(gate.start+gate.end)/2,H.frontHeight-.03,.15,MATERIAL_PALETTE.facade.color);
  const tail=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(gate.end,H.frontHeight-.06,.12),new THREE.Vector3(gate.end+f.gate.tail,.06,.12),new THREE.Vector3(gate.end,.06,.12)]),new THREE.LineBasicMaterial({color:MATERIAL_PALETTE.facade.color}));gateLeafV6.add(tail);
@@ -46,7 +46,7 @@ function buildFence(){const g=v6Groups.fence;clearV6(g);clearV6(v6Groups.fenceLa
  v6Box(g,.12,.14,.12,gate.end+.08,H.frontHeight+.07,0,0xe2a542);
  v6Box(g,.22,.14,.2,gate.end+.12,H.frontHeight+.25,.02,0x2c3434);
  // Niche is beyond open leaf + assumed tail + 0.5 m service reserve.
- const t=f.trash;v6Box(g,t.w,1.15,.06,t.x,.575,t.z+t.d/2,MATERIAL_PALETTE.facade.color);for(const x of [t.x-t.w/2,t.x+t.w/2])v6Box(g,.06,1.15,t.d,x,.575,t.z,MATERIAL_PALETTE.facade.color);
+ const t=f.trash;trashDoorV6=new THREE.Group();trashDoorV6.position.set(t.x-t.w/2,0,0);g.add(trashDoorV6);addLouvers(trashDoorV6,[[0,t.w]],H.frontHeight,false);v6Box(trashDoorV6,.055,H.frontHeight,.055,t.w,H.frontHeight/2,0,MATERIAL_PALETTE.facade.color);v6Box(trashDoorV6,.04,.18,.1,t.w-.12,1,-.06,0x8d8270);v6Box(g,t.w,1.15,.06,t.x,.575,t.z+t.d/2,MATERIAL_PALETTE.facade.color);for(const x of [t.x-t.w/2,t.x+t.w/2])v6Box(g,.06,1.15,t.d,x,.575,t.z,MATERIAL_PALETTE.facade.color);
  for(let i=0;i<t.containers;i++){const x=t.x+(i-.5)*.54;v6Box(g,.46,.8,.52,x,.42,t.z,0x36594f);v6Box(g,.49,.04,.56,x,.84,t.z,0x263d35);}
  v6Label(v6Groups.fenceLabels,'Жалюзи · 2 слоя · '+H.frontHeight.toFixed(1)+' м · RAL 8019',5,0,2.5);v6Label(v6Groups.fenceLabels,'3D-сетка · '+H.neighborHeight.toFixed(1)+' м · RAL 6005',.3,26,2.4);v6Label(v6Groups.fenceLabels,'Калитка / пилон / откат →',14,0,3);v6Label(v6Groups.fenceLabels,'Мусор · выкат к улице',t.x,t.z,1.7);
  const neutral=objectMeshes.canopy;neutral?.traverse(m=>{if(m.isMesh&&m.material&&!m.material.transparent){m.material=m.material.clone();m.material.color.setHex(MATERIAL_PALETTE.facade.color);}});
@@ -87,8 +87,9 @@ function applySceneState(){const l=effectiveLayers();groups.site.visible=groups.
  ground.material=appState.sceneMode==='comms-only'?neutralGroundMaterial:originalGroundMaterial;
  if(appState.sceneMode==='comms-only'){hideCommInfo();clearMeasure(true);}
  if(JSON.stringify(currentFenceDimensions())!==lastFenceKey)buildFence();
- gateLeafV6.position.x=appState.gateOpen?FRONT_SERVICE_PLAN.gate.opening:0;
+ gateLeafV6.position.x=appState.gateOpen?FRONT_SERVICE_PLAN.gate.opening:0;trashDoorV6.rotation.y=appState.trashOpen?Math.PI/2:0;
  v6Groups.fence.traverse(o=>{if(o.isMesh)o.castShadow=appState.fenceShadows;});
+ [accessLane,parkingPad,servicePadMesh].forEach(n=>{const op=phaseOpacity(5);n.visible=!!l.paths&&op>0;applyOpacity(n,op);});[landscapeGroup,lawnReserve].forEach(n=>{const op=phaseOpacity(7);n.visible=!!l.landscape&&op>0;applyOpacity(n,op);});
  ['paths','fence','landscape','hangingBeds'].forEach(k=>{const ph=k==='landscape'?7:k==='hangingBeds'?6:5;const op=phaseOpacity(ph);if(v6Groups[k]){v6Groups[k].visible=!!l[k]&&op>0;applyOpacity(v6Groups[k],op);}});
  const night=appState.sceneMode==='night-facade';nightLights.visible=night;nightLights.children.forEach(c=>c.visible=night);
  if(night!==applySceneState.wasNight){DOM.hourSlider.value=night?'22':'12';updateSun();applySceneState.wasNight=night;}
