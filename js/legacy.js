@@ -191,7 +191,7 @@ const CATALOG_KEY = 'bern_catalog_v2';
 const PROJECT_STATE_KEY = 'bern_project_state_v2';
 const BACKUPS_KEY = 'bern_project_backups_v2';
 const BACKUP_FORMAT = 'bern-project-backup';
-const BACKUP_SCHEMA = 1;
+const BACKUP_SCHEMA = 6;
 const BACKUP_LIMIT = 5;
 const STATUS_DEFS = {
 existing: { label: 'Существует', icon: '●', className: 'status-existing' },
@@ -248,6 +248,7 @@ if (s) hadSavedLayout = true;
 }
 loadSavedLayout();
 function saveLayout() {
+if (BernV6.ready) syncDependencies();
 if (BernV6.readOnly) return;
 try {
 const objects = {};
@@ -255,6 +256,7 @@ const objects = {};
 	localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 2, savedAt: Date.now(), objects }));
 	if (window.CAT) window.CAT.save();
 	saveProjectState();
+ if (BernV6.persist) BernV6.persist();
 } catch (e) { console.warn('Не удалось сохранить планировку:', e); }
 }
 function loadVariants() { try { return JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch (e) { return {}; } }
@@ -292,6 +294,7 @@ return JSON.parse(JSON.stringify(value, (key, item) => key.startsWith('_') ? und
 }
 function snapshotFullScene() {
 return {
+ schemaVersion: PROJECT_SCHEMA_VERSION, masterV6: BernV6.project ? plainClone(BernV6.project) : undefined,
 	v: 5,
 	layoutVersion: 2,
 	savedAt: Date.now(),
@@ -1014,6 +1017,7 @@ function utilityCrossingAudit() {
 // КАРТОЧКА ОБЪЕКТА + РЕДАКТОР (поворот + размеры + удаление каталога)
 // ═══════════════════════════════════════════════════════════════
 function showObjectCard(objectId) {
+appState.selectedObjectId=objectId;
 const obj = CONFIG.objects.find(o => o.id === objectId);
 if (!obj) return;
 const o = obj;
@@ -1090,9 +1094,12 @@ saveLayout();
 toast('🏷 Статус объекта: ' + STATUS_DEFS[o.status].label);
 showObjectCard(objectId);
 });
+if (isMasterLocked(o.id)) { const banner=document.createElement('p');banner.textContent='🔒 MASTER — геометрия заблокирована. Проект → Объекты → Разблокировать.';DOM.objectCardBody.prepend(banner); ['obj-rot','obj-rot-ccw','obj-rot-cw','obj-apply','obj-w','obj-d','obj-h','obj-r'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;}); }
 const rotSlider = document.getElementById('obj-rot');
 const rotVal = document.getElementById('obj-rot-val');
 const applyRot = (v) => {
+if (isMasterLocked(o.id)) { toast("MASTER: сначала разблокируйте объект в разделе Проект"); return; }
+pushUndo(snapshotFullScene());
 o.rot = ((v % 360) + 360) % 360;
 if (grp) grp.rotation.y = o.rot * Math.PI / 180;
 rotVal.textContent = o.rot + '°';
@@ -1109,6 +1116,8 @@ rotSlider.addEventListener('input', () => applyRot(parseInt(rotSlider.value) || 
 document.getElementById('obj-rot-ccw').onclick = () => { rotSlider.value = ((o.rot || 0) - 90 + 360) % 360; applyRot(parseInt(rotSlider.value)); };
 document.getElementById('obj-rot-cw').onclick = () => { rotSlider.value = ((o.rot || 0) + 90) % 360; applyRot(parseInt(rotSlider.value)); };
 document.getElementById('obj-apply').onclick = () => {
+if (isMasterLocked(o.id)) { toast('MASTER: объект заблокирован'); return; }
+pushUndo(snapshotFullScene());
 if (o.radius !== undefined) { const r = parseFloat(document.getElementById('obj-r').value); if (r > 0) o.radius = r; }
 else {
 const w = parseFloat(document.getElementById('obj-w').value);
@@ -1727,6 +1736,7 @@ if (showViolationRings) buildViolationRings();
 if (insolationOn) scheduleInsolation();
 }
 function applyFullSceneSnapshot(snapshot) {
+if (snapshot.masterV6 && BernV6.restoreProject) BernV6.restoreProject(snapshot.masterV6);
 const list = snapshotObjectList(snapshot);
 if (!list.length) return;
 if (!Array.isArray(snapshot)) {
@@ -1812,12 +1822,13 @@ drag.raycaster.setFromCamera(mouse, camera);
 const hits = drag.raycaster.intersectObjects(draggableGroups, true);
 if (!hits.length) return false;
 const root = findDraggableRoot(hits[0].object);
+if (root && isMasterLocked(root.userData.objectId)) { toast('MASTER: разблокировка в разделе Проект → Объекты'); return false; }
 if (!root || !chainVisible(root)) return false;
 drag.active = true; drag.moved = false;
 drag.id = root.userData.objectId;
 drag.obj = CONFIG.objects.find(o => o.id === drag.id);
 drag.group = root;
-drag.startSnap = snapshotPositions();
+drag.startSnap = snapshotFullScene();
 renderer.domElement.style.cursor = 'grabbing';
 hideCommInfo();
 showDragHint();
@@ -1865,6 +1876,7 @@ renderer.shadowMap.needsUpdate = true;
 Utils.markDirty();
 }
 function syncPositionsToScene() {
+if(BernV6.ready) syncDependencies();
 draggables.forEach(d => { const o = CONFIG.objects.find(x => x.id === d.id); if (o) { d.group.position.set(o.x, 0, o.z); d.group.rotation.y = (o.rot || 0) * Math.PI / 180; } });
 CONFIG.objects.forEach(o => { const lbl = labelSprites[o.id]; if (lbl) lbl.position.set(o.x, o.y, o.z); });
 CONFIG.utilities.forEach(refreshUtility);
@@ -1872,6 +1884,7 @@ renderer.shadowMap.needsUpdate = true;
 Utils.markDirty();
 }
 function resetLayout() {
+if(BernV6.readOnly){toast("Review: сброс сохранений отключён");return;}
 CAT.items().slice().forEach(o => CAT.remove(o.id, true));   // очистка каталога
 try { localStorage.removeItem(CATALOG_KEY); } catch (e) {}
 CONFIG.objects.forEach(o => { const d = DEFAULT_LAYOUT[o.id]; if (d) { o.x = d.x; o.z = d.z; o.rot = d.rot || 0; o.w = d.w; o.d = d.d; o.h = d.h; o.radius = d.radius; } });
@@ -1919,7 +1932,7 @@ if (d < 0 && !isAllowedOverlap(a, b)) res.push({ kind: 'dist', ids: [a.id, b.id]
 }
 return res;
 }
-function mobility(o) { return o.id === 'house' ? 0.12 : 1; }
+function mobility(o) { if (isMasterLocked(o.id)) return 0; return o.id === 'house' ? 0.12 : 1; }
 function setbackMinFor(o) {
 const r = Norms.rules.find(r => r.kind === 'setback' && r.obj === o.id);
 if (r) return r.min;
@@ -1927,7 +1940,7 @@ if (o.type === 'gazebo' || o.type === 'garage') return 1;
 return 0.5;
 }
 function rescuePlace(id) {
-const o = Norms.obj(id); if (!o) return false;
+const o = Norms.obj(id); if (!o || isMasterLocked(o.id)) return false;
 const origX = o.x, origZ = o.z, origRot = o.rot || 0;
 const rots = (o.radius !== undefined || o.w === o.d) ? [origRot] : [origRot, (origRot + 90) % 360];
 let best = null, bestD = Infinity;
@@ -1983,6 +1996,7 @@ let dx = B.x - A.x, dz = B.z - A.z;
 const len = Math.hypot(dx, dz);
 if (len < 1e-4) { dx = 1; dz = 0; } else { dx /= len; dz /= len; }
 const wA = mobility(A), wB = mobility(B), wSum = wA + wB;
+if (!wSum) return;
 disp[A.id] = disp[A.id] || { dx: 0, dz: 0 };
 disp[B.id] = disp[B.id] || { dx: 0, dz: 0 };
 disp[A.id].dx -= dx * need * (wA / wSum);
@@ -1990,7 +2004,7 @@ disp[A.id].dz -= dz * need * (wA / wSum);
 disp[B.id].dx += dx * need * (wB / wSum);
 disp[B.id].dz += dz * need * (wB / wSum);
 } else if (c.kind === 'setback') {
-const O = Norms.obj(c.ids[0]); if (!O) return;
+const O = Norms.obj(c.ids[0]); if (!O || isMasterLocked(O.id)) return;
 const s = Norms.setbacks(O);
 const need = Math.min(c.min - c.actual, 2.0) + 0.05;
 disp[O.id] = disp[O.id] || { dx: 0, dz: 0 };
@@ -2002,7 +2016,7 @@ else disp[O.id].dx -= need;
 });
 if (!Object.keys(disp).length) break;
 Object.keys(disp).forEach(id => {
-const O = Norms.obj(id); if (!O) return;
+const O = Norms.obj(id); if (!O || isMasterLocked(O.id)) return;
 O.x += disp[id].dx; O.z += disp[id].dz;
 clampObject(O);
 movedIds.add(id);
@@ -2195,6 +2209,7 @@ try { const list = JSON.parse(localStorage.getItem(BACKUPS_KEY)); return Array.i
 catch (e) { return []; }
 }
 function saveLocalBackups(list) {
+if(BernV6.readOnly)throw Error("Review: локальные сохранения защищены, используйте JSON");
 localStorage.setItem(BACKUPS_KEY, JSON.stringify(list.slice(0, BACKUP_LIMIT)));
 }
 function createLocalBackup(reason, silent) {
@@ -2423,12 +2438,15 @@ const p2 = { x:o.x + ( hwDoor)*cc + lz*ss, z:o.z - ( hwDoor)*ss + lz*cc };
 ctx.strokeStyle = '#3b2a22'; ctx.lineWidth = 4;
 ctx.beginPath(); ctx.moveTo(X(p1.x), Z(p1.z)); ctx.lineTo(X(p2.x), Z(p2.z)); ctx.stroke();
 }
+const showName = !BernV6.drawingLayers || BernV6.drawingLayers[['well','septic'].includes(o.id)?'engineeringLabels':'objectLabels'];
+if(showName) {
 const name = o.label.replace(/^[^\s]+\s/, '');
 ctx.fillStyle = '#222'; ctx.font = 'bold 10px Segoe UI, Arial'; ctx.textAlign = 'center';
 ctx.fillText(name, X(o.x), Z(o.z) - 3);
 const dims = o.radius !== undefined ? 'Ø' + Utils.fmt(o.radius*2) : (o.id === 'bath' && o.terrace ? Utils.fmt(o.w) + '×' + Utils.fmt(o.d) + ' + терраса ' + Utils.fmt(o.terrace.w) + '×' + Utils.fmt(o.terrace.d) : Utils.fmt(o.w) + '×' + Utils.fmt(o.d));
 ctx.fillStyle = '#777'; ctx.font = '9px Segoe UI, Arial';
 ctx.fillText(dims + ' м', X(o.x), Z(o.z) + 9);
+}
 ctx.restore();
 }
 function drawPerimeterDims(ctx, X, Z) {
@@ -2510,6 +2528,7 @@ ctx.fillStyle = '#888';
 ctx.fillText('Улица проходит по короткой стороне 25,001 м (z=0); глубина участка 40,002 м. Все размеры в метрах.', X(0), sbY + 18);
 }
 function drawPlan2D() {
+if(BernV6.drawPlan)return BernV6.drawPlan();
 const canvas = document.getElementById('drawing-canvas'); if (!canvas) return;
 const dpr = window.devicePixelRatio || 1;
 const S = 15, W = CONFIG.plot.w, D = CONFIG.plot.d;
@@ -2719,10 +2738,11 @@ function smartAutoPlace() {
 const autoPrev = snapshotPositions();
 const house = Norms.obj('house');
 const order = ['septic','well','bath','shed','firepit','greenhouse','garden','playground','car'];
-const placed = [house];
+const placed = CONFIG.objects.filter(o=>isMasterLocked(o.id)||o.id==='house');
 let moved = 0;
 for (const id of order) {
 const o = Norms.obj(id);
+if (isMasterLocked(id)) continue;
 const reg = PLACE_REGIONS[id] || { x:[2,23], z:[2,38] };
 const rots = (o.radius !== undefined) ? [ (o.rot || 0) ] : [0, 90];
 const cur = autoPrev.find(p => p.id === id) || { x: o.x, z: o.z, rot: o.rot || 0 };
@@ -3158,6 +3178,7 @@ pickObject(e);
 renderer.domElement.addEventListener('dblclick', () => { if (measure.mode === 'area' && !measure.areaClosed && measure.areaPoints.length >= 3) closeAreaPolygon(); });
 DOM.viewSelect.addEventListener('change', function() {
 const v = this.value;
+appState.activeView=v;
 if (v !== 'night') { sunLight.intensity = 1.0; ambientLight.intensity = 0.6; fillLight.intensity = 0.3; hemiLight.intensity = 0.35; scene.background = new THREE.Color(0x87CEEB); sunDisc.visible = true; sunGlow.visible = true; }
 if (v === 'night') { scene.background = new THREE.Color(0x0a0a1a); sunLight.intensity = 0.05; ambientLight.intensity = 0.15; fillLight.intensity = 0.05; hemiLight.intensity = 0.05; sunDisc.visible = false; sunGlow.visible = false; }
 const pos = CONFIG.camera[v] || CONFIG.camera.default;
@@ -3165,6 +3186,7 @@ cameraTween.start(new THREE.Vector3(pos[0], pos[1], pos[2]), new THREE.Vector3(C
 Utils.markDirty();
 });
 function exportPNG() {
+if(BernV6.applySceneState)BernV6.applySceneState();
 renderer.render(scene, camera);
 const link = document.createElement('a');
 link.download = 'plan_uchastka.png';
@@ -3421,6 +3443,7 @@ DOM.exportPng.addEventListener('click', exportPNG);
 document.getElementById('toggle-measure').addEventListener('click', () => setMeasureMode('dist'));
 document.getElementById('toggle-area').addEventListener('click', () => setMeasureMode('area'));
 async function exportPDF() {
+if(BernV6.exportPDF)return BernV6.exportPDF();
 DOM.pdfLoader.classList.add('active');
 try {
 renderer.render(scene, camera);
@@ -3508,10 +3531,10 @@ DOM.edit.violationsBtn.addEventListener('click', function() {
 showViolationRings = !showViolationRings;
 this.textContent = showViolationRings ? '⭕ Скрыть нарушения' : '🔴 Показать нарушения';
 this.classList.toggle('viol-active', showViolationRings);
-groups.violRings.visible = showViolationRings;
+setLayer("violations",showViolationRings);
 if (showViolationRings) buildViolationRings();
 });
-DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast('💾 Планировка сохранена'); });
+DOM.edit.saveBtn.addEventListener('click', () => { saveLayout(); toast(BernV6.readOnly?'Review: сохранения защищены. Проект можно скачать в JSON.':'💾 Планировка сохранена'); });
 DOM.edit.resetBtn.addEventListener('click', () => { if (!confirm('Вернуть все объекты на исходные места? Сохранённая планировка и добавленные объекты каталога будут удалены. Перед сбросом создастся локальная копия.')) return; if (!createLocalBackup('Перед сбросом', true)) { alert('Сброс отменён: не удалось создать страховочную копию.'); return; } resetLayout(); });
 DOM.edit.autofixBtn.addEventListener('click', () => { if (confirm('Умная авторасстановка расставит объекты по нормам и солнцу. Продолжить?')) applyAutoFix(); });
 DOM.edit.fixViolBtn.addEventListener('click', fixViolations);          // 🩹 Исправить нарушения
