@@ -2623,14 +2623,19 @@ drawNorthArrow(ctx, X(W) + 42, MT + 30);
 drawTitleBlock(ctx, X, Z);
 }
 function openDrawingModal() {
+document.getElementById('v6-facade-sheet')?.remove();
+document.getElementById('drawing-canvas').style.display = '';
+document.querySelector('#drawing-modal .modal-content').style.maxWidth = '760px';
+document.querySelector('#drawing-modal h2').textContent = '📐 2D-чертёж участка для строителей';
 document.getElementById('drawing-modal').style.display = 'block';
 document.body.style.overflow = 'hidden';
 drawPlan2D();
 }
 function downloadDrawingPNG() {
-const canvas = document.getElementById('drawing-canvas');
+const facade = document.getElementById('v6-facade-sheet');
+const canvas = facade || document.getElementById('drawing-canvas');
 const link = document.createElement('a');
-link.download = 'chertezh_uchastka.png';
+link.download = facade ? 'facade_rassvetnaya.png' : 'chertezh_uchastka.png';
 link.href = canvas.toDataURL('image/png');
 link.click();
 }

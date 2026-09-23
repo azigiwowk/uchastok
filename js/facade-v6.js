@@ -182,6 +182,9 @@ function drawFacadeSheet() {
 BernV6.showFacade = () => {
   openDrawingModal();
   drawFacadeSheet();
+  document.getElementById("drawing-canvas").style.display = "none";
+  document.querySelector("#drawing-modal h2").textContent =
+    "Фасад по Рассветной · рабочий эскиз";
   document
     .getElementById("v6-facade-sheet")
     .scrollIntoView({ block: "nearest" });

@@ -35,7 +35,12 @@ function registerLegacy(id, label, category, target, icon = "") {
     label,
     category,
     icon,
-    run: () => document.getElementById(target)?.click(),
+    run: () =>
+      id === "png"
+        ? exportPNG()
+        : id === "pdf"
+          ? exportPDF()
+          : document.getElementById(target)?.click(),
   });
 }
 [
