@@ -172,7 +172,7 @@ hiddenControls.append(DOM.sun.panel);
 DOM.sun.panel.classList.add("v6-sun");
 const shell = document.createElement("div");
 shell.id = "v6-shell";
-shell.innerHTML = `<header class="v6-header"><div class="v6-brand"><span class="v6-mark">⌂</span><div><strong>ПРОЕКТ БЕРН</strong><small>РАССВЕТНАЯ / MASTER 06</small></div></div><div class="v6-header-actions"><span class="v6-review">FEATURE REVIEW</span><select id="v6-mode" aria-label="Режим сцены">${Object.entries(
+shell.innerHTML = `<header class="v6-header"><div class="v6-brand"><span class="v6-mark">⌂</span><div><strong>ПРОЕКТ БЕРН</strong><small>РАССВЕТНАЯ / MASTER 06</small></div></div><div class="v6-header-actions">${V6_REVIEW ? '<span class="v6-review">FEATURE REVIEW</span>' : ""}<select id="v6-mode" aria-label="Режим сцены">${Object.entries(
   V6_MODES,
 )
   .map(([k, v]) => `<option value="${k}">${v}</option>`)
