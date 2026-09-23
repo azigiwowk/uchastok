@@ -2843,6 +2843,7 @@ const b = Norms.bounds(o);
 list.push({ ownId: o.id, box: new THREE.Box3(new THREE.Vector3(b.minX,0,b.minZ), new THREE.Vector3(b.maxX,h,b.maxZ)) });
 });
 // Внешние деревья пока не моделируем: подтверждённых координат и высот нет.
+if(BernV6.fenceOccluders)list.push(...BernV6.fenceOccluders());
 return list;
 }
 const _insRay = new THREE.Ray();
