@@ -1,38 +1,405 @@
-'use strict';
-const MATERIAL_PALETTE = {facade:{ral:'RAL 8019',color:0x403a3a,finish:'матовый',status:'planned'},neighbors:{ral:'RAL 6005',color:0x245442,status:'planned'},wood:{color:0xad8965},lightFacade:{color:0xf5e6d3}};
-const FENCE_DIMENSIONS = {frontHeight:2,neighborHeight:1.8,status:'planned'};
-const FRONT_SERVICE_PLAN = {
- status:'planned',gate:{type:'sliding',direction:'right',start:12.5,opening:4,tail:1.6,status:'assumption',tailStatus:'assumption',leafFilling:'один облегчённый слой; конструкцию и массу согласовать',manualRelease:true,ups:'optional',driveModel:null},
- wicket:{start:11.15,width:1,status:'assumption',independentAccess:true},
- pillar:{x:12.3,z:0,w:.3,d:.34,modules:['номер участка 7','почта','домофон','мягкий свет','слаботочка'],status:'planned'},
- trash:{x:23.45,z:.75,w:1.3,d:1.2,containers:2,status:'assumption',rollout:'street',streetDoor:true},
- snowMain:{x:2,z:2.5,w:3,d:4,status:'planned'},snowRight:{x:23.9,z:2.35,w:.65,d:.7,status:'assumption'},
- frontDrainageStatus:'needs-levels',foundations:{front:null,neighbors:null,gate:null,pillar:null,status:'assumption'},
- facadeNote:'Два смещённых продуваемых слоя Z-ламелей. Индивидуальная схема, не штатная комплектация Optima. Ветровую нагрузку, основание, крепления и массу согласовать с изготовителем.',
- maintenance:'Доступ к крепежу с участка; съёмные крышки, защита срезов и отвод воды. Без сплошного цоколя до проекта.',
- gateSafety:{photoeyes:true,signalLamp:true,stopReversal:'placeholder',pinchZone:'needs-design',manualAccess:'изнутри справа',independentWicket:true},
- source:{type:'user-spec',label:'MASTER UI/FACADE v6',date:null}
+"use strict";
+const MATERIAL_PALETTE = {
+  facade: {
+    ral: "RAL 8019",
+    color: 0x403a3a,
+    finish: "матовый",
+    status: "planned",
+  },
+  neighbors: { ral: "RAL 6005", color: 0x245442, status: "planned" },
+  wood: { color: 0xad8965 },
+  lightFacade: { color: 0xf5e6d3 },
 };
-const CONSTRUCTION_PHASES=MASTER_REVIEW.buildPhases;
-const PHASE_BY_ID={house:3,bath:4,shed:4,canopy:4,well:1,septic:2,garden:6,greenhouse:6,playground:7,firepit:7,car:5,parking:5};
-const DEPENDENCIES={house:['paths','electric','water','sewer','lighting','lowvoltage','drainage','stormwater','insolation','solar','dimensions','smeta','norms'],bath:['paths','water','sewer','electric','lighting','stormwater','dimensions','norms'],shed:['paths','electric','lighting','snowRoute','dimensions','norms'],canopy:['vehicle','stormwater','electric','dimensions'],garden:['irrigation','insolation','rootZones'],greenhouse:['irrigation','insolation','rootZones'],well:['water','serviceZones','norms'],septic:['sewer','serviceZones','norms'],gate:['paths','sleeves','vehicle','snowRoute','lighting','lowvoltage'],fence:['privacy','insolation','smeta'],firepit:['norms','paths'],playground:['norms','snowRoute'],car:['vehicle']};
-const HANGING_BEDS={status:'assumption',zones:[{id:'beds-left',x:.32,z:30,w:.5,d:8},{id:'beds-rear',x:4,z:39.7,w:4,d:.5}],irrigation:'reserve',mounts:'съёмные',wetLoad:null,note:'Масса мокрого грунта и нагрузка на панели/столбы не рассчитаны. Полив только резерв; не активная линия.'};
-const DEFAULT_TASKS=['Получить ГПЗУ','Высотная съёмка и фронтальный водоотвод','Геология и УГВ','Выбрать ЛОС','ТУ электричества / мощность','Подтвердить газ','Образцы RAL 8019 / 6005','Согласовать двойные ламели и основание','Уточнить хвост ворот и мусорную нишу'].map((title,i)=>({id:'task-'+i,title,status:'todo'}));
-BernV6.project={schemaVersion:PROJECT_SCHEMA_VERSION,locks:Object.fromEntries([...PLANNING_FROZEN_OBJECTS,'parking'].map(id=>[id,true])),reviews:{},userNotes:[],projectTasks:DEFAULT_TASKS,budget:{},serviceRadii:{},rootBuffer:null,snowBlowerWidth:null,vehicle:{width:null,length:null},cameras:[{id:'gate-camera',x:16.65,z:.18,h:2.25,angle:180,fov:70,range:8,status:'assumption'},{id:'yard-camera',x:20.2,z:24.8,h:2.4,angle:215,fov:75,range:12,status:'assumption'}],asBuilt:{},sources:{},fence:plainClone(FENCE_DIMENSIONS)};
-const SLEEVES=[
- ['S01','Привод ворот',[20.5,.8],[16.9,.8],'electric'],['S02','Домофон пилона',[13.2,22],[12.3,.3],'lowvoltage'],['S03','Камера ворот',[12.3,.3],[16.65,.3],'lowvoltage'],['S04','Фотоэлементы / сигнал',[12.4,.4],[16.7,.4],'lowvoltage'],['S05','Фасадный свет',[12.3,.5],[23,.5],'lighting'],['S06','Резерв связи под проездом',[11.3,1.1],[17.2,1.1],'lowvoltage'],['S07','Навес / будущий EV',[20.5,1.2],[16.8,6],'electric'],['S08','Капельный полив подвесных грядок',[8,22],[.6,29],'irrigation']
-].map(([id,purpose,start,end,system])=>({id,purpose,start,end,system,status:'assumption',diameter:null,load:null,depth:null,design:{start,end},asBuilt:{installed:false,actualDepth:null,actualRoute:null,photos:[],note:''}}));
-const SERVICE_POINTS=[{id:'shed-services',obj:'shed',purpose:'Розетка / вода / свет',side:'south'},{id:'bath-services',obj:'bath',purpose:'Розетка / свет / возможная вода',side:'north'},{id:'garden-services',obj:'garden',purpose:'Коллектор / возможная розетка',side:'east'},{id:'canopy-services',obj:'canopy',purpose:'Свет / розетка / резерв EV, мощность неизвестна',side:'east'}];
-function houseEntry(){const h=Norms.obj('house');return {door:rotateLocalPoint(h,.7,-h.d/2),terrace:rotateLocalPoint(h,.7,-h.d/2-h.terrace.d)};}
-function gateGeometry(){const g=FRONT_SERVICE_PLAN.gate;return {start:g.start,end:g.start+g.opening,openEnd:g.start+2*g.opening+g.tail,clear:{x:g.start+g.opening+(g.opening+g.tail+.5)/2,z:.55,w:g.opening+g.tail+.5,d:1.1}};}
-function serviceZones(){return ['well','septic','rainCollector','powerPole','gate-drive','irrigation-manifold'].map(id=>{const p=Norms.obj(id)||CONFIG.infrastructure[id]||(id==='gate-drive'?{x:16.95,z:.65}:{x:10,z:8});return{id,x:p.x,z:p.z,radius:BernV6.project.serviceRadii[id]??null,previewRadius:id==='septic'?2:1,status:'assumption',purpose:id==='gate-drive'?'Привод / ручная разблокировка':'Осмотр / ремонт / доступ',source:'радиус уточняется по оборудованию'};});}
-function snowBlowerRoute(){const s=Norms.obj('shed');return [objectAnchorPoint(s,{side:'south'}),[s.x,2.2],[19,2.2],[17.2,1.5],[17.2,8.8],[16.8,9.6],[11.8,9.6],[11.8,1.2],[14.5,1.2],[14.5,.2],[11.65,.2],[11.8,9],[11.8,15.5],[13.2,16.5],houseEntry().terrace];}
-function updateHouseRoute(){const h=Norms.obj('house');h.entranceSide='south';h.entranceWidth=1;h.entranceAlong=.7;h.routeTarget={type:'terrace-edge',side:'south',localX:.7,status:'planned'};const seg=LAYOUT_PATHS.find(p=>p.id==='wicket-d');seg.b=houseEntry().terrace;seg.routeTarget='house-terrace-edge';LAYOUT_PATHS[0].a=[FRONT_SERVICE_PLAN.wicket.start+FRONT_SERVICE_PLAN.wicket.width/2,0];}
-function routeAudit(){const end=LAYOUT_PATHS.find(p=>p.id==='wicket-d').b,target=houseEntry().terrace;return {gap:Math.hypot(end[0]-target[0],end[1]-target[1]),target:'внешний край террасы',status:Math.hypot(end[0]-target[0],end[1]-target[1])<.01?'connected':'needs-review'};}
-function markDependencies(id){for(const key of DEPENDENCIES[id]||['norms','dimensions','smeta'])BernV6.project.reviews[key]={status:'needs-review',reason:'Изменён '+id,at:new Date().toISOString()};}
-function objectSignature(o){return JSON.stringify([o.x,o.z,o.w,o.d,o.h,o.rot,o.radius,o.terrace]);}
-let previousObjects=new Map(CONFIG.objects.map(o=>[o.id,objectSignature(o)]));
-function syncDependencies(){let changed=false;for(const o of CONFIG.objects){const sig=objectSignature(o);if(previousObjects.has(o.id)&&previousObjects.get(o.id)!==sig){markDependencies(o.id);changed=true;}previousObjects.set(o.id,sig);}updateHouseRoute();if(changed&&BernV6.rebuildDynamic)BernV6.rebuildDynamic();}
+const FENCE_DIMENSIONS = {
+  frontHeight: 2,
+  neighborHeight: 1.8,
+  status: "planned",
+};
+const FRONT_SERVICE_PLAN = {
+  status: "planned",
+  gate: {
+    type: "sliding",
+    direction: "right",
+    start: 12.5,
+    opening: 4,
+    tail: 1.6,
+    status: "assumption",
+    tailStatus: "assumption",
+    leafFilling: "один облегчённый слой; конструкцию и массу согласовать",
+    manualRelease: true,
+    ups: "optional",
+    driveModel: null,
+  },
+  wicket: {
+    start: 11.15,
+    width: 1,
+    status: "assumption",
+    independentAccess: true,
+  },
+  pillar: {
+    x: 12.3,
+    z: 0,
+    w: 0.3,
+    d: 0.34,
+    modules: [
+      "номер участка 7",
+      "почта",
+      "домофон",
+      "мягкий свет",
+      "слаботочка",
+    ],
+    status: "planned",
+  },
+  trash: {
+    x: 23.45,
+    z: 0.75,
+    w: 1.3,
+    d: 1.2,
+    containers: 2,
+    status: "assumption",
+    rollout: "street",
+    streetDoor: true,
+  },
+  snowMain: { x: 2, z: 2.5, w: 3, d: 4, status: "planned" },
+  snowRight: { x: 23.9, z: 2.35, w: 0.65, d: 0.7, status: "assumption" },
+  frontDrainageStatus: "needs-levels",
+  foundations: {
+    front: null,
+    neighbors: null,
+    gate: null,
+    pillar: null,
+    status: "assumption",
+  },
+  facadeNote:
+    "Два смещённых продуваемых слоя Z-ламелей. Индивидуальная схема, не штатная комплектация Optima. Ветровую нагрузку, основание, крепления и массу согласовать с изготовителем.",
+  maintenance:
+    "Доступ к крепежу с участка; съёмные крышки, защита срезов и отвод воды. Без сплошного цоколя до проекта.",
+  gateSafety: {
+    photoeyes: true,
+    signalLamp: true,
+    stopReversal: "placeholder",
+    pinchZone: "needs-design",
+    manualAccess: "изнутри справа",
+    independentWicket: true,
+  },
+  source: { type: "user-spec", label: "MASTER UI/FACADE v6", date: null },
+};
+const CONSTRUCTION_PHASES = MASTER_REVIEW.buildPhases;
+const PHASE_BY_ID = {
+  house: 3,
+  bath: 4,
+  shed: 4,
+  canopy: 4,
+  well: 1,
+  septic: 2,
+  garden: 6,
+  greenhouse: 6,
+  playground: 7,
+  firepit: 7,
+  car: 5,
+  parking: 5,
+};
+const DEPENDENCIES = {
+  house: [
+    "paths",
+    "electric",
+    "water",
+    "sewer",
+    "lighting",
+    "lowvoltage",
+    "drainage",
+    "stormwater",
+    "insolation",
+    "solar",
+    "dimensions",
+    "smeta",
+    "norms",
+  ],
+  bath: [
+    "paths",
+    "water",
+    "sewer",
+    "electric",
+    "lighting",
+    "stormwater",
+    "dimensions",
+    "norms",
+  ],
+  shed: ["paths", "electric", "lighting", "snowRoute", "dimensions", "norms"],
+  canopy: ["vehicle", "stormwater", "electric", "dimensions"],
+  garden: ["irrigation", "insolation", "rootZones"],
+  greenhouse: ["irrigation", "insolation", "rootZones"],
+  well: ["water", "serviceZones", "norms"],
+  septic: ["sewer", "serviceZones", "norms"],
+  gate: ["paths", "sleeves", "vehicle", "snowRoute", "lighting", "lowvoltage"],
+  fence: ["privacy", "insolation", "smeta"],
+  firepit: ["norms", "paths"],
+  playground: ["norms", "snowRoute"],
+  car: ["vehicle"],
+};
+const HANGING_BEDS = {
+  status: "assumption",
+  zones: [
+    { id: "beds-left", x: 0.32, z: 30, w: 0.5, d: 8 },
+    { id: "beds-rear", x: 4, z: 39.7, w: 4, d: 0.5 },
+  ],
+  irrigation: "reserve",
+  mounts: "съёмные",
+  wetLoad: null,
+  note: "Масса мокрого грунта и нагрузка на панели/столбы не рассчитаны. Полив только резерв; не активная линия.",
+};
+const DEFAULT_TASKS = [
+  "Получить ГПЗУ",
+  "Высотная съёмка и фронтальный водоотвод",
+  "Геология и УГВ",
+  "Выбрать ЛОС",
+  "ТУ электричества / мощность",
+  "Подтвердить газ",
+  "Образцы RAL 8019 / 6005",
+  "Согласовать двойные ламели и основание",
+  "Уточнить хвост ворот и мусорную нишу",
+].map((title, i) => ({ id: "task-" + i, title, status: "todo" }));
+BernV6.project = {
+  schemaVersion: PROJECT_SCHEMA_VERSION,
+  locks: Object.fromEntries(
+    [...PLANNING_FROZEN_OBJECTS, "parking"].map((id) => [id, true]),
+  ),
+  reviews: {},
+  userNotes: [],
+  projectTasks: DEFAULT_TASKS,
+  budget: {},
+  serviceRadii: {},
+  rootBuffer: null,
+  snowBlowerWidth: null,
+  vehicle: { width: null, length: null },
+  cameras: [
+    {
+      id: "gate-camera",
+      x: 16.65,
+      z: 0.18,
+      h: 2.25,
+      angle: 180,
+      fov: 70,
+      range: 8,
+      status: "assumption",
+    },
+    {
+      id: "yard-camera",
+      x: 20.2,
+      z: 24.8,
+      h: 2.4,
+      angle: 215,
+      fov: 75,
+      range: 12,
+      status: "assumption",
+    },
+  ],
+  asBuilt: {},
+  sources: {},
+  fence: plainClone(FENCE_DIMENSIONS),
+};
+const SLEEVES = [
+  ["S01", "Привод ворот", [20.5, 0.8], [16.9, 0.8], "electric"],
+  ["S02", "Домофон пилона", [13.2, 22], [12.3, 0.3], "lowvoltage"],
+  ["S03", "Камера ворот", [12.3, 0.3], [16.65, 0.3], "lowvoltage"],
+  ["S04", "Фотоэлементы / сигнал", [12.4, 0.4], [16.7, 0.4], "lowvoltage"],
+  ["S05", "Фасадный свет", [12.3, 0.5], [23, 0.5], "lighting"],
+  ["S06", "Резерв связи под проездом", [11.3, 1.1], [17.2, 1.1], "lowvoltage"],
+  ["S07", "Навес / будущий EV", [20.5, 1.2], [16.8, 6], "electric"],
+  ["S08", "Капельный полив подвесных грядок", [8, 22], [0.6, 29], "irrigation"],
+].map(([id, purpose, start, end, system]) => ({
+  id,
+  purpose,
+  start,
+  end,
+  system,
+  status: "assumption",
+  diameter: null,
+  load: null,
+  depth: null,
+  design: { start, end },
+  asBuilt: {
+    installed: false,
+    actualDepth: null,
+    actualRoute: null,
+    photos: [],
+    note: "",
+  },
+}));
+const SERVICE_POINTS = [
+  {
+    id: "shed-services",
+    obj: "shed",
+    purpose: "Розетка / вода / свет",
+    side: "south",
+  },
+  {
+    id: "bath-services",
+    obj: "bath",
+    purpose: "Розетка / свет / возможная вода",
+    side: "north",
+  },
+  {
+    id: "garden-services",
+    obj: "garden",
+    purpose: "Коллектор / возможная розетка",
+    side: "east",
+  },
+  {
+    id: "canopy-services",
+    obj: "canopy",
+    purpose: "Свет / розетка / резерв EV, мощность неизвестна",
+    side: "east",
+  },
+];
+function houseEntry() {
+  const h = Norms.obj("house");
+  return {
+    door: rotateLocalPoint(h, 0.7, -h.d / 2),
+    terrace: rotateLocalPoint(h, 0.7, -h.d / 2 - h.terrace.d),
+  };
+}
+function gateGeometry() {
+  const g = FRONT_SERVICE_PLAN.gate;
+  return {
+    start: g.start,
+    end: g.start + g.opening,
+    openEnd: g.start + 2 * g.opening + g.tail,
+    clear: {
+      x: g.start + g.opening + (g.opening + g.tail + 0.5) / 2,
+      z: 0.55,
+      w: g.opening + g.tail + 0.5,
+      d: 1.1,
+    },
+  };
+}
+function serviceZones() {
+  return [
+    "well",
+    "septic",
+    "rainCollector",
+    "powerPole",
+    "gate-drive",
+    "irrigation-manifold",
+  ].map((id) => {
+    const p =
+      Norms.obj(id) ||
+      CONFIG.infrastructure[id] ||
+      (id === "gate-drive" ? { x: 16.95, z: 0.65 } : { x: 10, z: 8 });
+    return {
+      id,
+      x: p.x,
+      z: p.z,
+      radius: BernV6.project.serviceRadii[id] ?? null,
+      previewRadius: id === "septic" ? 2 : 1,
+      status: "assumption",
+      purpose:
+        id === "gate-drive"
+          ? "Привод / ручная разблокировка"
+          : "Осмотр / ремонт / доступ",
+      source: "радиус уточняется по оборудованию",
+    };
+  });
+}
+function snowBlowerRoute() {
+  const s = Norms.obj("shed");
+  return [
+    objectAnchorPoint(s, { side: "south" }),
+    [s.x, 2.2],
+    [19, 2.2],
+    [17.2, 1.5],
+    [17.2, 8.8],
+    [16.8, 9.6],
+    [11.8, 9.6],
+    [11.8, 1.2],
+    [14.5, 1.2],
+    [14.5, 0.2],
+    [11.65, 0.2],
+    [11.8, 9],
+    [11.8, 15.5],
+    [13.2, 16.5],
+    houseEntry().terrace,
+  ];
+}
+function updateHouseRoute() {
+  const h = Norms.obj("house");
+  h.entranceSide = "south";
+  h.entranceWidth = 1;
+  h.entranceAlong = 0.7;
+  h.routeTarget = {
+    type: "terrace-edge",
+    side: "south",
+    localX: 0.7,
+    status: "planned",
+  };
+  const seg = LAYOUT_PATHS.find((p) => p.id === "wicket-d");
+  seg.b = houseEntry().terrace;
+  seg.routeTarget = "house-terrace-edge";
+  LAYOUT_PATHS[0].a = [
+    FRONT_SERVICE_PLAN.wicket.start + FRONT_SERVICE_PLAN.wicket.width / 2,
+    0,
+  ];
+}
+function routeAudit() {
+  const end = LAYOUT_PATHS.find((p) => p.id === "wicket-d").b,
+    target = houseEntry().terrace;
+  return {
+    gap: Math.hypot(end[0] - target[0], end[1] - target[1]),
+    target: "внешний край террасы",
+    status:
+      Math.hypot(end[0] - target[0], end[1] - target[1]) < 0.01
+        ? "connected"
+        : "needs-review",
+  };
+}
+function markDependencies(id) {
+  for (const key of DEPENDENCIES[id] || ["norms", "dimensions", "smeta"])
+    BernV6.project.reviews[key] = {
+      status: "needs-review",
+      reason: "Изменён " + id,
+      at: new Date().toISOString(),
+    };
+}
+function objectSignature(o) {
+  return JSON.stringify([o.x, o.z, o.w, o.d, o.h, o.rot, o.radius, o.terrace]);
+}
+let previousObjects = new Map(
+  CONFIG.objects.map((o) => [o.id, objectSignature(o)]),
+);
+function syncDependencies() {
+  let changed = false;
+  for (const o of CONFIG.objects) {
+    const sig = objectSignature(o);
+    if (previousObjects.has(o.id) && previousObjects.get(o.id) !== sig) {
+      markDependencies(o.id);
+      changed = true;
+    }
+    previousObjects.set(o.id, sig);
+  }
+  updateHouseRoute();
+  if (changed && BernV6.rebuildDynamic) BernV6.rebuildDynamic();
+}
 updateHouseRoute();
-PROJECT_FACTS.forEach(f=>{f.source={sourceType:f.id==='cadastral'?'egrn':f.id==='boundary'?'boundary-act':'project-history',sourceLabel:f.note,sourceDate:null};});
-PROJECT_FACTS.push({id:'facade-v6',label:'Фасад 2,0 м RAL 8019 / соседи 1,8 м RAL 6005',status:'planned',note:'Рабочее решение v6; цвет не заказан, конструкция и основание не рассчитаны.',source:{sourceType:'user-spec',sourceLabel:'MASTER UI/FACADE v6 §§54,70',sourceDate:null}});
+PROJECT_FACTS.forEach((f) => {
+  f.source = {
+    sourceType:
+      f.id === "cadastral"
+        ? "egrn"
+        : f.id === "boundary"
+          ? "boundary-act"
+          : "project-history",
+    sourceLabel: f.note,
+    sourceDate: null,
+  };
+});
+PROJECT_FACTS.push({
+  id: "facade-v6",
+  label: "Фасад 2,0 м RAL 8019 / соседи 1,8 м RAL 6005",
+  status: "planned",
+  note: "Рабочее решение v6; цвет не заказан, конструкция и основание не рассчитаны.",
+  source: {
+    sourceType: "user-spec",
+    sourceLabel: "MASTER UI/FACADE v6 §§54,70",
+    sourceDate: null,
+  },
+});

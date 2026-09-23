@@ -1,11 +1,79 @@
-const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-const scripts=['js/state.js','js/storage-preflight.js'].map(p=>fs.readFileSync(p,'utf8'));
-function boot(initial={},review=false){const data=new Map(Object.entries(initial)),ctx={URLSearchParams,location:{search:review?'?review=master-facade-ui-v6':''},window:{},localStorage:{getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,String(v))},document:{dispatchEvent(){}},CustomEvent:class{}};vm.createContext(ctx);for(const s of scripts)vm.runInContext(s,ctx);return{data,ctx,get:s=>vm.runInContext(s,ctx)};}
-const layout=JSON.stringify({v:1,objects:{house:{x:14,z:29,w:16,d:10,note:'старое'}}}),variants=JSON.stringify({A:[{id:'house',x:14,z:29}]}),cat=JSON.stringify([{id:'tree_1',type:'fruit_tree',x:3,z:24,note:'не удалить'}]);
-let a=boot({bern_layout_v1:layout,bern_layout_variants:variants,bern_catalog_v1:cat});assert.equal(a.data.get('bern_layout_v2'),layout);assert.equal(a.data.get('bern_layout_variants_v2'),variants);assert.equal(a.data.get('bern_catalog_v2'),cat);assert.equal(a.data.get('bern_layout_v1'),layout);assert.equal(JSON.parse(a.data.get('bern_pre_v6_backup')).raw.bern_layout_v1,layout);
-a=boot({bern_layout_v2:layout,bern_project_backups_v2:'[{"payload":{"note":"original"}}]'});assert.equal(a.data.get('bern_layout_v2'),layout);assert.equal(JSON.parse(a.data.get('bern_pre_v6_backup')).raw.bern_project_backups_v2,'[{"payload":{"note":"original"}}]');
-a=boot({bern_layout_v2:'{broken'});assert.equal(a.get('BernV6.readOnly'),true);assert.match(a.get('BernV6.storageError'),/Миграция остановлена/);assert.equal(a.data.get('bern_layout_v2'),'{broken');
-a=boot({bern_layout_v2:layout,bern_project_v6:'{"schemaVersion":99}'});assert.equal(a.get('BernV6.readOnly'),true);assert.equal(a.data.get('bern_layout_v2'),layout);
-a=boot({bern_layout_v2:layout,bern_ui_v6:'{"layers":{"paths":false}}'},true);assert.deepEqual([...a.data.keys()],['bern_layout_v2','bern_ui_v6']);assert.equal(a.get('BernV6.readOnly'),true);
-a=boot();const saved=a.get('JSON.stringify(appState.layers)');a.get("setLayer('paths',false)");const custom=a.get('JSON.stringify(appState.layers)');a.get("setSceneMode('comms-only');setSceneMode('xray');setSceneMode('normal')");assert.equal(a.get('JSON.stringify(appState.layers)'),custom);a.get("setSceneMode('comms-only');setLayer('buildings',true)");assert.equal(a.get('effectiveLayers().buildings'),false);a.get("setLayer('comms',false)");assert.equal(a.get('effectiveLayers().water'),false);
-console.log('PASS: 6 storage/migration scenarios; raw preservation, corruption protection, review isolation, exact layer restore');
+const vm = require("node:vm"),
+  fs = require("node:fs"),
+  assert = require("node:assert/strict");
+const scripts = ["js/state.js", "js/storage-preflight.js"].map((p) =>
+  fs.readFileSync(p, "utf8"),
+);
+function boot(initial = {}, review = false) {
+  const data = new Map(Object.entries(initial)),
+    ctx = {
+      URLSearchParams,
+      location: { search: review ? "?review=master-facade-ui-v6" : "" },
+      window: {},
+      localStorage: {
+        getItem: (k) => data.get(k) ?? null,
+        setItem: (k, v) => data.set(k, String(v)),
+      },
+      document: { dispatchEvent() {} },
+      CustomEvent: class {},
+    };
+  vm.createContext(ctx);
+  for (const s of scripts) vm.runInContext(s, ctx);
+  return { data, ctx, get: (s) => vm.runInContext(s, ctx) };
+}
+const layout = JSON.stringify({
+    v: 1,
+    objects: { house: { x: 14, z: 29, w: 16, d: 10, note: "старое" } },
+  }),
+  variants = JSON.stringify({ A: [{ id: "house", x: 14, z: 29 }] }),
+  cat = JSON.stringify([
+    { id: "tree_1", type: "fruit_tree", x: 3, z: 24, note: "не удалить" },
+  ]);
+let a = boot({
+  bern_layout_v1: layout,
+  bern_layout_variants: variants,
+  bern_catalog_v1: cat,
+});
+assert.equal(a.data.get("bern_layout_v2"), layout);
+assert.equal(a.data.get("bern_layout_variants_v2"), variants);
+assert.equal(a.data.get("bern_catalog_v2"), cat);
+assert.equal(a.data.get("bern_layout_v1"), layout);
+assert.equal(
+  JSON.parse(a.data.get("bern_pre_v6_backup")).raw.bern_layout_v1,
+  layout,
+);
+a = boot({
+  bern_layout_v2: layout,
+  bern_project_backups_v2: '[{"payload":{"note":"original"}}]',
+});
+assert.equal(a.data.get("bern_layout_v2"), layout);
+assert.equal(
+  JSON.parse(a.data.get("bern_pre_v6_backup")).raw.bern_project_backups_v2,
+  '[{"payload":{"note":"original"}}]',
+);
+a = boot({ bern_layout_v2: "{broken" });
+assert.equal(a.get("BernV6.readOnly"), true);
+assert.match(a.get("BernV6.storageError"), /Миграция остановлена/);
+assert.equal(a.data.get("bern_layout_v2"), "{broken");
+a = boot({ bern_layout_v2: layout, bern_project_v6: '{"schemaVersion":99}' });
+assert.equal(a.get("BernV6.readOnly"), true);
+assert.equal(a.data.get("bern_layout_v2"), layout);
+a = boot(
+  { bern_layout_v2: layout, bern_ui_v6: '{"layers":{"paths":false}}' },
+  true,
+);
+assert.deepEqual([...a.data.keys()], ["bern_layout_v2", "bern_ui_v6"]);
+assert.equal(a.get("BernV6.readOnly"), true);
+a = boot();
+const saved = a.get("JSON.stringify(appState.layers)");
+a.get("setLayer('paths',false)");
+const custom = a.get("JSON.stringify(appState.layers)");
+a.get("setSceneMode('comms-only');setSceneMode('xray');setSceneMode('normal')");
+assert.equal(a.get("JSON.stringify(appState.layers)"), custom);
+a.get("setSceneMode('comms-only');setLayer('buildings',true)");
+assert.equal(a.get("effectiveLayers().buildings"), false);
+a.get("setLayer('comms',false)");
+assert.equal(a.get("effectiveLayers().water"), false);
+console.log(
+  "PASS: 6 storage/migration scenarios; raw preservation, corruption protection, review isolation, exact layer restore",
+);
