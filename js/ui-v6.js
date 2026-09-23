@@ -477,6 +477,7 @@ function renderDrawer(force = false) {
       Object.keys(DRAWING_PRESETS)
         .map((k) => actionButton("drawing-" + k))
         .join("") +
+      actionButton("facade-sheet") +
       actionButton("houseplan") +
       section(
         "Разбивочный лист X/Z",
